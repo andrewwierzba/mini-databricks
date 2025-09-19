@@ -3,13 +3,13 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
-import { AppIcon, MenuIcon, SearchIcon, SparkleIcon } from "@databricks/design-system"
+import { AppIcon, MenuIcon, SearchIcon } from "@databricks/design-system"
 import { Avatar } from "@databricks/design-system"
 
 const GradientSparkle = () => {
     return (
         <>
-            {/* Global gradient definition for both icon and button background */}
+            {/* Gradient definition */}
             <svg height="0" width="0" style={{ position: 'absolute' }}>
                 <defs>
                     <linearGradient
@@ -25,8 +25,8 @@ const GradientSparkle = () => {
                     </linearGradient>
                 </defs>
             </svg>
-            
-            {/* Icon SVG */}
+
+            {/* Icon */}
             <svg height="16" width="16" viewBox="0 0 16 16">
                 <path
                     className="transition-all duration-200 group-hover:[fill-rule:nonzero]"
@@ -61,14 +61,14 @@ export default function () {
                 <SearchIcon
                     className="bottom left-3 absolute top"
                     style={{
-                        color: 'var(--secondary-foreground)'
+                        color: 'var(--du-bois-text-secondary)'
                     }}
                 />
                 <Input
                     className="bg-background rounded-sm shadow-none text-[13px] pl-10"
                     placeholder="Search data, notebooks, recents, and more..."
                 />
-                <span className="bottom text-secondary-foreground text-[13px] absolute right-3 z-10">⌘ + P</span>
+                <span className="bottom text-du-bois-text-secondary text-[13px] absolute right-3 z-10">⌘ + P</span>
             </div>
 
             {/* Navigation miscellaneous */}
@@ -76,7 +76,7 @@ export default function () {
                 <div className="flex gap-1">
                     <Button
                         aria-label="global-assistant"
-                        className="group hover:[background:var(--ai-gradient-hover)] rounded-sm transition-all"
+                        className="rounded-sm group transition-all"
                         size="icon"
                         variant="ghost"
                     >
