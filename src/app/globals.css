@@ -17,6 +17,8 @@
 	--du-bois-background-secondary: #F6F7F9;
 	--du-bois-text-primary: #11171C;
 	--du-bois-text-secondary: #5F7281;
+	--du-bois-border: #E8ECF0;
+	--du-bois-blue-400: #8ACAFF;
 
 	/* Shadcn theme */
 	--radius: 0.625rem;
@@ -55,13 +57,15 @@
 
 @theme inline {
 	/* Databricks theme */
-	--color-ai-gradient: var(--du-bois-ai-gradient);
-	--color-grey-050: var(--du-bois-grey-050);
-	--color-grey-100: var(--du-bois-grey-100);
-	--color-background-primary: var(--du-bois-background-primary);
-	--color-background-secondary: var(--du-bois-background-secondary);
-	--text-primary: var(--du-bois-text-primary);
-	--text-secondary: var(--du-bois-text-secondary);
+	--du-bois-color-ai-gradient: var(--du-bois-ai-gradient);
+	--du-bois-color-grey-050: var(--du-bois-grey-050);
+	--du-bois-color-grey-100: var(--du-bois-grey-100);
+	--du-bois-color-background-primary: var(--du-bois-background-primary);
+	--du-bois-color-background-secondary: var(--du-bois-background-secondary);
+	--du-bois-color-text-primary: var(--du-bois-text-primary);
+	--du-bois-color-text-secondary: var(--du-bois-text-secondary);
+	--du-bois-color-border: var(--du-bois-border);
+	--du-bois-color-blue-400: var(--du-bois-blue-400);
 
 	/* Shadcn theme */
 	--color-background: var(--background);
@@ -112,11 +116,13 @@
 		--du-bois-background-secondary: #1F272D;
 		--du-bois-text-primary: #E8ECF0;
 		--du-bois-text-secondary: #92A4B3;
+		--du-bois-border: #1F272D;
+		--du-bois-blue-400: #8ACAFF;
 	}
 }
 
 body {
-	background: var(--background-primary);
+	background: var(--du-bois-background-secondary);
 }
 
 .dark {
@@ -133,6 +139,8 @@ body {
 	--du-bois-background-secondary: #1F272D;
 	--du-bois-text-primary: #E8ECF0;
 	--du-bois-text-secondary: #92A4B3;
+	--du-bois-border: #1F272D;
+	--du-bois-blue-400: #8ACAFF;
 
 	/* Shadcn theme */
 	--background: oklch(0.145 0 0);
