@@ -40,7 +40,7 @@ const GradientSparkle = () => {
     );
 };
 
-export default function () {
+export function Navigation() {
     return (
         <nav aria-label="navigation" className="items-center flex gap-2 justify-between mb-2 px-2">
             {/* Navigation menu */}
