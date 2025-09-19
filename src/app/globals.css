@@ -15,6 +15,8 @@
 	--grey-100: #E8ECF0;
 	--background-primary: #FFFFFF;
 	--background-secondary: #F6F7F9;
+	--text-primary: #11171C;
+	--text-secondary: #5F7281;
 
 	/* Shadcn theme */
 	--radius: 0.625rem;
@@ -58,6 +60,8 @@
 	--color-grey-100: var(--grey-100);
 	--color-background-primary: var(--background-primary);
 	--color-background-secondary: var(--background-secondary);
+	--text-primary: var(--text-primary);
+	--text-secondary: var(--text-secondary);
 
 	/* Shadcn theme */
 	--color-background: var(--background);
@@ -106,6 +110,8 @@
 		--grey-100: #E8ECF0;
 		--background-primary: #11171C;
 		--background-secondary: #1F272D;
+		--text-primary: #E8ECF0;
+		--text-secondary: #92A4B3;
 	}
 }
 
@@ -125,6 +131,8 @@ body {
 	--grey-100: #E8ECF0;
 	--background-primary: #11171C;
 	--background-secondary: #1F272D;
+	--text-primary: #E8ECF0;
+	--text-secondary: #92A4B3;
 
 	/* Shadcn theme */
 	--background: oklch(0.145 0 0);
