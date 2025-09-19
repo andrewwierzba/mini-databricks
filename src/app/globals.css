@@ -5,18 +5,18 @@
 
 :root {
 	/* Databricks theme */
-	--ai-gradient: linear-gradient(
+	--du-bois-ai-gradient: linear-gradient(
 		to right,
 		oklch(0.662 0.135 246.5) 24%,
 		oklch(0.634 0.245 321.7) 47%,
 		oklch(0.691 0.199 31.4) 76%
 		);
-	--grey-050: #F6F7F9;
-	--grey-100: #E8ECF0;
-	--background-primary: #FFFFFF;
-	--background-secondary: #F6F7F9;
-	--text-primary: #11171C;
-	--text-secondary: #5F7281;
+	--du-bois-grey-050: #F6F7F9;
+	--du-bois-grey-100: #E8ECF0;
+	--du-bois-background-primary: #FFFFFF;
+	--du-bois-background-secondary: #F6F7F9;
+	--du-bois-text-primary: #11171C;
+	--du-bois-text-secondary: #5F7281;
 
 	/* Shadcn theme */
 	--radius: 0.625rem;
@@ -55,13 +55,13 @@
 
 @theme inline {
 	/* Databricks theme */
-	--color-ai-gradient: var(--ai-gradient);
-	--color-grey-050: var(--grey-050);
-	--color-grey-100: var(--grey-100);
-	--color-background-primary: var(--background-primary);
-	--color-background-secondary: var(--background-secondary);
-	--text-primary: var(--text-primary);
-	--text-secondary: var(--text-secondary);
+	--color-ai-gradient: var(--du-bois-ai-gradient);
+	--color-grey-050: var(--du-bois-grey-050);
+	--color-grey-100: var(--du-bois-grey-100);
+	--color-background-primary: var(--du-bois-background-primary);
+	--color-background-secondary: var(--du-bois-background-secondary);
+	--text-primary: var(--du-bois-text-primary);
+	--text-secondary: var(--du-bois-text-secondary);
 
 	/* Shadcn theme */
 	--color-background: var(--background);
@@ -106,12 +106,12 @@
 @media (prefers-color-scheme: dark) {
 	:root {
 		/* Databricks theme */
-		--grey-050: #F6F7F9;
-		--grey-100: #E8ECF0;
-		--background-primary: #11171C;
-		--background-secondary: #1F272D;
-		--text-primary: #E8ECF0;
-		--text-secondary: #92A4B3;
+		--du-bois-grey-050: #F6F7F9;
+		--du-bois-grey-100: #E8ECF0;
+		--du-bois-background-primary: #11171C;
+		--du-bois-background-secondary: #1F272D;
+		--du-bois-text-primary: #E8ECF0;
+		--du-bois-text-secondary: #92A4B3;
 	}
 }
 
@@ -121,18 +121,18 @@ body {
 
 .dark {
 	/* Databricks theme */
-	--ai-gradient: linear-gradient(
+	--du-bois-ai-gradient: linear-gradient(
 		to right,
 		oklch(0.662 0.135 246.5) 24%,
 		oklch(0.634 0.245 321.7) 47%,
 		oklch(0.691 0.199 31.4) 76%
 		);
-	--grey-050: #F6F7F9;
-	--grey-100: #E8ECF0;
-	--background-primary: #11171C;
-	--background-secondary: #1F272D;
-	--text-primary: #E8ECF0;
-	--text-secondary: #92A4B3;
+	--du-bois-grey-050: #F6F7F9;
+	--du-bois-grey-100: #E8ECF0;
+	--du-bois-background-primary: #11171C;
+	--du-bois-background-secondary: #1F272D;
+	--du-bois-text-primary: #E8ECF0;
+	--du-bois-text-secondary: #92A4B3;
 
 	/* Shadcn theme */
 	--background: oklch(0.145 0 0);
