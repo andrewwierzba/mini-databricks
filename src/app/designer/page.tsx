@@ -1,10 +1,16 @@
 "use client"
 
+import { useState } from "react"
+import { Navigation } from "@/components/ui/patterns/navigation"
 import { Workspace } from "@/components/ui/patterns/workspace-browser"
+import { Assistant } from "@/components/ui/patterns/assistant"
+
 import { ReactFlow, Background, Controls } from 'reactflow'
 import 'reactflow/dist/style.css'
 
 export default function Designer() {
+    const [showAssistant, setShowAssistant] = useState(true)
+    
     const initialNodes = [
         {
             id: '1',
@@ -29,18 +35,22 @@ export default function Designer() {
     ]
 
     return (
-        <div className="bg-(--du-bois-color-background-primary) border-(--du-bois-color-border) border rounded-sm flex font-sans h-full overflow-hidden">
-            <Workspace />
-            <div className="flex-1 h-full">
-                <ReactFlow
-                    className="bg-(--du-bois-color-background-primary)"
-                    edges={initialEdges}
-                    fitView
-                    nodes={initialNodes}
-                >
-                    <Background />
-                    <Controls />
-                </ReactFlow>
+        <div className="flex flex-col h-full">
+            <Navigation onOpenAssistant={() => setShowAssistant(true)} />
+            <div className="bg-(--du-bois-color-background-primary) border-(--du-bois-color-border) border rounded-sm flex font-sans h-full overflow-hidden">
+                <Workspace />
+                <div className="flex-1 h-full">
+                    <ReactFlow
+                        className="bg-(--du-bois-color-background-primary)"
+                        edges={initialEdges}
+                        fitView
+                        nodes={initialNodes}
+                    >
+                        <Background />
+                        <Controls />
+                    </ReactFlow>
+                </div>
+                {showAssistant && <Assistant onClose={() => setShowAssistant(false)} />}
             </div>
         </div>
     );

@@ -40,7 +40,7 @@ const GradientSparkle = () => {
     );
 };
 
-export function Navigation() {
+export function Navigation({ onOpenAssistant }: { onOpenAssistant?: () => void }) {
     return (
         <nav aria-label="navigation" className="items-center flex gap-2 justify-between mb-2 px-2">
             {/* Navigation menu */}
@@ -77,6 +77,7 @@ export function Navigation() {
                     <Button
                         aria-label="global-assistant"
                         className="rounded-sm group transition-all"
+                        onClick={onOpenAssistant}
                         size="icon"
                         variant="ghost"
                     >
