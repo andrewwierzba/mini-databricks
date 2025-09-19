@@ -1,4 +1,4 @@
-import { Workspace } from "@/components/ui/patterns/file-browser"
+import { Workspace } from "@/components/ui/patterns/workspace-browser"
 
 export default function Home() {
 	return (
