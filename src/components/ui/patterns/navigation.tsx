@@ -89,7 +89,7 @@ export function Navigation({ onOpenAssistant }: { onOpenAssistant?: () => void }
                         size="icon"
                         variant="ghost"
                     >
-                        <AppIcon onPointerEnterCapture={() => {}} onPointerLeaveCapture={() => {}} />
+                        <AppIcon />
                     </Button>
                 </div>
                 <Avatar
