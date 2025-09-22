@@ -19,6 +19,7 @@
 	--du-bois-text-secondary: #5F7281;
 	--du-bois-border: #E8ECF0;
 	--du-bois-blue-400: #8ACAFF;
+	--du-bois-white: #FFFFFF;
 
 	/* Shadcn theme */
 	--radius: 0.625rem;
@@ -66,6 +67,7 @@
 	--du-bois-color-text-secondary: var(--du-bois-text-secondary);
 	--du-bois-color-border: var(--du-bois-border);
 	--du-bois-color-blue-400: var(--du-bois-blue-400);
+	--du-bois-color-white: var(--du-bois-white);
 
 	/* Shadcn theme */
 	--color-background: var(--background);
@@ -118,6 +120,7 @@
 		--du-bois-text-secondary: #92A4B3;
 		--du-bois-border: #1F272D;
 		--du-bois-blue-400: #8ACAFF;
+		--du-bois-white: #FFFFFF;
 	}
 }
 
@@ -141,6 +144,7 @@ body {
 	--du-bois-text-secondary: #92A4B3;
 	--du-bois-border: #1F272D;
 	--du-bois-blue-400: #8ACAFF;
+	--du-bois-white: #FFFFFF;
 
 	/* Shadcn theme */
 	--background: oklch(0.145 0 0);
