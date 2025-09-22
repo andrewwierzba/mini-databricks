@@ -26,10 +26,10 @@ const data = [{
 export function FileBrowser({ onClose }: { onClose: () => void }) {
     return (
         <div aria-label="file-browser" className="border-r border-(--du-bois-color-border) h-full min-w-[300px] p-1">
-            <div className="items-center flex justify-between w-full">
+            <div className="items-center flex gap-1 h-8 justify-between w-full">
                 <Button
                     aria-label="navigate-outside-of-folder"
-                    className="rounded-sm"
+                    className="rounded-sm h-6 w-6"
                     size="icon"
                     variant="ghost"
                 >
@@ -40,7 +40,7 @@ export function FileBrowser({ onClose }: { onClose: () => void }) {
                 </Typography>
                 <Button
                     aria-label="close-file-browser"
-                    className="rounded-sm"
+                    className="rounded-sm h-6 w-6"
                     onClick={onClose}
                     size="icon"
                     variant="ghost"
