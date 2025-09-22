@@ -5,12 +5,12 @@ import { Navigation } from "@/components/ui/patterns/navigation"
 import { Workspace } from "@/components/ui/patterns/workspace-browser"
 import { Assistant } from "@/components/ui/patterns/assistant"
 
-import { ReactFlow, Background, Controls } from 'reactflow'
+import { ReactFlow, Background, Controls, MiniMap } from 'reactflow'
 import 'reactflow/dist/style.css'
 
 export default function Designer() {
     const [showAssistant, setShowAssistant] = useState(true)
-    
+
     const initialNodes = [
         {
             id: '1',
@@ -45,9 +45,31 @@ export default function Designer() {
                         edges={initialEdges}
                         fitView
                         nodes={initialNodes}
+                        panOnDrag={false}
+                        panOnScroll={true}
+                        selectionOnDrag={true}
                     >
-                        <Background />
-                        <Controls />
+                        <Background gap={8} />
+                        <Controls position="bottom-right" />
+                        <MiniMap
+                            bgColor="var(--du-bois-background-primary)"
+                            maskColor={undefined}
+                            maskStrokeColor="var(--du-bois-border)"
+                            maskStrokeWidth={1}
+                            nodeBorderRadius={20}
+                            nodeColor="var(--du-bois-background-primary)"
+                            nodeStrokeColor="var(--du-bois-border)"
+                            nodeStrokeWidth={10}
+                            position="bottom-right" 
+                            style={{ 
+                                border: "1px solid var(--du-bois-border)",
+                                borderRadius: "4px",
+                                height: 80,
+                                overflow: "hidden",
+                                right: 36,
+                                width: 138
+                            }}
+                        />
                     </ReactFlow>
                 </div>
                 {showAssistant && <Assistant onClose={() => setShowAssistant(false)} />}
