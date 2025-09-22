@@ -4,10 +4,11 @@ import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 import { ArrowLeftIcon, CloseIcon, DataIcon, FileIcon, FolderIcon, FolderFillIcon, QueryEditorIcon, Typography } from "@databricks/design-system"
 
-const { Text } = Typography
+const { Paragraph, Text } = Typography
 
 const data = [{
     name: "folder_1",
@@ -91,23 +92,45 @@ export function Workspace() {
                 </div>
                 <Separator />
                 <div className="flex flex-col gap-1 p-1">
-                    <Button
-                        aria-label="view-file-browser"
-                        className="rounded-sm"
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => setShowFileBrowser(!showFileBrowser)}
-                    >
-                        <FolderIcon />
-                    </Button>
-                    <Button
-                        aria-label="view-catalog"
-                        className="rounded-sm"
-                        size="icon"
-                        variant="ghost"
-                    >
-                        <DataIcon />
-                    </Button>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <Button
+                                aria-label="view-file-browser"
+                                className="rounded-sm"
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => setShowFileBrowser(!showFileBrowser)}
+                            >
+                                <FolderIcon />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                            <Typography>
+                                <Paragraph style={{ color: 'var(--du-bois-text-white)' }}>
+                                    Workspace (Ctrl + Option + E)
+                                </Paragraph>
+                            </Typography>
+                        </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <Button
+                                aria-label="view-catalog"
+                                className="rounded-sm"
+                                size="icon"
+                                variant="ghost"
+                            >
+                                <DataIcon />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                            <Typography>
+                                <Paragraph style={{ color: 'var(--du-bois-text-white)' }}>
+                                    Catalog (Ctrl + Option + C)
+                                </Paragraph>
+                            </Typography>
+                        </TooltipContent>
+                    </Tooltip>
                 </div>
             </div>
             {showFileBrowser && <FileBrowser onClose={() => setShowFileBrowser(false)} />}
