@@ -11,14 +11,24 @@
 		oklch(0.634 0.245 321.7) 47%,
 		oklch(0.691 0.199 31.4) 76%
 		);
-	--du-bois-grey-050: #F6F7F9;
-	--du-bois-grey-100: #E8ECF0;
 	--du-bois-background-primary: #FFFFFF;
 	--du-bois-background-secondary: #F6F7F9;
+	--du-bois-border: #E8ECF0;
+	--du-bois-text-placeholder: #5F7281;
 	--du-bois-text-primary: #11171C;
 	--du-bois-text-secondary: #5F7281;
-	--du-bois-border: #E8ECF0;
+	--du-bois-text-validation-danger: #C82D4C;
+	--du-bois-text-validation-success: #277C43;
+	--du-bois-blue-100: #F0F8FF;
+	--du-bois-blue-200: #D7EDFE;
+	--du-bois-blue-300: #BAE1FC;
 	--du-bois-blue-400: #8ACAFF;
+	--du-bois-blue-500: #4299E0;
+	--du-bois-blue-600: #2272B4;
+	--du-bois-blue-700: #0E538B;
+	--du-bois-blue-800: #04355D;
+	--du-bois-grey-050: #F6F7F9;
+	--du-bois-grey-100: #E8ECF0;
 	--du-bois-white: #FFFFFF;
 
 	/* Shadcn theme */
@@ -59,14 +69,24 @@
 @theme inline {
 	/* Databricks theme */
 	--du-bois-color-ai-gradient: var(--du-bois-ai-gradient);
-	--du-bois-color-grey-050: var(--du-bois-grey-050);
-	--du-bois-color-grey-100: var(--du-bois-grey-100);
 	--du-bois-color-background-primary: var(--du-bois-background-primary);
 	--du-bois-color-background-secondary: var(--du-bois-background-secondary);
+	--du-bois-color-border: var(--du-bois-border);
+	--du-bois-color-text-placeholder: var(--du-bois-text-placeholder);
 	--du-bois-color-text-primary: var(--du-bois-text-primary);
 	--du-bois-color-text-secondary: var(--du-bois-text-secondary);
-	--du-bois-color-border: var(--du-bois-border);
+	--du-bois-color-validation-danger: var(--du-bois-text-validation-danger);
+	--du-bois-color-validation-success: var(--du-bois-text-validation-success);
+	--du-bois-color-blue-100: var(--du-bois-blue-100);
+	--du-bois-color-blue-200: var(--du-bois-blue-200);
+	--du-bois-color-blue-300: var(--du-bois-blue-300);
 	--du-bois-color-blue-400: var(--du-bois-blue-400);
+	--du-bois-color-blue-500: var(--du-bois-blue-500);
+	--du-bois-color-blue-600: var(--du-bois-blue-600);
+	--du-bois-color-blue-700: var(--du-bois-blue-700);
+	--du-bois-color-blue-800: var(--du-bois-blue-800);
+	--du-bois-color-grey-050: var(--du-bois-grey-050);
+	--du-bois-color-grey-100: var(--du-bois-grey-100);
 	--du-bois-color-white: var(--du-bois-white);
 
 	/* Shadcn theme */
@@ -112,14 +132,30 @@
 @media (prefers-color-scheme: dark) {
 	:root {
 		/* Databricks theme */
-		--du-bois-grey-050: #F6F7F9;
-		--du-bois-grey-100: #E8ECF0;
+		--du-bois-ai-gradient: linear-gradient(
+			to right,
+			oklch(0.662 0.135 246.5) 24%,
+			oklch(0.634 0.245 321.7) 47%,
+			oklch(0.691 0.199 31.4) 76%
+			);
 		--du-bois-background-primary: #11171C;
 		--du-bois-background-secondary: #1F272D;
+		--du-bois-border: #1F272D;
+		--du-bois-text-placeholder: #5F7281;
 		--du-bois-text-primary: #E8ECF0;
 		--du-bois-text-secondary: #92A4B3;
-		--du-bois-border: #1F272D;
+		--du-bois-text-validation-danger: #E65B77;
+		--du-bois-text-validation-success: #3CAA60;
+		--du-bois-blue-100: #F0F8FF;
+		--du-bois-blue-200: #D7EDFE;
+		--du-bois-blue-300: #BAE1FC;
 		--du-bois-blue-400: #8ACAFF;
+		--du-bois-blue-500: #4299E0;
+		--du-bois-blue-600: #2272B4;
+		--du-bois-blue-700: #0E538B;
+		--du-bois-blue-800: #04355D;
+		--du-bois-grey-050: #F6F7F9;
+		--du-bois-grey-100: #E8ECF0;
 		--du-bois-white: #FFFFFF;
 	}
 }
@@ -136,14 +172,24 @@ body {
 		oklch(0.634 0.245 321.7) 47%,
 		oklch(0.691 0.199 31.4) 76%
 		);
-	--du-bois-grey-050: #F6F7F9;
-	--du-bois-grey-100: #E8ECF0;
 	--du-bois-background-primary: #11171C;
 	--du-bois-background-secondary: #1F272D;
+	--du-bois-border: #1F272D;
+	--du-bois-text-placeholder: #8396A5;
 	--du-bois-text-primary: #E8ECF0;
 	--du-bois-text-secondary: #92A4B3;
-	--du-bois-border: #1F272D;
+	--du-bois-text-validation-danger: #E65B77;
+	--du-bois-text-validation-success: #3CAA60;
+	--du-bois-blue-100: #F0F8FF;
+	--du-bois-blue-200: #D7EDFE;
+	--du-bois-blue-300: #BAE1FC;
 	--du-bois-blue-400: #8ACAFF;
+	--du-bois-blue-500: #4299E0;
+	--du-bois-blue-600: #2272B4;
+	--du-bois-blue-700: #0E538B;
+	--du-bois-blue-800: #04355D;
+	--du-bois-grey-050: #F6F7F9;
+	--du-bois-grey-100: #E8ECF0;
 	--du-bois-white: #FFFFFF;
 
 	/* Shadcn theme */
