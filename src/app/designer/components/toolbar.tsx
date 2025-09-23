@@ -18,34 +18,19 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-interface ToolbarProps {
-	onInputClick?: () => void;
-	onTransformSelect?: (transformType: string) => void;
-	onOutputClick?: () => void;
-	onSQLClick?: () => void;
-	version?: string;
-	className?: string;
-}
+import { getNodeTypesByCategory } from "@/config/nodeTypes"
+import { useDesigner } from "@/contexts/DesignerContext"
 
-const versions = {
-    v1: {
-        options: ["input", "aggregate", "combine", "filter", "join", "sort", "transform", "output"]
-    },
-    v2: {
-        options: ["input", "aggregate", "combine", "filter", "join", "sort", "select", "transform", "output"]
-    }
+interface ToolbarProps {
+	className?: string
 }
 
 const { Text } = Typography
 
-export function Toolbar({
-    className,
-	onInputClick, 
-	onTransformSelect, 
-	onOutputClick, 
-	onSQLClick,
-	version = 'v1'
-}: ToolbarProps) {
+export function Toolbar({ className }: ToolbarProps) {
+	const { addNode } = useDesigner()
+	const transformNodeTypes = getNodeTypesByCategory("transform")
+
     return (
 		<div
 			aria-label="designer-canvas-toolbar"
@@ -58,7 +43,7 @@ export function Toolbar({
 			<div className="flex gap-2">
 				<Button
 					className="rounded-sm h-6 px-2 py-[2px]"
-					onClick={onInputClick}
+					onClick={() => addNode("input")}
 					size="sm"
 					variant="ghost"
 				>
@@ -68,30 +53,29 @@ export function Toolbar({
                     </Typography>
 				</Button>
 				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button
-							className="rounded-sm h-6 px-2 py-[2px]"
-							size="sm"
-							variant="ghost"
-						>
-							<PlusIcon style={{ color: 'var(--du-bois-text-secondary)' }} />
-							<Typography>
-                                <Text>Transform</Text>
-                            </Typography>
-						</Button>
+					<DropdownMenuTrigger className="rounded-sm h-6 px-2 py-[2px] inline-flex items-center gap-2 hover:bg-accent hover:text-accent-foreground">
+						<PlusIcon style={{ color: 'var(--du-bois-text-secondary)' }} />
+						<Typography>
+							<Text>Transform</Text>
+						</Typography>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
                         align="start"
                         className="rounded-sm"
                         sideOffset={8}
                     >
-						{versions.v1.options.map((option) => {
+						{transformNodeTypes.map((nodeType) => {
 							return (
 								<DropdownMenuItem
-									key={option}
-									onClick={() => onTransformSelect}
+									key={nodeType.id}
+									onClick={() => addNode(nodeType.id)}
 								>
-									{option}
+                                    <nodeType.icon className="h-4 w-4" />
+									<Typography>
+                                        <Text>
+                                            {nodeType.label}
+                                        </Text>
+                                    </Typography>
 								</DropdownMenuItem>
 							);
 						})}
@@ -99,7 +83,7 @@ export function Toolbar({
 				</DropdownMenu>
 				<Button
 					className="rounded-sm h-6 px-2 py-[2px]"
-					onClick={onOutputClick}
+					onClick={() => addNode("output")}
 					size="sm"
 					variant="ghost"
 				>
@@ -113,7 +97,7 @@ export function Toolbar({
 			<div className="flex gap-2">
 				<Button
 					className="rounded-sm h-6 px-2 py-[2px]"
-					onClick={onSQLClick}
+					onClick={() => console.log("SQL: To be completed.")}
 					size="sm"
 					variant="ghost"
 				>
