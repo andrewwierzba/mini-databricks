@@ -14,7 +14,7 @@ import { Assistant } from "@/components/ui/patterns/assistant"
 import Node from "@/app/designer/components/node"
 import { Toolbar } from "@/app/designer/components/toolbar"
 
-import { getNodeTypeById } from "@/config/nodeTypes"
+import { getNodeTypeById } from "@/app/designer/config/nodeTypes"
 import { DesignerProvider, useDesigner } from "@/contexts/DesignerContext"
 
 import { CloseIcon, Typography } from "@databricks/design-system"

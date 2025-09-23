@@ -4,7 +4,7 @@ import React, { memo } from "react"
 import { Handle, NodeProps, Position } from "reactflow"
 
 import { Typography } from "@databricks/design-system"
-import { getNodeTypeById } from "@/config/nodeTypes"
+import { getNodeTypeById } from "@/app/designer/config/nodeTypes"
 
 interface CustomNodeData {
     label: string;
