@@ -10,7 +10,7 @@ const { Hint, Paragraph, Text } = Typography
 
 export function Assistant({ onClose }: { onClose: () => void }) {    
     return (
-        <div aria-label="assistant" className="border-l border-(--du-bois-color-border) flex flex-col h-full min-w-[300px] p-2">
+        <div aria-label="assistant" className="border-l border-(--du-bois-color-border) flex flex-col h-full p-2 w-[320px]">
             <div className="items-center flex justify-between w-full">
                 <Typography>
                     <Text bold>Assistant</Text>

@@ -26,7 +26,7 @@ const data = [{
 
 export function FileBrowser({ onClose }: { onClose: () => void }) {
     return (
-        <div aria-label="file-browser" className="border-r border-(--du-bois-color-border) h-full min-w-[300px] p-1">
+        <div aria-label="file-browser" className="border-r border-(--du-bois-color-border) h-full p-1 w-[320px]">
             <div className="items-center flex gap-1 h-8 justify-between w-full">
                 <Button
                     aria-label="navigate-outside-of-folder"
