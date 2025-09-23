@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { getNodeTypesByCategory } from "@/app/designer/config/nodeTypes"
-import { useDesigner } from "@/contexts/DesignerContext"
+import { useDesigner } from "@/app/designer/contexts/DesignerContext"
 
 interface ToolbarProps {
 	className?: string
