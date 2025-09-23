@@ -6,7 +6,7 @@ import { Workspace } from "@/components/ui/patterns/workspace-browser"
 import { Assistant } from "@/components/ui/patterns/assistant"
 
 export default function Home() {
-	const [showAssistant, setShowAssistant] = useState(true)
+	const [showAssistant, setShowAssistant] = useState(false)
 
 	return (
 		<div className="flex flex-col h-full">
