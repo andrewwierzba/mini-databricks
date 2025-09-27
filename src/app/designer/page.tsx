@@ -137,6 +137,8 @@ function DesignerCanvas() {
                         {/* Configuration Panel */ }
                         {showNodeConfig && selectedNodeId && (() => {
                             const selectedNodeData = nodes.find(node => node.id === selectedNodeId);
+
+                            console.log(selectedNodeId, selectedNodeData);
                             
                             return selectedNodeData ? (
                                 <div className="bg-white rounded-sm border shadow-xs absolute right-4 top-4 w-[320px]">
@@ -169,7 +171,28 @@ function DesignerCanvas() {
                                             <CloseIcon />
                                         </Button>
                                     </div>
-                                    <div className="p-2"></div>
+                                    <div className="p-2">
+                                        {(() => {
+                                            switch (selectedNodeData.data?.nodeType) {
+                                                case "aggregate":
+                                                    return <div className="text-sm">Aggregate node configuration</div>;
+                                                case "combine":
+                                                    return <div className="text-sm">Combine node configuration</div>;
+                                                case "filter":
+                                                    return <div className="text-sm">Filter node configuration</div>;
+                                                case "join":
+                                                    return <div className="text-sm">Join node configuration</div>;
+                                                case "select":
+                                                    return <div className="text-sm">Select node configuration</div>;
+                                                case "sort":
+                                                    return <div className="text-sm">Sort node configuration</div>;
+                                                case "transform":
+                                                    return <div className="text-sm">Transform node configuration</div>;
+                                                default:
+                                                    return <div className="text-sm">Node configuration</div>;
+                                            }
+                                        })()}
+                                    </div>
                                 </div>
                             ) : null;
                         })()}
