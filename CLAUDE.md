@@ -15,11 +15,12 @@
 - Import external libraries first, then local imports, then CSS imports last
 
 ## Property Conventions
-- Alphabetical order for properties
+- Properties should always be in alphabetical order
 
 ## Style Conventions
-- Classes should be in **alphabetical order by their CSS property equivalents**
-- Styles should be in alphabetical order
+- Colors in globals.css should automatically be converted into OKLCH (e.g. oklch(1 0 0))
+- Tailwind CSS classes should always be in **alphabetical order by their CSS property equivalents**
+- Styles should always be in alphabetical order
 
 ## Design System
 - Use the Databricks Design System as the base for all components
