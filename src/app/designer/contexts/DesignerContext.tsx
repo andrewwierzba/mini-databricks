@@ -39,8 +39,8 @@ interface DesignerProviderProps {
 export const DesignerProvider = ({ children }: DesignerProviderProps) => {
     const [edges, setEdges] = useState<Edge[]>([]);
     const [nodes, setNodes] = useState<Node[]>([]);
-    const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
     const [nodeTypeCounters, setNodeTypeCounters] = useState<Record<string, number>>({});
+    const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
     const addNode = useCallback((nodeTypeId: string, position?: { x: number; y: number }) => {
         const defaultPosition = position || {
@@ -55,7 +55,6 @@ export const DesignerProvider = ({ children }: DesignerProviderProps) => {
             return
         }
 
-        // Get current counter for this node type and increment it
         const currentCounter = (nodeTypeCounters[nodeTypeId] || 0) + 1;
         setNodeTypeCounters(prev => ({
             ...prev,
@@ -71,7 +70,7 @@ export const DesignerProvider = ({ children }: DesignerProviderProps) => {
             },
             id: newNodeId,
             position: defaultPosition,
-            type: "custom"
+            type: "custom",
         }
 
         setNodes(prev => [...prev, newNode])
@@ -99,15 +98,15 @@ export const DesignerProvider = ({ children }: DesignerProviderProps) => {
     }, [])
 
     const contextValue: DesignerContextType = {
-        availableNodeTypes: nodeTypes,
-        nodes,
-        edges,
-        selectedNodeId,
         addNode,
-        selectNode,
-        setNodes,
-        setEdges,
+        availableNodeTypes: nodeTypes,
+        edges,
         getNodeTypeConfig,
+        nodes,
+        selectedNodeId,
+        selectNode,
+        setEdges,
+        setNodes,
     }
 
     return (
