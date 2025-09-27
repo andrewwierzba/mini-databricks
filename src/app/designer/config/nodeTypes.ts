@@ -1,6 +1,7 @@
 import { ComponentType } from "react";
 
 import {
+    CheckIcon,
     FilterIcon,
     JoinOperatorIcon,
     LayerIcon,
@@ -79,6 +80,17 @@ export const nodeTypes: NodeTypeConfig[] = [{
         icon: JoinOperatorIcon,
         id: "join",
         label: "Join",
+        sourceNode: true,
+        targetNode: true
+    }, {
+        category: {
+            icon: PlusIcon,
+            name: "transform"
+        },
+        defaultData: { name: "Select" },
+        icon: CheckIcon,
+        id: "select",
+        label: "Select",
         sourceNode: true,
         targetNode: true
     }, {
