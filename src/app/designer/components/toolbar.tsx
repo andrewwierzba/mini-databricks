@@ -34,7 +34,7 @@ export function Toolbar({ className }: ToolbarProps) {
     return (
 		<div
 			aria-label="designer-canvas-toolbar"
-			className={`${className || ''} rounded-sm shadow-xs inline-flex gap-1 ml-4 mt-4 p-1`}
+			className={`${className || ''} rounded-sm shadow-xs flex gap-1 ml-4 mt-4 p-1`}
 			style={{
 				backgroundColor: "var(--du-bois-color-background-primary)",
 				border: `1px solid var(--du-bois-border)`
@@ -42,21 +42,21 @@ export function Toolbar({ className }: ToolbarProps) {
 		>
 			<div className="flex gap-2">
 				<Button
-					className="rounded-sm h-6 px-2 py-[2px]"
+					className="rounded-sm h-6 gap-0 sm:gap-1 px-1 sm:px-2 py-[2px]"
 					onClick={() => addNode("input")}
 					size="sm"
 					variant="ghost"
 				>
 					<TableIcon style={{ color: 'var(--du-bois-text-secondary)' }} />
 					<Typography>
-                        <Text>Input</Text>
+                        <Text className="hidden sm:inline">Input</Text>
                     </Typography>
 				</Button>
 				<DropdownMenu>
-					<DropdownMenuTrigger className="rounded-sm h-6 px-2 py-[2px] inline-flex items-center gap-2 hover:bg-accent hover:text-accent-foreground">
+					<DropdownMenuTrigger className="items-center hover:bg-accent rounded-sm hover:text-accent-foreground inline-flex sm:gap-1 h-6 px-1 sm:px-2 py-[2px]">
 						<PlusIcon style={{ color: 'var(--du-bois-text-secondary)' }} />
 						<Typography>
-							<Text>Transform</Text>
+							<Text className="hidden sm:inline">Transform</Text>
 						</Typography>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
@@ -82,14 +82,14 @@ export function Toolbar({ className }: ToolbarProps) {
 					</DropdownMenuContent>
 				</DropdownMenu>
 				<Button
-					className="rounded-sm h-6 px-2 py-[2px]"
+					className="rounded-sm gap-0 sm:gap-1 h-6 px-1 sm:px-2 py-[2px]"
 					onClick={() => addNode("output")}
 					size="sm"
 					variant="ghost"
 				>
 					<TableLightningIcon style={{ color: 'var(--du-bois-text-secondary)' }} />
 					<Typography>
-                        <Text>Output</Text>
+                        <Text className="hidden sm:inline">Output</Text>
                     </Typography>
 				</Button>
 			</div>
