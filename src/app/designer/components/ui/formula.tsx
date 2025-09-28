@@ -122,7 +122,7 @@ function Formula({ availableFields = [], className, ...props }: FormulaProps) {
 
     return (
         <div aria-label="formula" className="relative">
-            <Label className="mb-2">Formula</Label>
+            {/* <Label className="mb-2">Formula</Label> */}
             <Textarea
                 className="font-mono !text-[13px]"
                 onChange={handleTextareaChange}
@@ -131,13 +131,13 @@ function Formula({ availableFields = [], className, ...props }: FormulaProps) {
                 {...props}
             />
             {showDropdown && (
-                <div className="bg-white rounded-md shadow-md mt-1 max-h-100 overflow-y-scroll absolute top-full w-full">
+                <div className="bg-white dark:bg-black rounded-md shadow-md cursor-pointer mt-1 max-h-100 overflow-y-scroll absolute top-full w-full z-1">
                     <div className="border-b text-muted-foreground text-xs px-2 py-1">Insert field or function</div>
                     <div>
                         {/* Show filtered fields */}
                         {filteredFields.map((field, index) => (
                             <div
-                                className="items-center hover:bg-black/10 flex gap-2 justify-between px-2 py-2"
+                                className="items-center hover:bg-black/10 dark:hover:bg-white/10 flex gap-2 justify-between px-2 py-2"
                                 key={field.name}
                                 onClick={() => insertItem(field.name, false)}
                             >
