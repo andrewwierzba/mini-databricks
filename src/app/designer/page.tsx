@@ -130,72 +130,75 @@ function DesignerCanvas() {
                                 }}
                             />
                         </ReactFlow>
+                        
+                        {/* Wrapper */}
+                        <div className="flex gap-2 justify-between left-0 absolute right-0 top-0">
+                            {/* Toolbar */ }
+                            <Toolbar className="h-fit w-fit" />
 
-                        {/* Toolbar */ }
-                        <Toolbar className="left-0 absolute top-0" />
+                            {/* Configuration Panel */ }
+                            {showNodeConfig && selectedNodeId && (() => {
+                                const selectedNodeData = nodes.find(node => node.id === selectedNodeId);
 
-                        {/* Configuration Panel */ }
-                        {showNodeConfig && selectedNodeId && (() => {
-                            const selectedNodeData = nodes.find(node => node.id === selectedNodeId);
+                                console.log(selectedNodeId, selectedNodeData);
+                                
+                                return selectedNodeData ? (
+                                    <div className="bg-white rounded-sm border shadow-xs mr-4 mt-4 w-[320px]">
+                                        <div className="items-center border-b flex gap-2 justify-between p-2">
+                                            <div className="items-center flex gap-2">
+                                                {(() => {
+                                                    const nodeConfig = getNodeTypeById(selectedNodeData.data?.nodeType);
+                                                    const Icon = nodeConfig?.icon;
 
-                            console.log(selectedNodeId, selectedNodeData);
-                            
-                            return selectedNodeData ? (
-                                <div className="bg-white rounded-sm border shadow-xs absolute right-4 top-4 w-[320px]">
-                                    <div className="items-center border-b flex gap-2 justify-between p-2">
-                                        <div className="items-center flex gap-2">
-                                            {(() => {
-                                                const nodeConfig = getNodeTypeById(selectedNodeData.data?.nodeType);
-                                                const Icon = nodeConfig?.icon;
-
-                                                return Icon ?
-                                                    <Icon
-                                                        className="bg-(--du-bois-color-background-secondary) rounded-sm p-1"
-                                                        style={{ color: "var(--du-bois-text-secondary)"}}
-                                                    />
-                                                    : null;
-                                            })()}
-                                            <Typography>
-                                                <Title level={4}>
-                                                    {selectedNodeData.data?.label || "Node"}
-                                                </Title>
-                                            </Typography>
+                                                    return Icon ?
+                                                        <Icon
+                                                            className="bg-(--du-bois-color-background-secondary) rounded-sm p-1"
+                                                            style={{ color: "var(--du-bois-text-secondary)"}}
+                                                        />
+                                                        : null;
+                                                })()}
+                                                <Typography>
+                                                    <Title level={4}>
+                                                        {selectedNodeData.data?.label || "Node"}
+                                                    </Title>
+                                                </Typography>
+                                            </div>
+                                            <Button
+                                                aria-label="close-node"
+                                                className="rounded-sm h-6 w-6"
+                                                onClick={() => setShowNodeConfig(false)}
+                                                size="icon"
+                                                variant="ghost"
+                                            >
+                                                <CloseIcon />
+                                            </Button>
                                         </div>
-                                        <Button
-                                            aria-label="close-node"
-                                            className="rounded-sm h-6 w-6"
-                                            onClick={() => setShowNodeConfig(false)}
-                                            size="icon"
-                                            variant="ghost"
-                                        >
-                                            <CloseIcon />
-                                        </Button>
+                                        <div className="p-2">
+                                            {(() => {
+                                                switch (selectedNodeData.data?.nodeType) {
+                                                    case "aggregate":
+                                                        return <div className="text-sm">Aggregate node configuration</div>;
+                                                    case "combine":
+                                                        return <div className="text-sm">Combine node configuration</div>;
+                                                    case "filter":
+                                                        return <div className="text-sm">Filter node configuration</div>;
+                                                    case "join":
+                                                        return <div className="text-sm">Join node configuration</div>;
+                                                    case "select":
+                                                        return <div className="text-sm">Select node configuration</div>;
+                                                    case "sort":
+                                                        return <div className="text-sm">Sort node configuration</div>;
+                                                    case "transform":
+                                                        return <div className="text-sm">Transform node configuration</div>;
+                                                    default:
+                                                        return <div className="text-sm">Node configuration</div>;
+                                                }
+                                            })()}
+                                        </div>
                                     </div>
-                                    <div className="p-2">
-                                        {(() => {
-                                            switch (selectedNodeData.data?.nodeType) {
-                                                case "aggregate":
-                                                    return <div className="text-sm">Aggregate node configuration</div>;
-                                                case "combine":
-                                                    return <div className="text-sm">Combine node configuration</div>;
-                                                case "filter":
-                                                    return <div className="text-sm">Filter node configuration</div>;
-                                                case "join":
-                                                    return <div className="text-sm">Join node configuration</div>;
-                                                case "select":
-                                                    return <div className="text-sm">Select node configuration</div>;
-                                                case "sort":
-                                                    return <div className="text-sm">Sort node configuration</div>;
-                                                case "transform":
-                                                    return <div className="text-sm">Transform node configuration</div>;
-                                                default:
-                                                    return <div className="text-sm">Node configuration</div>;
-                                            }
-                                        })()}
-                                    </div>
-                                </div>
-                            ) : null;
-                        })()}
+                                ) : null;
+                            })()}
+                        </div>
                     </div>
                 </div>
 
