@@ -2,6 +2,8 @@
 
 import React, { useState } from "react"
 
+import { cn } from "@/lib/utils"
+
 {/* Shadcn components */}
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -18,14 +20,15 @@ interface PageProps {
         name: string
         type: string
     }>
+    className?: string
 }
 
-export default function Editor({ availableFields = [] }: PageProps) {
+export default function Editor({ availableFields = [], className }: PageProps) {
     const [aiFormula, setAiFormula] = useState(false)
     const [formulaValue, setFormulaValue] = useState("")
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className={cn("flex flex-col gap-2", className)}>
             <Formula 
                 availableFields={availableFields}
             />
