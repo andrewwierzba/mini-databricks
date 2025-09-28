@@ -7,6 +7,11 @@ import "reactflow/dist/style.css"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import {
@@ -28,7 +33,9 @@ import { Toolbar } from "@/app/designer/components/toolbar"
 import { getNodeTypeById } from "@/app/designer/config/nodeTypes"
 import { DesignerProvider, useDesigner } from "@/app/designer/contexts/DesignerContext"
 
-import { CloseIcon, FileIcon, TrashIcon, Typography } from "@databricks/design-system"
+import Editor from "@/app/designer/components/ui/patterns/editor/page"
+
+import { ChevronDownIcon, ChevronRightIcon, CloseIcon, FileIcon, TrashIcon, Typography } from "@databricks/design-system"
 
 const { Title } = Typography
 
@@ -225,6 +232,10 @@ function DesignerCanvas() {
                                                                             </SelectTrigger>
                                                                             <SelectContent>
                                                                                 <SelectItem value="id">id</SelectItem>
+                                                                                <SelectItem value="customer_id">customer_id</SelectItem>
+                                                                                <SelectItem value="agent_id">agent_id</SelectItem>
+                                                                                <SelectItem value="status">status</SelectItem>
+                                                                                <SelectItem value="created_at">created_at</SelectItem>
                                                                             </SelectContent>
                                                                         </Select>
                                                                         <Select
@@ -369,7 +380,7 @@ function DesignerCanvas() {
                                                                                 </TableCell>
                                                                                 <TableCell className="min-w-32 truncate">
                                                                                     <Select aria-label="column-type">
-                                                                                        <SelectTrigger className="min-w-0 w-full [&>span]:truncate">
+                                                                                        <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
                                                                                             <SelectValue placeholder="Select a column type" />
                                                                                         </SelectTrigger>
                                                                                         <SelectContent>
@@ -399,7 +410,66 @@ function DesignerCanvas() {
                                                     case "sort":
                                                         return <div className="text-sm">Sort node configuration</div>;
                                                     case "transform":
-                                                        return <div className="text-sm">Transform node configuration</div>;
+                                                        return (
+                                                            <div className="flex flex-col gap-2">
+                                                                <div>
+                                                                    <div className="text-sm font-medium">Transform</div>
+                                                                    <div className="text-gray-600 text-xs">Transform fields</div>
+                                                                </div>
+
+                                                                <Collapsible defaultOpen>
+                                                                    <CollapsibleTrigger className="items-center flex text-sm gap-1 mb-1 w-full">
+                                                                        <ChevronRightIcon />
+                                                                        Expression
+                                                                    </CollapsibleTrigger>
+                                                                    <CollapsibleContent className="flex flex-col gap-2">
+                                                                        <div className="flex gap-2">
+                                                                            <Select aria-label="transform-column">
+                                                                                <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
+                                                                                    <SelectValue placeholder="Select a column" />
+                                                                                </SelectTrigger>
+                                                                                <SelectContent>
+                                                                                    <SelectItem value="id">id</SelectItem>
+                                                                                    <SelectItem value="customer_id">customer_id</SelectItem>
+                                                                                    <SelectItem value="agent_id">agent_id</SelectItem>
+                                                                                    <SelectItem value="status">status</SelectItem>
+                                                                                    <SelectItem value="created_at">created_at</SelectItem>
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                            <Select aria-label="transform-column-type" disabled>
+                                                                                <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
+                                                                                    <SelectValue placeholder="Select a column type" />
+                                                                                </SelectTrigger>
+                                                                                <SelectContent>
+                                                                                    <SelectItem value="boolean">boolean</SelectItem>
+                                                                                    <SelectItem value="date">date</SelectItem>
+                                                                                    <SelectItem value="datetime">datetime</SelectItem>
+                                                                                    <SelectItem value="integer">integer</SelectItem>
+                                                                                    <SelectItem value="string">string</SelectItem>
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                        </div>
+
+                                                                        <Editor />
+                                                                    </CollapsibleContent>
+                                                                </Collapsible>
+
+                                                                {/* Allow for additional expressions with formulas */}
+                                                                <Button
+                                                                    aria-label="add-expression"
+                                                                    className="w-fit"
+                                                                    size="sm"
+                                                                >
+                                                                    Add expression
+                                                                </Button>
+
+                                                                {/* If formula returns rows, show formula output preview */}
+                                                                <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
+                                                                    <span className="font-medium">Preview:</span>
+                                                                    <span>5 out of 10 rows</span>
+                                                                </div>
+                                                            </div>
+                                                        );
                                                     default:
                                                         return <div className="text-sm">Node configuration</div>;
                                                 }
