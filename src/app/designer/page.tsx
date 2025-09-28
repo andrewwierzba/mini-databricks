@@ -6,6 +6,7 @@ import ReactFlow, { addEdge, applyEdgeChanges, applyNodeChanges, Background, Con
 import "reactflow/dist/style.css"
 
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import {
@@ -336,7 +337,65 @@ function DesignerCanvas() {
                                                     case "join":
                                                         return <div className="text-sm">Join node configuration</div>;
                                                     case "select":
-                                                        return <div className="text-sm">Select node configuration</div>;
+                                                        return (
+                                                            <div className="flex flex-col gap-2">
+                                                                <div>
+                                                                    <div className="text-sm font-medium">Select</div>
+                                                                    <div className="text-gray-600 text-xs">Select fields to include, exclude, or rename</div>
+                                                                </div>
+
+                                                                <div className="rounded-sm border overflow-hidden">
+                                                                    <Table className="text-sm">
+                                                                        <TableHeader>
+                                                                            <TableRow>
+                                                                                <TableHead>
+                                                                                    <Checkbox aria-label="select-all" />
+                                                                                </TableHead>
+                                                                                <TableHead className="font-medium min-w-32 truncate">Column name</TableHead>
+                                                                                <TableHead className="font-medium min-w-32 truncate">Type</TableHead>
+                                                                                <TableHead className="font-medium min-w-32 truncate">Rename</TableHead>
+                                                                            </TableRow>
+                                                                        </TableHeader>
+                                                                        <TableBody>
+                                                                            <TableRow>
+                                                                                <TableCell className="text-xs max-w-32 truncate">
+                                                                                    <Checkbox aria-label="select-single" />
+                                                                                </TableCell>
+                                                                                <TableCell
+                                                                                    aria-label="column-name"
+                                                                                    className="min-w-32 truncate"
+                                                                                >
+                                                                                    column_name_001
+                                                                                </TableCell>
+                                                                                <TableCell className="min-w-32 truncate">
+                                                                                    <Select aria-label="column-type">
+                                                                                        <SelectTrigger className="min-w-0 w-full [&>span]:truncate">
+                                                                                            <SelectValue placeholder="Select a column type" />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                            <SelectItem value="boolean">boolean</SelectItem>
+                                                                                            <SelectItem value="date">date</SelectItem>
+                                                                                            <SelectItem value="datetime">datetime</SelectItem>
+                                                                                            <SelectItem value="integer">integer</SelectItem>
+                                                                                            <SelectItem value="string">string</SelectItem>
+                                                                                        </SelectContent>
+                                                                                    </Select>
+                                                                                </TableCell>
+                                                                                <TableCell className="min-w-32 truncate">
+                                                                                    <Input aria-label="column-rename" />
+                                                                                </TableCell>
+                                                                            </TableRow>
+                                                                        </TableBody>
+                                                                    </Table>
+                                                                </div>
+
+                                                                {/* If select returns rows, show select output preview */}
+                                                                <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
+                                                                    <span className="font-medium">Preview:</span>
+                                                                    <span>5 out of 10 rows</span>
+                                                                </div>
+                                                            </div>
+                                                        );
                                                     case "sort":
                                                         return <div className="text-sm">Sort node configuration</div>;
                                                     case "transform":
@@ -360,31 +419,31 @@ function DesignerCanvas() {
                                 </div>
                             </div>
                             <div className="flex-1 overflow-auto">
-                                <Table className="max-h-50">
+                                <Table className="text-sm max-h-50">
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead className="text-xs font-medium max-w-32 truncate">column_name_001</TableHead>
-                                            <TableHead className="text-xs font-medium max-w-32 truncate">column_name_002</TableHead>
-                                            <TableHead className="text-xs font-medium max-w-32 truncate">column_name_003</TableHead>
-                                            <TableHead className="text-xs font-medium max-w-32 truncate">column_name_004</TableHead>
-                                            <TableHead className="text-xs font-medium max-w-32 truncate">column_name_005</TableHead>
+                                            <TableHead className="font-medium min-w-32 truncate">column_name_001</TableHead>
+                                            <TableHead className="font-medium min-w-32 truncate">column_name_002</TableHead>
+                                            <TableHead className="font-medium min-w-32 truncate">column_name_003</TableHead>
+                                            <TableHead className="font-medium min-w-32 truncate">column_name_004</TableHead>
+                                            <TableHead className="font-medium min-w-32 truncate">column_name_005</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         <TableRow>
-                                            <TableCell className="text-xs max-w-32 truncate">
+                                            <TableCell className="min-w-32 truncate">
                                                 value_001
                                             </TableCell>
-                                            <TableCell className="text-xs max-w-32 truncate">
+                                            <TableCell className="min-w-32 truncate">
                                                 value_002
                                             </TableCell>
-                                            <TableCell className="text-xs max-w-32 truncate">
+                                            <TableCell className="min-w-32 truncate">
                                                 value_003
                                             </TableCell>
-                                            <TableCell className="text-xs max-w-32 truncate">
+                                            <TableCell className="min-w-32 truncate">
                                                 value_004
                                             </TableCell>
-                                            <TableCell className="text-xs max-w-32 truncate">
+                                            <TableCell className="min-w-32 truncate">
                                                 value_005
                                             </TableCell>
                                         </TableRow>
