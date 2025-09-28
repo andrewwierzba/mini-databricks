@@ -3,7 +3,7 @@
 import { createContext, ReactNode, useContext, useCallback, useState } from "react"
 import { Node, Edge } from "reactflow"
 
-import { getNodeTypeById, NodeTypeConfig, nodeTypes } from "@/app/designer/config/nodeTypes"
+import { getNodeTypeById, nodeTypes, NodeTypeConfig } from "@/app/designer/config/nodeTypes"
 
 export interface DesignerContextType {
     addNode: (
@@ -39,7 +39,7 @@ interface DesignerProviderProps {
 export const DesignerProvider = ({ children }: DesignerProviderProps) => {
     const [edges, setEdges] = useState<Edge[]>([]);
     const [nodes, setNodes] = useState<Node[]>([]);
-    const [nodeTypeCounters, setNodeTypeCounters] = useState<Record<string, number>>({});
+    const [nodeTypeCount, setNodeTypeCount] = useState<Record<string, number>>({});
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
     const addNode = useCallback((nodeTypeId: string, position?: { x: number; y: number }) => {
@@ -55,13 +55,14 @@ export const DesignerProvider = ({ children }: DesignerProviderProps) => {
             return
         }
 
-        const currentCounter = (nodeTypeCounters[nodeTypeId] || 0) + 1;
-        setNodeTypeCounters(prev => ({
+        const currentNodeCount = (nodeTypeCount[nodeTypeId] || 0) + 1;
+
+        setNodeTypeCount(prev => ({
             ...prev,
-            [nodeTypeId]: currentCounter
+            [nodeTypeId]: currentNodeCount
         }));
         
-        const newNodeId = `${nodeTypeId}-${currentCounter}`
+        const newNodeId = `${nodeTypeId}-${currentNodeCount}`
         
         const newNode: Node = {
             data: { 
@@ -87,7 +88,7 @@ export const DesignerProvider = ({ children }: DesignerProviderProps) => {
         }
 
         setSelectedNodeId(newNodeId)
-    }, [selectedNodeId, nodeTypeCounters])
+    }, [selectedNodeId, nodeTypeCount])
 
     const selectNode = useCallback((nodeId: string | null) => {
         setSelectedNodeId(nodeId);
