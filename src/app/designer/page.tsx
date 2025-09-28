@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useCallback, useMemo } from "react"
+import { useSearchParams } from "next/navigation"
 
 import ReactFlow, { addEdge, applyEdgeChanges, applyNodeChanges, Background, Connection, Controls, Edge, EdgeChange, MiniMap, Node as FlowNode, NodeChange, NodeMouseHandler, ReactFlowProvider } from "reactflow"
 import "reactflow/dist/style.css"
@@ -13,6 +14,11 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { Input } from "@/components/ui/input"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 import { Progress } from "@/components/ui/progress"
 import {
     Select,
@@ -21,6 +27,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 import { Navigation } from "@/components/ui/patterns/navigation"
@@ -31,19 +38,20 @@ import Node from "@/app/designer/components/node"
 import { Toolbar } from "@/app/designer/components/toolbar"
 
 import { getNodeTypeById } from "@/app/designer/config/nodeTypes"
-import { DesignerProvider, useDesigner } from "@/app/designer/contexts/DesignerContext"
+import { DesignerProvider, useDesigner, ResearchVariant } from "@/app/designer/contexts/DesignerContext"
 
 import Editor from "@/app/designer/components/ui/patterns/editor/page"
 
-import { ChevronDownIcon, ChevronRightIcon, CloseIcon, FileIcon, TrashIcon, Typography } from "@databricks/design-system"
+import { ChevronDownIcon, ChevronRightIcon, CloseIcon, FileIcon, FunctionIcon, TrashIcon, Typography } from "@databricks/design-system"
 
 const { Title } = Typography
 
 function DesignerCanvas() {
-    const { edges, nodes, selectedNodeId, selectNode, setEdges, setNodes } = useDesigner()
+    const { edges, nodes, researchVariant, selectedNodeId, selectNode, setEdges, setNodes } = useDesigner()
 
     console.log("selectedNodeId:", selectedNodeId)
 
+    const [editorPopover, setEditorPopover] = useState<string | null>(null)
     const [fileUploadProgress, setFileUploadProgress] = useState<Record<string, number>>({})
     const [nodeConfigs, setNodeConfigs] = useState<Record<string, {
             filter: {
@@ -206,7 +214,7 @@ function DesignerCanvas() {
                                             size="icon"
                                             variant="ghost"
                                         >
-                                            <CloseIcon />
+                                            <CloseIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                                         </Button>
                                     </div>
                                     <div className="p-2">
@@ -290,7 +298,7 @@ function DesignerCanvas() {
                                                                 
                                                                 {/* Interaction: if a file is uploading or has uploaded, show the file card */}
                                                                 <div className="align-start rounded-md border flex gap-2 mb-[2px] p-2">
-                                                                    <FileIcon className="pt-[2px]" />
+                                                                    <FileIcon className="pt-[2px]" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
 
                                                                     <div className="flex flex-col w-full">
                                                                         <div className="items-center flex gap-2 justify-between mb-2 w-full">
@@ -307,7 +315,7 @@ function DesignerCanvas() {
                                                                                 size="sm" 
                                                                                 variant="ghost"
                                                                             >
-                                                                                <TrashIcon />
+                                                                                <TrashIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                                                                             </Button>
                                                                         </div>
 
@@ -415,42 +423,90 @@ function DesignerCanvas() {
                                                                 <div className="text-gray-600 text-xs">Transform fields</div>
                                                             </div>
 
-                                                            <Collapsible defaultOpen>
-                                                                <CollapsibleTrigger className="items-center flex text-sm gap-1 mb-1 w-full">
-                                                                    <ChevronRightIcon />
-                                                                    Expression
-                                                                </CollapsibleTrigger>
-                                                                <CollapsibleContent className="flex flex-col gap-2">
-                                                                    <div className="flex gap-2">
-                                                                        <Select aria-label="transform-column">
-                                                                            <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
-                                                                                <SelectValue placeholder="Select a column" />
-                                                                            </SelectTrigger>
-                                                                            <SelectContent>
-                                                                                <SelectItem value="id">id</SelectItem>
-                                                                                <SelectItem value="customer_id">customer_id</SelectItem>
-                                                                                <SelectItem value="agent_id">agent_id</SelectItem>
-                                                                                <SelectItem value="status">status</SelectItem>
-                                                                                <SelectItem value="created_at">created_at</SelectItem>
-                                                                            </SelectContent>
-                                                                        </Select>
-                                                                        <Select aria-label="transform-column-type" disabled>
-                                                                            <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
-                                                                                <SelectValue placeholder="Select a column type" />
-                                                                            </SelectTrigger>
-                                                                            <SelectContent>
-                                                                                <SelectItem value="boolean">boolean</SelectItem>
-                                                                                <SelectItem value="date">date</SelectItem>
-                                                                                <SelectItem value="datetime">datetime</SelectItem>
-                                                                                <SelectItem value="integer">integer</SelectItem>
-                                                                                <SelectItem value="string">string</SelectItem>
-                                                                            </SelectContent>
-                                                                        </Select>
-                                                                    </div>
-
-                                                                    <Editor />
-                                                                </CollapsibleContent>
-                                                            </Collapsible>
+                                                            <div className="rounded-sm border overflow-hidden">
+                                                                <Table className="text-sm">
+                                                                    <TableHeader>
+                                                                        <TableRow>
+                                                                            <TableHead className="font-medium min-w-32 truncate">Expression</TableHead>
+                                                                            <TableHead className="font-medium min-w-32 truncate">Type</TableHead>
+                                                                            <TableHead className="font-medium min-w-32 truncate">Rename</TableHead>
+                                                                        </TableRow>
+                                                                    </TableHeader>
+                                                                    <TableBody>
+                                                                        <TableRow>
+                                                                            <TableCell
+                                                                                aria-label="column-name"
+                                                                                className="min-w-32"
+                                                                            >
+                                                                                <div className="items-center flex gap-2">
+                                                                                    <div className="max-w-32 truncate">column_name_001</div>
+                                                                                    <Popover 
+                                                                                        open={editorPopover === "column_name_001"}
+                                                                                        onOpenChange={(open) => setEditorPopover(open ? "column_name_001" : null)}
+                                                                                    >
+                                                                                        <PopoverTrigger asChild>
+                                                                                            <Button
+                                                                                                aria-label="edit-expression"
+                                                                                                className="h-6 w-6"
+                                                                                                size="icon"
+                                                                                                variant="outline"
+                                                                                            >
+                                                                                                <FunctionIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+                                                                                            </Button>
+                                                                                        </PopoverTrigger>
+                                                                                        <PopoverContent 
+                                                                                            align="start"
+                                                                                            className="p-0 w-[320px]"
+                                                                                            side="right"
+                                                                                            sideOffset={4}
+                                                                                        >
+                                                                                            <div className="flex flex-col">
+                                                                                                <div className="p-2">
+                                                                                                    <div className="text-sm font-medium mb-1">Expression editor</div>
+                                                                                                    <Editor className="mb-1" />
+                                                                                                </div>
+                                                                                                <Separator />
+                                                                                                <div className="flex gap-2 justify-end p-2">
+                                                                                                    <Button
+                                                                                                        onClick={() => setEditorPopover(null)}
+                                                                                                        size="sm"
+                                                                                                        variant="outline"
+                                                                                                    >
+                                                                                                        Cancel
+                                                                                                    </Button>
+                                                                                                    <Button
+                                                                                                        onClick={() => setEditorPopover(null)}
+                                                                                                        size="sm"
+                                                                                                    >
+                                                                                                        Apply
+                                                                                                    </Button>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </PopoverContent>
+                                                                                    </Popover>
+                                                                                </div>
+                                                                            </TableCell>
+                                                                            <TableCell className="min-w-32 truncate">
+                                                                                <Select aria-label="column-type">
+                                                                                    <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
+                                                                                        <SelectValue placeholder="Select a column type" />
+                                                                                    </SelectTrigger>
+                                                                                    <SelectContent>
+                                                                                        <SelectItem value="boolean">boolean</SelectItem>
+                                                                                        <SelectItem value="date">date</SelectItem>
+                                                                                        <SelectItem value="datetime">datetime</SelectItem>
+                                                                                        <SelectItem value="integer">integer</SelectItem>
+                                                                                        <SelectItem value="string">string</SelectItem>
+                                                                                    </SelectContent>
+                                                                                </Select>
+                                                                            </TableCell>
+                                                                            <TableCell className="min-w-32 truncate">
+                                                                                <Input aria-label="column-rename" />
+                                                                            </TableCell>
+                                                                        </TableRow>
+                                                                    </TableBody>
+                                                                </Table>
+                                                            </div>
 
                                                             {/* Allow for additional expressions with formulas */}
                                                             <Button
@@ -462,6 +518,120 @@ function DesignerCanvas() {
                                                             </Button>
 
                                                             {/* If formula returns rows, show formula output preview */}
+                                                            <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
+                                                                <span className="font-medium">Preview:</span>
+                                                                <span>5 out of 10 rows</span>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                case "transform-combined":
+                                                    return (
+                                                        <div className="flex flex-col gap-2">
+                                                            <div>
+                                                                <div className="text-sm font-medium">Transform</div>
+                                                                <div className="text-gray-600 text-xs">Select and transform fields</div>
+                                                            </div>
+
+                                                            <div className="rounded-sm border overflow-hidden">
+                                                                <Table className="text-sm">
+                                                                    <TableHeader>
+                                                                        <TableRow>
+                                                                            <TableHead>
+                                                                                <Checkbox aria-label="select-all" />
+                                                                            </TableHead>
+                                                                            <TableHead className="font-medium min-w-32 truncate">Column name</TableHead>
+                                                                            <TableHead className="font-medium min-w-32 truncate">Type</TableHead>
+                                                                            <TableHead className="font-medium min-w-32 truncate">Rename</TableHead>
+                                                                        </TableRow>
+                                                                    </TableHeader>
+                                                                    <TableBody>
+                                                                        <TableRow>
+                                                                            <TableCell className="text-xs max-w-32 truncate">
+                                                                                <Checkbox aria-label="select-single" />
+                                                                            </TableCell>
+                                                                            <TableCell
+                                                                                aria-label="column-name"
+                                                                                className="min-w-32 truncate"
+                                                                            >
+                                                                                <div className="items-center flex gap-2">
+                                                                                    <div className="max-w-32 truncate">column_name_001</div>
+                                                                                    <Popover 
+                                                                                        open={editorPopover === "column_name_001"}
+                                                                                        onOpenChange={(open) => setEditorPopover(open ? "column_name_001" : null)}
+                                                                                    >
+                                                                                        <PopoverTrigger asChild>
+                                                                                            <Button
+                                                                                                aria-label="edit-expression"
+                                                                                                className="h-6 w-6"
+                                                                                                size="icon"
+                                                                                                variant="outline"
+                                                                                            >
+                                                                                                <FunctionIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+                                                                                            </Button>
+                                                                                        </PopoverTrigger>
+                                                                                        <PopoverContent 
+                                                                                            align="start"
+                                                                                            className="p-0 w-[320px]"
+                                                                                            side="right"
+                                                                                            sideOffset={4}
+                                                                                        >
+                                                                                            <div className="flex flex-col">
+                                                                                                <div className="p-2">
+                                                                                                    <div className="text-sm font-medium mb-1">Expression editor</div>
+                                                                                                    <Editor className="mb-1" />
+                                                                                                </div>
+                                                                                                <Separator />
+                                                                                                <div className="flex gap-2 justify-end p-2">
+                                                                                                    <Button
+                                                                                                        onClick={() => setEditorPopover(null)}
+                                                                                                        size="sm"
+                                                                                                        variant="outline"
+                                                                                                    >
+                                                                                                        Cancel
+                                                                                                    </Button>
+                                                                                                    <Button
+                                                                                                        onClick={() => setEditorPopover(null)}
+                                                                                                        size="sm"
+                                                                                                    >
+                                                                                                        Apply
+                                                                                                    </Button>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </PopoverContent>
+                                                                                    </Popover>
+                                                                                </div>
+                                                                            </TableCell>
+                                                                            <TableCell className="min-w-32 truncate">
+                                                                                <Select aria-label="column-type">
+                                                                                    <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
+                                                                                        <SelectValue placeholder="Select a column type" />
+                                                                                    </SelectTrigger>
+                                                                                    <SelectContent>
+                                                                                        <SelectItem value="boolean">boolean</SelectItem>
+                                                                                        <SelectItem value="date">date</SelectItem>
+                                                                                        <SelectItem value="datetime">datetime</SelectItem>
+                                                                                        <SelectItem value="integer">integer</SelectItem>
+                                                                                        <SelectItem value="string">string</SelectItem>
+                                                                                    </SelectContent>
+                                                                                </Select>
+                                                                            </TableCell>
+                                                                            <TableCell className="min-w-32 truncate">
+                                                                                <Input aria-label="column-rename" />
+                                                                            </TableCell>
+                                                                        </TableRow>
+                                                                    </TableBody>
+                                                                </Table>
+                                                            </div>
+
+                                                            {/* Allow for new custom columns with expressions */}
+                                                            <Button
+                                                                className="w-fit"
+                                                                size="sm"
+                                                                variant="outline"
+                                                            >
+                                                                Insert custom column
+                                                            </Button>
+
                                                             <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
                                                                 <span className="font-medium">Preview:</span>
                                                                 <span>5 out of 10 rows</span>
@@ -529,8 +699,11 @@ function DesignerCanvas() {
 }
 
 export default function Designer() {
+    const searchParams = useSearchParams()
+    const variant = (searchParams.get('variant') as ResearchVariant) || 'separate'
+
     return (
-        <DesignerProvider>
+        <DesignerProvider initialVariant={variant}>
             <ReactFlowProvider>
                 <DesignerCanvas />
             </ReactFlowProvider>
