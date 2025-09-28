@@ -169,66 +169,262 @@ function DesignerCanvas() {
                             />
                         </ReactFlow>
                         
-                        {/* Wrapper */}
-                        <div className="flex gap-2 justify-between left-0 absolute right-0 top-0">
-                            {/* Toolbar */ }
-                            <Toolbar className="h-fit w-fit" />
+                        {/* Toolbar */ }
+                        <Toolbar className="h-fit left-0 absolute top-0 w-fit" />
 
-                            {/* Configuration Panel */ }
-                            {showNodeConfig && selectedNodeId && (() => {
-                                const selectedNodeData = nodes.find(node => node.id === selectedNodeId);
+                        {/* Configuration Panel */ }
+                        {showNodeConfig && selectedNodeId && (() => {
+                            const selectedNodeData = nodes.find(node => node.id === selectedNodeId);
 
-                                console.log(selectedNodeId, selectedNodeData);
-                                
-                                return selectedNodeData ? (
-                                    <div className="bg-white rounded-sm border shadow-xs mr-4 mt-4 w-[320px]">
-                                        <div className="items-center border-b flex gap-2 justify-between p-2">
-                                            <div className="items-center flex gap-2">
-                                                {(() => {
-                                                    const nodeConfig = getNodeTypeById(selectedNodeData.data?.nodeType);
-                                                    const Icon = nodeConfig?.icon;
-
-                                                    return Icon ?
-                                                        <Icon
-                                                            className="bg-(--du-bois-color-background-secondary) rounded-sm p-1"
-                                                            style={{ color: "var(--du-bois-text-secondary)"}}
-                                                        />
-                                                        : null;
-                                                })()}
-                                                <Typography>
-                                                    <Title level={4}>
-                                                        {selectedNodeData.data?.label || "Node"}
-                                                    </Title>
-                                                </Typography>
-                                            </div>
-                                            <Button
-                                                aria-label="close-node"
-                                                className="rounded-sm h-6 w-6"
-                                                onClick={() => setShowNodeConfig(false)}
-                                                size="icon"
-                                                variant="ghost"
-                                            >
-                                                <CloseIcon />
-                                            </Button>
-                                        </div>
-                                        <div className="p-2">
+                            console.log(selectedNodeId, selectedNodeData);
+                            
+                            return selectedNodeData ? (
+                                <div className="bg-white rounded-sm border shadow-xs mr-4 mt-4 absolute right-0 top-0 w-[320px]">
+                                    <div className="items-center border-b flex gap-2 justify-between p-2">
+                                        <div className="items-center flex gap-2">
                                             {(() => {
-                                                switch (selectedNodeData.data?.nodeType) {
-                                                    case "aggregate":
-                                                        return <div className="text-sm">Aggregate node configuration</div>;
-                                                    case "combine":
-                                                        return <div className="text-sm">Combine node configuration</div>;
-                                                    case "filter":
-                                                        return (
-                                                            <div>
-                                                                <div className="text-sm font-medium">Filter</div>
-                                                                <div className="text-gray-600 text-xs mb-2">Filter fields</div>
+                                                const nodeConfig = getNodeTypeById(selectedNodeData.data?.nodeType);
+                                                const Icon = nodeConfig?.icon;
 
-                                                                <div className="flex flex-col gap-2">
+                                                return Icon ?
+                                                    <Icon
+                                                        className="bg-(--du-bois-color-background-secondary) rounded-sm p-1"
+                                                        style={{ color: "var(--du-bois-text-secondary)"}}
+                                                    />
+                                                    : null;
+                                            })()}
+                                            <Typography>
+                                                <Title level={4}>
+                                                    {selectedNodeData.data?.label || "Node"}
+                                                </Title>
+                                            </Typography>
+                                        </div>
+                                        <Button
+                                            aria-label="close-node"
+                                            className="rounded-sm h-6 w-6"
+                                            onClick={() => setShowNodeConfig(false)}
+                                            size="icon"
+                                            variant="ghost"
+                                        >
+                                            <CloseIcon />
+                                        </Button>
+                                    </div>
+                                    <div className="p-2">
+                                        {(() => {
+                                            switch (selectedNodeData.data?.nodeType) {
+                                                case "aggregate":
+                                                    return <div className="text-sm">Aggregate node configuration</div>;
+                                                case "combine":
+                                                    return <div className="text-sm">Combine node configuration</div>;
+                                                case "filter":
+                                                    return (
+                                                        <div>
+                                                            <div className="text-sm font-medium">Filter</div>
+                                                            <div className="text-gray-600 text-xs mb-2">Filter fields</div>
+
+                                                            <div className="flex flex-col gap-2">
+                                                                <div className="flex gap-2">
+                                                                    <Select aria-label="filter-column">
+                                                                        <SelectTrigger className="flex-1 min-w-0 overflow-hidden *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
+                                                                            <SelectValue className="inline" placeholder="Select a column" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                            <SelectItem value="id">id</SelectItem>
+                                                                            <SelectItem value="customer_id">customer_id</SelectItem>
+                                                                            <SelectItem value="agent_id">agent_id</SelectItem>
+                                                                            <SelectItem value="status">status</SelectItem>
+                                                                            <SelectItem value="created_at">created_at</SelectItem>
+                                                                        </SelectContent>
+                                                                    </Select>
+                                                                    <Select
+                                                                        aria-label="filter-operator"
+                                                                        defaultValue="="
+                                                                    >
+                                                                        <SelectTrigger className="min-w-0 [&>span]:truncate">
+                                                                            <SelectValue placeholder="Select an operator" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                            <SelectItem value="=">{'='}</SelectItem>
+                                                                            <SelectItem value="equals">equals</SelectItem>
+                                                                            <SelectItem value="!=">!=</SelectItem>
+                                                                            <SelectItem value="does not equal">does not equal</SelectItem>
+                                                                            <SelectItem value=">">{'>'}</SelectItem>
+                                                                            <SelectItem value=">=">{'>='}</SelectItem>
+                                                                            <SelectItem value="<">{'<'}</SelectItem>
+                                                                            <SelectItem value="<=">{'<='}</SelectItem>
+                                                                            <SelectItem value="is null">is null</SelectItem>
+                                                                            <SelectItem value="is not null">is not null</SelectItem>
+                                                                        </SelectContent>
+                                                                    </Select>
+
+                                                                    {/* If filter operator is not "is null" or "is not null", show filter value input */ }
+                                                                    <Input
+                                                                        aria-label="filter-value"
+                                                                        className="flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap"
+                                                                        placeholder="Enter a value"
+                                                                    />
+                                                                </div>
+                                                                
+                                                                {/* If column name, operator, and value returns rows, show filter output preview */}
+                                                                <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
+                                                                    <span className="font-medium">Preview:</span>
+                                                                    <span>5 out of 10 rows</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                case "input":
+                                                    return (
+                                                        <div>
+                                                            <div className="text-sm font-medium">File upload</div>
+                                                            <div className="text-gray-600 text-xs mb-2">Browse files to upload</div>
+
+                                                            <div className="flex flex-col gap-2">
+                                                                {/* Hidden file input */}
+                                                                <input
+                                                                    accept=".csv,.json"
+                                                                    className="hidden"
+                                                                    id={`file-upload-${selectedNodeId}`}
+                                                                    type="file"
+                                                                />
+                                                                
+                                                                {/* Interaction: if a file is uploading or has uploaded, show the file card */}
+                                                                <div className="align-start rounded-md border flex gap-2 mb-[2px] p-2">
+                                                                    <FileIcon className="pt-[2px]" />
+
+                                                                    <div className="flex flex-col w-full">
+                                                                        <div className="items-center flex gap-2 justify-between mb-2 w-full">
+                                                                            {/* File name */}
+                                                                            <div aira-label="file-name" className="text-sm font-medium">
+                                                                                customers-1000.csv
+                                                                            </div>
+
+                                                                            {/* Remove file */}
+                                                                            <Button 
+                                                                                aria-label="file-remove"
+                                                                                className="rounded-sm h-6 w-6"
+                                                                                onClick={() => console.log("Delete file")}
+                                                                                size="sm" 
+                                                                                variant="ghost"
+                                                                            >
+                                                                                <TrashIcon />
+                                                                            </Button>
+                                                                        </div>
+
+                                                                        {/* File progress */}
+                                                                        <div>
+                                                                            <Progress
+                                                                                className="h-1 mb-1"
+                                                                                value={50}
+                                                                            />
+                                                                            <div className="flex gap-2 justify-between">
+                                                                                <span className="text-gray-500 text-xs">1.4 Mb</span>
+                                                                                <span className="text-gray-500 text-xs">50%</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                {/* If no file, show upload button */}
+                                                                <Button 
+                                                                    aria-label="upload-file"
+                                                                    className="w-fit"
+                                                                    onClick={() => document.getElementById(`file-upload-${selectedNodeId}`)?.click()}
+                                                                    size="sm"
+                                                                >
+                                                                    Upload a file
+                                                                </Button>
+
+                                                                {/* If file returns rows, show input output preview */}
+                                                                <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
+                                                                    <span className="font-medium">Preview:</span>
+                                                                    <span>5 out of 10 rows</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                case "join":
+                                                    return <div className="text-sm">Join node configuration</div>;
+                                                case "select":
+                                                    return (
+                                                        <div className="flex flex-col gap-2">
+                                                            <div>
+                                                                <div className="text-sm font-medium">Select</div>
+                                                                <div className="text-gray-600 text-xs">Select fields to include, exclude, or rename</div>
+                                                            </div>
+
+                                                            <div className="rounded-sm border overflow-hidden">
+                                                                <Table className="text-sm">
+                                                                    <TableHeader>
+                                                                        <TableRow>
+                                                                            <TableHead>
+                                                                                <Checkbox aria-label="select-all" />
+                                                                            </TableHead>
+                                                                            <TableHead className="font-medium min-w-32 truncate">Column name</TableHead>
+                                                                            <TableHead className="font-medium min-w-32 truncate">Type</TableHead>
+                                                                            <TableHead className="font-medium min-w-32 truncate">Rename</TableHead>
+                                                                        </TableRow>
+                                                                    </TableHeader>
+                                                                    <TableBody>
+                                                                        <TableRow>
+                                                                            <TableCell className="text-xs max-w-32 truncate">
+                                                                                <Checkbox aria-label="select-single" />
+                                                                            </TableCell>
+                                                                            <TableCell
+                                                                                aria-label="column-name"
+                                                                                className="min-w-32 truncate"
+                                                                            >
+                                                                                column_name_001
+                                                                            </TableCell>
+                                                                            <TableCell className="min-w-32 truncate">
+                                                                                <Select aria-label="column-type">
+                                                                                    <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
+                                                                                        <SelectValue placeholder="Select a column type" />
+                                                                                    </SelectTrigger>
+                                                                                    <SelectContent>
+                                                                                        <SelectItem value="boolean">boolean</SelectItem>
+                                                                                        <SelectItem value="date">date</SelectItem>
+                                                                                        <SelectItem value="datetime">datetime</SelectItem>
+                                                                                        <SelectItem value="integer">integer</SelectItem>
+                                                                                        <SelectItem value="string">string</SelectItem>
+                                                                                    </SelectContent>
+                                                                                </Select>
+                                                                            </TableCell>
+                                                                            <TableCell className="min-w-32 truncate">
+                                                                                <Input aria-label="column-rename" />
+                                                                            </TableCell>
+                                                                        </TableRow>
+                                                                    </TableBody>
+                                                                </Table>
+                                                            </div>
+
+                                                            {/* If select returns rows, show select output preview */}
+                                                            <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
+                                                                <span className="font-medium">Preview:</span>
+                                                                <span>5 out of 10 rows</span>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                case "sort":
+                                                    return <div className="text-sm">Sort node configuration</div>;
+                                                case "transform":
+                                                    return (
+                                                        <div className="flex flex-col gap-2">
+                                                            <div>
+                                                                <div className="text-sm font-medium">Transform</div>
+                                                                <div className="text-gray-600 text-xs">Transform fields</div>
+                                                            </div>
+
+                                                            <Collapsible defaultOpen>
+                                                                <CollapsibleTrigger className="items-center flex text-sm gap-1 mb-1 w-full">
+                                                                    <ChevronRightIcon />
+                                                                    Expression
+                                                                </CollapsibleTrigger>
+                                                                <CollapsibleContent className="flex flex-col gap-2">
                                                                     <div className="flex gap-2">
-                                                                        <Select aria-label="filter-column">
-                                                                            <SelectTrigger className="flex-1 min-w-0 overflow-hidden *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
-                                                                                <SelectValue className="inline" placeholder="Select a column" />
+                                                                        <Select aria-label="transform-column">
+                                                                            <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
+                                                                                <SelectValue placeholder="Select a column" />
                                                                             </SelectTrigger>
                                                                             <SelectContent>
                                                                                 <SelectItem value="id">id</SelectItem>
@@ -238,247 +434,48 @@ function DesignerCanvas() {
                                                                                 <SelectItem value="created_at">created_at</SelectItem>
                                                                             </SelectContent>
                                                                         </Select>
-                                                                        <Select
-                                                                            aria-label="filter-operator"
-                                                                            defaultValue="="
-                                                                        >
-                                                                            <SelectTrigger className="min-w-0 [&>span]:truncate">
-                                                                                <SelectValue placeholder="Select an operator" />
+                                                                        <Select aria-label="transform-column-type" disabled>
+                                                                            <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
+                                                                                <SelectValue placeholder="Select a column type" />
                                                                             </SelectTrigger>
                                                                             <SelectContent>
-                                                                                <SelectItem value="=">{'='}</SelectItem>
-                                                                                <SelectItem value="equals">equals</SelectItem>
-                                                                                <SelectItem value="!=">!=</SelectItem>
-                                                                                <SelectItem value="does not equal">does not equal</SelectItem>
-                                                                                <SelectItem value=">">{'>'}</SelectItem>
-                                                                                <SelectItem value=">=">{'>='}</SelectItem>
-                                                                                <SelectItem value="<">{'<'}</SelectItem>
-                                                                                <SelectItem value="<=">{'<='}</SelectItem>
-                                                                                <SelectItem value="is null">is null</SelectItem>
-                                                                                <SelectItem value="is not null">is not null</SelectItem>
+                                                                                <SelectItem value="boolean">boolean</SelectItem>
+                                                                                <SelectItem value="date">date</SelectItem>
+                                                                                <SelectItem value="datetime">datetime</SelectItem>
+                                                                                <SelectItem value="integer">integer</SelectItem>
+                                                                                <SelectItem value="string">string</SelectItem>
                                                                             </SelectContent>
                                                                         </Select>
-
-                                                                        {/* If filter operator is not "is null" or "is not null", show filter value input */ }
-                                                                        <Input
-                                                                            aria-label="filter-value"
-                                                                            className="flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap"
-                                                                            placeholder="Enter a value"
-                                                                        />
                                                                     </div>
-                                                                    
-                                                                    {/* If column name, operator, and value returns rows, show filter output preview */}
-                                                                    <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
-                                                                        <span className="font-medium">Preview:</span>
-                                                                        <span>5 out of 10 rows</span>
-                                                                    </div>
-                                                                </div>
+
+                                                                    <Editor />
+                                                                </CollapsibleContent>
+                                                            </Collapsible>
+
+                                                            {/* Allow for additional expressions with formulas */}
+                                                            <Button
+                                                                aria-label="add-expression"
+                                                                className="w-fit"
+                                                                size="sm"
+                                                            >
+                                                                Add expression
+                                                            </Button>
+
+                                                            {/* If formula returns rows, show formula output preview */}
+                                                            <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
+                                                                <span className="font-medium">Preview:</span>
+                                                                <span>5 out of 10 rows</span>
                                                             </div>
-                                                        );
-                                                    case "input":
-                                                        return (
-                                                            <div>
-                                                                <div className="text-sm font-medium">File upload</div>
-                                                                <div className="text-gray-600 text-xs mb-2">Browse files to upload</div>
-
-                                                                <div className="flex flex-col gap-2">
-                                                                    {/* Hidden file input */}
-                                                                    <input
-                                                                        accept=".csv,.json"
-                                                                        className="hidden"
-                                                                        id={`file-upload-${selectedNodeId}`}
-                                                                        type="file"
-                                                                    />
-                                                                    
-                                                                    {/* Interaction: if a file is uploading or has uploaded, show the file card */}
-                                                                    <div className="align-start rounded-md border flex gap-2 mb-[2px] p-2">
-                                                                        <FileIcon className="pt-[2px]" />
-
-                                                                        <div className="flex flex-col w-full">
-                                                                            <div className="items-center flex gap-2 justify-between mb-2 w-full">
-                                                                                {/* File name */}
-                                                                                <div aira-label="file-name" className="text-sm font-medium">
-                                                                                    customers-1000.csv
-                                                                                </div>
-
-                                                                                {/* Remove file */}
-                                                                                <Button 
-                                                                                    aria-label="file-remove"
-                                                                                    className="rounded-sm h-6 w-6"
-                                                                                    onClick={() => console.log("Delete file")}
-                                                                                    size="sm" 
-                                                                                    variant="ghost"
-                                                                                >
-                                                                                    <TrashIcon />
-                                                                                </Button>
-                                                                            </div>
-
-                                                                            {/* File progress */}
-                                                                            <div>
-                                                                                <Progress
-                                                                                    className="h-1 mb-1"
-                                                                                    value={50}
-                                                                                />
-                                                                                <div className="flex gap-2 justify-between">
-                                                                                    <span className="text-gray-500 text-xs">1.4 Mb</span>
-                                                                                    <span className="text-gray-500 text-xs">50%</span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    
-                                                                    {/* If no file, show upload button */}
-                                                                    <Button 
-                                                                        aria-label="upload-file"
-                                                                        className="w-fit"
-                                                                        onClick={() => document.getElementById(`file-upload-${selectedNodeId}`)?.click()}
-                                                                        size="sm"
-                                                                    >
-                                                                        Upload a file
-                                                                    </Button>
-
-                                                                    {/* If file returns rows, show input output preview */}
-                                                                    <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
-                                                                        <span className="font-medium">Preview:</span>
-                                                                        <span>5 out of 10 rows</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    case "join":
-                                                        return <div className="text-sm">Join node configuration</div>;
-                                                    case "select":
-                                                        return (
-                                                            <div className="flex flex-col gap-2">
-                                                                <div>
-                                                                    <div className="text-sm font-medium">Select</div>
-                                                                    <div className="text-gray-600 text-xs">Select fields to include, exclude, or rename</div>
-                                                                </div>
-
-                                                                <div className="rounded-sm border overflow-hidden">
-                                                                    <Table className="text-sm">
-                                                                        <TableHeader>
-                                                                            <TableRow>
-                                                                                <TableHead>
-                                                                                    <Checkbox aria-label="select-all" />
-                                                                                </TableHead>
-                                                                                <TableHead className="font-medium min-w-32 truncate">Column name</TableHead>
-                                                                                <TableHead className="font-medium min-w-32 truncate">Type</TableHead>
-                                                                                <TableHead className="font-medium min-w-32 truncate">Rename</TableHead>
-                                                                            </TableRow>
-                                                                        </TableHeader>
-                                                                        <TableBody>
-                                                                            <TableRow>
-                                                                                <TableCell className="text-xs max-w-32 truncate">
-                                                                                    <Checkbox aria-label="select-single" />
-                                                                                </TableCell>
-                                                                                <TableCell
-                                                                                    aria-label="column-name"
-                                                                                    className="min-w-32 truncate"
-                                                                                >
-                                                                                    column_name_001
-                                                                                </TableCell>
-                                                                                <TableCell className="min-w-32 truncate">
-                                                                                    <Select aria-label="column-type">
-                                                                                        <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
-                                                                                            <SelectValue placeholder="Select a column type" />
-                                                                                        </SelectTrigger>
-                                                                                        <SelectContent>
-                                                                                            <SelectItem value="boolean">boolean</SelectItem>
-                                                                                            <SelectItem value="date">date</SelectItem>
-                                                                                            <SelectItem value="datetime">datetime</SelectItem>
-                                                                                            <SelectItem value="integer">integer</SelectItem>
-                                                                                            <SelectItem value="string">string</SelectItem>
-                                                                                        </SelectContent>
-                                                                                    </Select>
-                                                                                </TableCell>
-                                                                                <TableCell className="min-w-32 truncate">
-                                                                                    <Input aria-label="column-rename" />
-                                                                                </TableCell>
-                                                                            </TableRow>
-                                                                        </TableBody>
-                                                                    </Table>
-                                                                </div>
-
-                                                                {/* If select returns rows, show select output preview */}
-                                                                <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
-                                                                    <span className="font-medium">Preview:</span>
-                                                                    <span>5 out of 10 rows</span>
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    case "sort":
-                                                        return <div className="text-sm">Sort node configuration</div>;
-                                                    case "transform":
-                                                        return (
-                                                            <div className="flex flex-col gap-2">
-                                                                <div>
-                                                                    <div className="text-sm font-medium">Transform</div>
-                                                                    <div className="text-gray-600 text-xs">Transform fields</div>
-                                                                </div>
-
-                                                                <Collapsible defaultOpen>
-                                                                    <CollapsibleTrigger className="items-center flex text-sm gap-1 mb-1 w-full">
-                                                                        <ChevronRightIcon />
-                                                                        Expression
-                                                                    </CollapsibleTrigger>
-                                                                    <CollapsibleContent className="flex flex-col gap-2">
-                                                                        <div className="flex gap-2">
-                                                                            <Select aria-label="transform-column">
-                                                                                <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
-                                                                                    <SelectValue placeholder="Select a column" />
-                                                                                </SelectTrigger>
-                                                                                <SelectContent>
-                                                                                    <SelectItem value="id">id</SelectItem>
-                                                                                    <SelectItem value="customer_id">customer_id</SelectItem>
-                                                                                    <SelectItem value="agent_id">agent_id</SelectItem>
-                                                                                    <SelectItem value="status">status</SelectItem>
-                                                                                    <SelectItem value="created_at">created_at</SelectItem>
-                                                                                </SelectContent>
-                                                                            </Select>
-                                                                            <Select aria-label="transform-column-type" disabled>
-                                                                                <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
-                                                                                    <SelectValue placeholder="Select a column type" />
-                                                                                </SelectTrigger>
-                                                                                <SelectContent>
-                                                                                    <SelectItem value="boolean">boolean</SelectItem>
-                                                                                    <SelectItem value="date">date</SelectItem>
-                                                                                    <SelectItem value="datetime">datetime</SelectItem>
-                                                                                    <SelectItem value="integer">integer</SelectItem>
-                                                                                    <SelectItem value="string">string</SelectItem>
-                                                                                </SelectContent>
-                                                                            </Select>
-                                                                        </div>
-
-                                                                        <Editor />
-                                                                    </CollapsibleContent>
-                                                                </Collapsible>
-
-                                                                {/* Allow for additional expressions with formulas */}
-                                                                <Button
-                                                                    aria-label="add-expression"
-                                                                    className="w-fit"
-                                                                    size="sm"
-                                                                >
-                                                                    Add expression
-                                                                </Button>
-
-                                                                {/* If formula returns rows, show formula output preview */}
-                                                                <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
-                                                                    <span className="font-medium">Preview:</span>
-                                                                    <span>5 out of 10 rows</span>
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    default:
-                                                        return <div className="text-sm">Node configuration</div>;
-                                                }
-                                            })()}
-                                        </div>
+                                                        </div>
+                                                    );
+                                                default:
+                                                    return <div className="text-sm">Node configuration</div>;
+                                            }
+                                        })()}
                                     </div>
-                                ) : null;
-                            })()}
-                        </div>
+                                </div>
+                            ) : null;
+                        })()}
 
                         {/* Preview Panel */}
                         <div className="bg-white border-t flex flex-col w-full" style={{ height: previewPanelHeight }}>
