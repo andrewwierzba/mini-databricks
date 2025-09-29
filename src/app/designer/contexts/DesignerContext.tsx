@@ -62,55 +62,116 @@ interface DesignerProviderProps {
 
 const createDefaultNodes = (): { nodes: Node[], edges: Edge[] } => {
     const inputNodeConfig = getNodeTypeById("input")
+    const joinNodeConfig = getNodeTypeById("join")
 
-    if (!inputNodeConfig) return { nodes: [], edges: [] }
+    if (!inputNodeConfig || !joinNodeConfig) return { nodes: [], edges: [] }
 
-    const nodes: Node[] = [
-        {
+    const nodes: Node[] = [{
             data: { 
                 ...inputNodeConfig.defaultData,
+                filePath: "/files/customer_cases-500.csv",
                 label: inputNodeConfig.label,
                 name: "customer_cases",
-                tableName: "customer_cases",
+                nodeType: "input",
                 schema: "public",
-                filePath: "/files/customer_cases-500.csv",
-                nodeType: "input"
+                tableName: "customer_cases"
             },
             id: "input-1",
             position: { x: 100, y: 100 },
             type: "custom",
-        },
-        {
+        }, {
             data: { 
                 ...inputNodeConfig.defaultData,
+                filePath: "/files/customers-1000.csv",
                 label: inputNodeConfig.label,
                 name: "customers",
-                tableName: "customers",
+                nodeType: "input",
                 schema: "public",
-                filePath: "/files/customers-1000.csv",
-                nodeType: "input"
+                tableName: "customers"
             },
             id: "input-2",
             position: { x: 100, y: 200 },
             type: "custom",
-        },
-        {
+        }, {
             data: { 
                 ...inputNodeConfig.defaultData,
+                filePath: "/files/agents-100.csv",
                 label: inputNodeConfig.label,
                 name: "agents",
-                tableName: "agents",
+                nodeType: "input",
                 schema: "public",
-                filePath: "/files/agents-100.csv",
-                nodeType: "input"
+                tableName: "agents"
             },
             id: "input-3",
             position: { x: 100, y: 300 },
             type: "custom",
-        }
-    ]
+        }, {
+            data: { 
+                ...joinNodeConfig.defaultData,
+                conditions: [{
+                    id: "condition-1",
+                    leftColumn: "customer_id",
+                    operator: "=" as const,
+                    logicalOperator: "AND" as const,
+                    rightColumn: "id"
+                }],
+                joinType: "inner" as const,
+                label: joinNodeConfig.label,
+                leftTableAlias: "customer_cases",
+                name: "join_1",
+                nodeType: "join",
+                rightTableAlias: "customers"
+            },
+            id: "join-1",
+            position: { x: 360, y: 100 },
+            type: "custom",
+        }, {
+            data: { 
+                ...joinNodeConfig.defaultData,
+                conditions: [{
+                    id: "condition-1",
+                    leftColumn: "agent_id",
+                    operator: "=" as const,
+                    logicalOperator: "AND" as const,
+                    rightColumn: "agents_id"
+                }],
+                joinType: "inner" as const,
+                label: joinNodeConfig.label,
+                leftTableAlias: "join_1",
+                name: "join_2",
+                nodeType: "join",
+                rightTableAlias: "agents"
+            },
+            id: "join-2",
+            position: { x: 620, y: 200 },
+            type: "custom",
+        }]
 
-    const edges: Edge[] = []
+    const edges: Edge[] = [{
+            id: "input-1-join-1",
+            source: "input-1",
+            target: "join-1",
+            targetHandle: "target-1",
+            type: "default",
+        }, {
+            id: "input-2-join-1",
+            source: "input-2",
+            target: "join-1",
+            targetHandle: "target-2",
+            type: "default",
+        }, {
+            id: "join-1-join-2",
+            source: "join-1",
+            target: "join-2",
+            targetHandle: "target-1",
+            type: "default",
+        }, {
+            id: "input-3-join-2",
+            source: "input-3",
+            target: "join-2",
+            targetHandle: "target-2",
+            type: "default",
+        }]
 
     return { nodes, edges }
 }
@@ -144,13 +205,13 @@ export const DesignerProvider = ({
                 const defaults = createDefaultNodes();
                 setNodes(defaults.nodes);
                 setEdges(defaults.edges);
-                setNodeTypeCount({ input: 3 });
+                setNodeTypeCount({ input: 3, join: 2 });
             }
         } else {
             const defaults = createDefaultNodes();
             setNodes(defaults.nodes);
             setEdges(defaults.edges);
-            setNodeTypeCount({ input: 3 });
+            setNodeTypeCount({ input: 3, join: 2 });
         }
     }, [storageKey]);
 
