@@ -12,6 +12,72 @@ import {
     PlusIcon 
 } from "@databricks/design-system";
 
+// To do: Define
+export interface FilterCondition {
+    column: string;
+    id: string;
+    logicalOperator?: "AND" | "OR";
+    operator: string;
+    value: any;
+}
+
+export interface FilterNodeData {
+    conditions: FilterCondition[];
+    name: string;
+}
+
+export interface InputNodeData {
+    filePath?: string;
+    fileSize?: number;
+    name: string;
+    schema?: string;
+    tableName?: string;
+    uploadedFile?: string;
+}
+
+export interface JoinCondition {
+    id: string;
+    leftColumn: string;
+    logicalOperator?: "AND" | "OR";
+    operator: "=" | "!=" | "<" | ">" | "<=" | ">=" | "LIKE";
+    rightColumn: string;
+}
+
+export interface JoinNodeData {
+    conditions: JoinCondition[];
+    joinType: "inner" | "left" | "right" | "full";
+    leftTableAlias?: string;
+    name: string;
+    outputColumns?: {
+        leftColumns: string[];
+        rightColumns: string[];
+    };
+    rightTableAlias?: string;
+}
+
+export interface SelectNodeData {
+    columns: string[];
+    name: string;
+}
+
+export interface SortColumn {
+    column: string;
+    direction: "ASC" | "DESC";
+}
+
+export interface SortNodeData {
+    columns: SortColumn[];
+    name: string;
+}
+
+export type NodeData = 
+    | FilterNodeData
+    | InputNodeData
+    | JoinNodeData
+    | SortNodeData
+    | SelectNodeData;
+
+// To do: Define
 export interface NodeCategoryConfig {
     icon: ComponentType<any>;
     name: string;
@@ -19,7 +85,8 @@ export interface NodeCategoryConfig {
 
 export interface NodeTypeConfig {
     category: NodeCategoryConfig;
-    defaultData?: Record<string, any>;
+    defaultData?: NodeData;
+    description?: string;
     icon: ComponentType<any>;
     id: string;
     label: string;
@@ -32,7 +99,9 @@ export const nodeTypes: NodeTypeConfig[] = [{
             icon: TableIcon,
             name: "input"
         },
-        defaultData: { name: "Input" },
+        defaultData: {
+            name: "Input"
+        } as InputNodeData,
         icon: TableIcon,
         id: "input",
         label: "Input",
@@ -65,7 +134,9 @@ export const nodeTypes: NodeTypeConfig[] = [{
             icon: PlusIcon,
             name: "transform"
         },
-        defaultData: { name: "Filter" },
+        defaultData: {
+            name: "Filter"
+        } as FilterNodeData,
         icon: FilterIcon,
         id: "filter",
         label: "Filter",
@@ -76,7 +147,9 @@ export const nodeTypes: NodeTypeConfig[] = [{
             icon: PlusIcon,
             name: "transform"
         },
-        defaultData: { name: "Join" },
+        defaultData: {
+            name: "Join"
+        } as JoinNodeData,
         icon: JoinOperatorIcon,
         id: "join",
         label: "Join",
@@ -87,7 +160,9 @@ export const nodeTypes: NodeTypeConfig[] = [{
             icon: PlusIcon,
             name: "transform"
         },
-        defaultData: { name: "Select" },
+        defaultData: {
+            name: "Select"
+        } as SelectNodeData,
         icon: CheckIcon,
         id: "select",
         label: "Select",
@@ -98,7 +173,9 @@ export const nodeTypes: NodeTypeConfig[] = [{
             icon: PlusIcon,
             name: "transform"
         },
-        defaultData: { name: "Sort" },
+        defaultData: {
+            name: "Sort"
+        } as SortNodeData,
         icon: SortUnsortedIcon,
         id: "sort",
         label: "Sort",
