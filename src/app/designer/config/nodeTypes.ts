@@ -22,14 +22,19 @@ export interface FilterCondition {
 }
 
 export interface FilterNodeData {
+    columnHeaders?: string[];
     conditions: FilterCondition[];
     name: string;
+    previewData?: any[];
 }
 
 export interface InputNodeData {
+    columnHeaders?: string[];
     filePath?: string;
     fileSize?: number;
     name: string;
+    previewData?: any[];
+    recordCount?: number;
     schema?: string;
     tableName?: string;
     uploadedFile?: string;
@@ -44,6 +49,7 @@ export interface JoinCondition {
 }
 
 export interface JoinNodeData {
+    columnHeaders?: string[];
     conditions: JoinCondition[];
     joinType: "inner" | "left" | "right" | "full";
     leftTableAlias?: string;
@@ -52,12 +58,15 @@ export interface JoinNodeData {
         leftColumns: string[];
         rightColumns: string[];
     };
+    previewData?: any[];
+    recordCount?: number;
     rightTableAlias?: string;
 }
 
 export interface SelectNodeData {
     columns: string[];
     name: string;
+    previewData?: any[];
 }
 
 export interface SortColumn {
@@ -67,7 +76,9 @@ export interface SortColumn {
 
 export interface SortNodeData {
     columns: SortColumn[];
+    columnHeaders?: string[];
     name: string;
+    previewData?: any[];
 }
 
 export type NodeData = 
