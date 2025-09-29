@@ -203,13 +203,13 @@ function DesignerCanvas() {
                                             })()}
                                             <Typography>
                                                 <Title level={4}>
-                                                    {selectedNodeData.data?.label || "Node"}
+                                                    {selectedNodeData.data?.name || "Node"}
                                                 </Title>
                                             </Typography>
                                         </div>
                                         <Button
                                             aria-label="close-node"
-                                            className="rounded-sm h-6 w-6"
+                                            className="rounded-[4px] h-6 w-6"
                                             onClick={() => setShowNodeConfig(false)}
                                             size="icon"
                                             variant="ghost"
@@ -282,6 +282,15 @@ function DesignerCanvas() {
                                                         </div>
                                                     );
                                                 case "input":
+                                                    const getFileName = (filePath?: string, uploadedFile?: string) => {
+                                                        if (uploadedFile) return uploadedFile;
+                                                        if (!filePath) return null;
+
+                                                        return filePath.split('/').pop() || filePath;
+                                                    };
+                                                    const inputNodeData = selectedNodeData.data as any;
+                                                    const fileName = getFileName(inputNodeData?.filePath, inputNodeData?.uploadedFile);
+                                                    
                                                     return (
                                                         <div>
                                                             <div className="text-sm font-medium">File upload</div>
@@ -294,24 +303,60 @@ function DesignerCanvas() {
                                                                     className="hidden"
                                                                     id={`file-upload-${selectedNodeId}`}
                                                                     type="file"
+                                                                    onChange={(e) => {
+                                                                        const file = e.target.files?.[0];
+                                                                        if (file && selectedNodeId) {
+                                                                            // Update node data with uploaded file
+                                                                            setNodes(prev => prev.map(node => 
+                                                                                node.id === selectedNodeId 
+                                                                                    ? { 
+                                                                                        ...node, 
+                                                                                        data: { 
+                                                                                            ...node.data, 
+                                                                                            filePath: null, // Clear existing file path
+                                                                                            uploadedFile: file.name,
+                                                                                            fileSize: file.size
+                                                                                        }
+                                                                                    }
+                                                                                    : node
+                                                                            ));
+                                                                        }
+                                                                    }}
                                                                 />
                                                                 
-                                                                {/* Interaction: if a file is uploading or has uploaded, show the file card */}
-                                                                <div className="align-start rounded-md border flex gap-2 mb-[2px] p-2">
-                                                                    <FileIcon className="pt-[2px]" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+                                                                {/* File card - show if there's a file reference */}
+                                                                {fileName && (
+                                                                    <div className="align-start rounded-md border flex gap-2 mb-[2px] p-2">
+                                                                        <FileIcon className="pt-[2px]" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
 
-                                                                    <div className="flex flex-col w-full">
-                                                                        <div className="items-center flex gap-2 justify-between mb-2 w-full">
-                                                                            {/* File name */}
-                                                                            <div aira-label="file-name" className="text-sm font-medium">
-                                                                                customers-1000.csv
-                                                                            </div>
+                                                                        <div className="flex flex-col w-full">
+                                                                            <div className="items-center flex gap-2 justify-between mb-2 w-full">
+                                                                                {/* File name */}
+                                                                                <div aria-label="file-name" className="text-sm font-medium">
+                                                                                    {fileName}
+                                                                                </div>
 
                                                                             {/* Remove file */}
                                                                             <Button 
                                                                                 aria-label="file-remove"
-                                                                                className="rounded-sm h-6 w-6"
-                                                                                onClick={() => console.log("Delete file")}
+                                                                                className="rounded-[4px] h-6 w-6"
+                                                                                onClick={() => {
+                                                                                    if (selectedNodeId) {
+                                                                                        setNodes(prev => prev.map(node => 
+                                                                                            node.id === selectedNodeId 
+                                                                                                ? { 
+                                                                                                    ...node, 
+                                                                                                    data: { 
+                                                                                                        ...node.data, 
+                                                                                                        filePath: null,
+                                                                                                        uploadedFile: null,
+                                                                                                        fileSize: null
+                                                                                                    }
+                                                                                                }
+                                                                                                : node
+                                                                                        ));
+                                                                                    }
+                                                                                }}
                                                                                 size="sm" 
                                                                                 variant="ghost"
                                                                             >
@@ -323,25 +368,33 @@ function DesignerCanvas() {
                                                                         <div>
                                                                             <Progress
                                                                                 className="h-1 mb-1"
-                                                                                value={50}
+                                                                                value={100}
                                                                             />
                                                                             <div className="flex gap-2 justify-between">
-                                                                                <span className="text-gray-500 text-xs">1.4 Mb</span>
-                                                                                <span className="text-gray-500 text-xs">50%</span>
+                                                                                <span className="text-gray-500 text-xs">
+                                                                                    {inputNodeData?.fileSize 
+                                                                                        ? `${(inputNodeData.fileSize / 1024 / 1024).toFixed(1)} Mb`
+                                                                                        : "Unknown file size"
+                                                                                    }
+                                                                                </span>
+                                                                                <span className="text-gray-500 text-xs">100%</span>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                                )}
                                                                 
                                                                 {/* If no file, show upload button */}
-                                                                <Button 
-                                                                    aria-label="upload-file"
-                                                                    className="w-fit"
-                                                                    onClick={() => document.getElementById(`file-upload-${selectedNodeId}`)?.click()}
-                                                                    size="sm"
-                                                                >
-                                                                    Upload a file
-                                                                </Button>
+                                                                {!fileName && (
+                                                                    <Button 
+                                                                        aria-label="upload-file"
+                                                                        className="rounded-[4px] w-fit"
+                                                                        onClick={() => document.getElementById(`file-upload-${selectedNodeId}`)?.click()}
+                                                                        size="sm"
+                                                                    >
+                                                                        Upload a file
+                                                                    </Button>
+                                                                )}
 
                                                                 {/* If file returns rows, show input output preview */}
                                                                 <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
@@ -511,8 +564,9 @@ function DesignerCanvas() {
                                                             {/* Allow for additional expressions with formulas */}
                                                             <Button
                                                                 aria-label="add-expression"
-                                                                className="w-fit"
+                                                                className="rounded-[4px] w-fit"
                                                                 size="sm"
+                                                                variant="outline"
                                                             >
                                                                 Add expression
                                                             </Button>
