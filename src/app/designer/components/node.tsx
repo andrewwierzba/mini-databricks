@@ -5,7 +5,7 @@ import { Handle, NodeProps, Position } from "reactflow"
 
 import { Typography } from "@databricks/design-system"
 
-import { getNodeTypeById, NodeData } from "@/app/designer/config/nodeTypes"
+import { getNodeTypeById, NodeData } from "@/app/designer/types/nodes"
 import { useDesigner } from "@/app/designer/contexts/DesignerContext"
 
 type CustomNodeData = NodeData & {

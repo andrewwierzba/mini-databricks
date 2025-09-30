@@ -18,7 +18,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { getNodeTypesByCategory } from "@/app/designer/config/nodeTypes"
+import { getNodeTypesByCategory } from "@/app/designer/types/nodes"
 import { useDesigner } from "@/app/designer/contexts/DesignerContext"
 
 interface ToolbarProps {

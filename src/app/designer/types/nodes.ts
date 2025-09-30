@@ -1,4 +1,5 @@
-import { ComponentType } from "react";
+import { ComponentType } from "react"
+import { z } from "zod"
 
 import {
     CheckIcon,
@@ -9,10 +10,99 @@ import {
     TableCombineIcon,
     TableIcon, 
     TableLightningIcon,
-    PlusIcon 
-} from "@databricks/design-system";
+    PlusIcon
+} from "@databricks/design-system"
 
-// To do: Define
+/* ========================================================================
+   Heading: 
+   Column and Column Types (supported in all nodes) 
+======================================================================== */
+
+export type ColumnType = 
+    | "boolean"
+    | "date"
+    | "datetime"
+    | "float"
+    | "integer"
+    | "string"
+
+export interface Column {
+    description?: string
+    name: string
+    type: ColumnType
+}
+
+/* ========================================================================
+   Heading: 
+   Logical Operators (supported in all nodes) 
+======================================================================== */
+
+export type LogicalOperator = "AND" | "OR"
+
+/* ========================================================================
+   Heading: 
+   Validation (supported in all nodes) 
+======================================================================== */
+
+export interface ValidationError {
+    field?: string
+    message: string
+    type: "error" | "warning"
+}
+
+export interface ValidationResult {
+    errors: ValidationError[]
+    isValid: boolean
+    warnings: ValidationError[]
+}
+
+/* ========================================================================
+   Heading: 
+   Aggregate Node 
+======================================================================== */
+
+export type AggregationFunction = 
+    | "AVG"
+    | "COUNT"
+    | "COUNT_DISTINCT"
+    | "MAX"
+    | "MIN"
+    | "SUM"
+
+export interface Aggregation {
+    alias?: string
+    column: string
+    function: AggregationFunction
+    id: string
+}
+
+export interface AggregateNodeData {
+    aggregations: Aggregation[]
+    columnHeaders?: string[]
+    groupBy?: string[]
+    name: string
+    nodeType: "aggregate"
+    previewData?: Array<Record<string, any>>
+    recordCount?: number
+}
+
+/* ========================================================================
+   Heading: 
+   Combine Node 
+======================================================================== */
+
+export interface CombineNodeData {
+    columnHeaders?: string[];
+    name: string;
+    outputOptions: "all" | "distinct";
+    previewData?: any[];
+}
+
+/* ========================================================================
+   Heading: 
+   Filter Node 
+======================================================================== */
+
 export interface FilterCondition {
     column: string;
     id: string;
@@ -28,6 +118,11 @@ export interface FilterNodeData {
     previewData?: any[];
 }
 
+/* ========================================================================
+   Heading: 
+   Input Node 
+======================================================================== */
+
 export interface InputNodeData {
     columnHeaders?: string[];
     filePath?: string;
@@ -39,6 +134,11 @@ export interface InputNodeData {
     tableName?: string;
     uploadedFile?: string;
 }
+
+/* ========================================================================
+   Heading: 
+   Join Node 
+======================================================================== */
 
 export interface JoinCondition {
     id: string;
@@ -63,11 +163,42 @@ export interface JoinNodeData {
     rightTableAlias?: string;
 }
 
-export interface SelectNodeData {
-    columns: string[];
+/* ========================================================================
+   Heading: 
+   Output Node 
+======================================================================== */
+
+export interface OutputNodeData {
     name: string;
-    previewData?: any[];
+    schema?: string;
+    tableName?: string;
 }
+
+/* ========================================================================
+   Heading: 
+   Select Node 
+======================================================================== */
+
+export interface SelectColumn {
+    alias?: string
+    name: string
+    selected: boolean
+    type?: ColumnType
+}
+
+export interface SelectNodeData {
+    columns: SelectColumn[]
+    columnHeaders?: string[]
+    name: string
+    nodeType: "select"
+    previewData?: Array<Record<string, any>>
+    recordCount?: number
+}
+
+/* ========================================================================
+   Heading: 
+   Sort Node 
+======================================================================== */
 
 export interface SortColumn {
     column: string;
@@ -81,18 +212,40 @@ export interface SortNodeData {
     previewData?: any[];
 }
 
+/* ========================================================================
+   Heading: 
+   Transform Node 
+======================================================================== */
+
+export interface TransformExpression {
+    alias: string
+    expression: string
+    id: string
+    type?: ColumnType
+}
+
+export interface TransformNodeData {
+    columnHeaders?: string[]
+    expressions: TransformExpression[]
+    name: string
+    nodeType: "transform"
+    previewData?: Array<Record<string, any>>
+    recordCount?: number
+}
+
+// Node category types 
+export interface NodeCategoryConfig {
+    icon: ComponentType<any>;
+    name: string;
+}
+
+// Node data types 
 export type NodeData = 
     | FilterNodeData
     | InputNodeData
     | JoinNodeData
     | SortNodeData
     | SelectNodeData;
-
-// To do: Define
-export interface NodeCategoryConfig {
-    icon: ComponentType<any>;
-    name: string;
-}
 
 export interface NodeTypeConfig {
     category: NodeCategoryConfig;

@@ -3,7 +3,7 @@
 import { createContext, ReactNode, useContext, useCallback, useEffect, useState } from "react"
 import { addEdge, applyEdgeChanges, applyNodeChanges, Connection, Edge, EdgeChange, Node, NodeChange } from "reactflow"
 
-import { getNodeTypeById, nodeTypes, NodeTypeConfig } from "@/app/designer/config/nodeTypes"
+import { getNodeTypeById, nodeTypes, NodeTypeConfig } from "@/app/designer/types/nodes"
 
 export type ResearchVariant = "combined" | "separate"
 

@@ -37,7 +37,7 @@ import { Assistant } from "@/components/ui/patterns/assistant"
 import Node from "@/app/designer/components/node"
 import { Toolbar } from "@/app/designer/components/toolbar"
 
-import { getNodeTypeById } from "@/app/designer/config/nodeTypes"
+import { getNodeTypeById } from "@/app/designer/types/nodes"
 import { DesignerProvider, useDesigner, ResearchVariant } from "@/app/designer/contexts/DesignerContext"
 
 import Editor from "@/app/designer/components/ui/patterns/editor/page"
