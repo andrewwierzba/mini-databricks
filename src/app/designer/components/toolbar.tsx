@@ -18,7 +18,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { getNodeTypesByCategory } from "@/app/designer/types/nodes"
+import { getNodeTypesByGroup } from "@/app/designer/types/nodes"
 import { useDesigner } from "@/app/designer/contexts/DesignerContext"
 
 interface ToolbarProps {
@@ -29,7 +29,7 @@ const { Text } = Typography
 
 export function Toolbar({ className }: ToolbarProps) {
 	const { addNode } = useDesigner()
-	const transformNodeTypes = getNodeTypesByCategory("transform")
+	const transformNodeTypes = getNodeTypesByGroup("transform")
 
     return (
 		<div
