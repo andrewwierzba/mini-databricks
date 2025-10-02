@@ -2,7 +2,11 @@
 
 import React from "react"
 
+import { DashIcon, PlusIcon, ResizeIcon, Typography } from "@databricks/design-system"
+
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
 import {
     Select,
     SelectContent,
@@ -10,16 +14,23 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-
-import { TrashIcon, Typography } from "@databricks/design-system"
+import { Separator } from "@/components/ui/separator"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow
+} from "@/components/ui/table"
 
 import { useNodeConfiguration } from "@/app/designer/hooks/useNodeConfiguration"
 import {
+    getNodeTypeById,
     JoinCondition,
     JoinNodeData,
     JoinOperator,
-    JoinType,
-    LogicalOperator
+    JoinType
 } from "@/app/designer/types/nodes"
 
 const { Paragraph, Text } = Typography
@@ -31,210 +42,244 @@ interface JoinNodeConfigProps {
 export function JoinNodeConfig({ nodeId }: JoinNodeConfigProps) {
     const {
         nodeData,
-        errors,
-        isValid,
         addJoinCondition,
         updateJoinCondition,
         removeJoinCondition,
         updateJoinType
     } = useNodeConfiguration(nodeId)
 
+    const nodeTypeConfig = getNodeTypeById("join")
+    const description = nodeTypeConfig?.description || ""
+
     const joinData = nodeData as JoinNodeData | undefined
+
+    const availableColumns = joinData?.availableColumns || []
     const conditions = joinData?.conditions || []
-    const leftColumns = joinData?.columnHeaders || [] // In real app, get from left input
-    const rightColumns = joinData?.columnHeaders || [] // In real app, get from right input
 
     const handleAddCondition = () => {
         const newCondition: JoinCondition = {
             id: `condition-${Date.now()}`,
             leftColumn: "",
-            logicalOperator: conditions.length > 0 ? "AND" : undefined,
             operator: "=",
             rightColumn: ""
         }
+
         addJoinCondition(newCondition)
     }
 
     return (
         <div className="flex flex-col gap-3">
-            {/* Header */}
+            {/* Heading */}
             <div>
                 <Typography>
-                    <Text className="font-medium text-sm">Join Configuration</Text>
+                    <Text style={{ fontWeight: 600 }}>
+                        Join
+                    </Text>
                 </Typography>
                 <Typography>
-                    <Paragraph className="text-gray-600 text-xs">
-                        Configure how to join two datasets
+                    <Paragraph style={{ color: "var(--color-gray-600)" }}>
+                        {description}
                     </Paragraph>
                 </Typography>
             </div>
 
-            {/* Validation Errors */}
-            {!isValid && errors.length > 0 && (
-                <div className="bg-red-50 rounded-sm border-red-200 border text-red-700 text-xs p-2">
-                    {errors.map((error, idx) => (
-                        <div key={idx}>{error.message}</div>
-                    ))}
-                </div>
-            )}
-
-            {/* Join Type */}
+            {/* Join type */}
             <div>
                 <Typography>
-                    <Text className="font-medium mb-1 text-xs">Join Type</Text>
+                    <Text style={{ fontWeight: 600 }}>
+                        Join type
+                    </Text>
                 </Typography>
                 <Select
-                    value={joinData?.joinType || "inner"}
                     onValueChange={(value) => updateJoinType(value as JoinType)}
+                    value={joinData?.joinType || "inner"}
                 >
                     <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Select join type" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="inner">Inner Join</SelectItem>
                         <SelectItem value="left">Left Join</SelectItem>
                         <SelectItem value="right">Right Join</SelectItem>
                         <SelectItem value="full">Full Outer Join</SelectItem>
-                        <SelectItem value="cross">Cross Join</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
 
-            {/* Join Conditions */}
+            {/* Join conditions */}
             <div>
                 <Typography>
-                    <Text className="font-medium mb-2 text-xs">Join Conditions</Text>
+                    <Text style={{ fontWeight: 600 }}>
+                        Join condtions
+                    </Text>
                 </Typography>
-
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col">
                     {conditions.map((condition, index) => (
-                        <div key={condition.id} className="flex flex-col gap-2">
-                            {/* Logical Operator */}
-                            {index > 0 && (
-                                <Select
-                                    value={condition.logicalOperator || "AND"}
-                                    onValueChange={(value) => 
-                                        updateJoinCondition(condition.id, { 
-                                            logicalOperator: value as LogicalOperator 
-                                        })
-                                    }
-                                >
-                                    <SelectTrigger className="w-20">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="AND">AND</SelectItem>
-                                        <SelectItem value="OR">OR</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            )}
+                        <>
+                            {/* Conditions */}
+                            <div className="items-center flex gap-2 mb-2" key={condition.id}>
 
-                            {/* Condition Row */}
-                            <div className="items-center flex gap-2">
-                                {/* Left Column */}
-                                <Select
-                                    value={condition.leftColumn}
-                                    onValueChange={(value) => 
-                                        updateJoinCondition(condition.id, { leftColumn: value })
-                                    }
-                                >
-                                    <SelectTrigger className="flex-1">
-                                        <SelectValue placeholder="Left column" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {leftColumns.length === 0 ? (
-                                            <SelectItem value="_none" disabled>
-                                                No columns
-                                            </SelectItem>
-                                        ) : (
-                                            leftColumns.map(col => (
-                                                <SelectItem key={col} value={col}>
-                                                    {col}
+                                {/* Left table column */}
+                                <div className="flex-1">
+                                    <Select
+                                        onValueChange={(value) =>
+                                            updateJoinCondition(condition.id, { leftColumn: value })
+                                        }
+                                        value={condition.leftColumn}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select column" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {availableColumns.length === 0 ? (
+                                                <SelectItem value="_none" disabled>
+                                                    No available columns
                                                 </SelectItem>
-                                            ))
-                                        )}
-                                    </SelectContent>
-                                </Select>
+                                            ) : (
+                                                availableColumns.map(column => (
+                                                    <SelectItem key={column.name} value={column.name}>
+                                                        {column.name}
+                                                    </SelectItem>
+                                                ))
+                                            )}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
 
-                                {/* Operator */}
-                                <Select
-                                    value={condition.operator}
-                                    onValueChange={(value) => 
-                                        updateJoinCondition(condition.id, { 
-                                            operator: value as JoinOperator 
-                                        })
-                                    }
-                                >
-                                    <SelectTrigger className="w-16">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="=">=</SelectItem>
-                                        <SelectItem value="!=">!=</SelectItem>
-                                        <SelectItem value="<">{"<"}</SelectItem>
-                                        <SelectItem value=">">{">"}</SelectItem>
-                                        <SelectItem value="<=">{"<="}</SelectItem>
-                                        <SelectItem value=">=">{">="}</SelectItem>
-                                        <SelectItem value="LIKE">LIKE</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <div className="h-6 shrink-0 text-center w-6">
+                                    <ResizeIcon
+                                        onPointerEnterCapture={() => {}}
+                                        onPointerLeaveCapture={() => {}}
+                                        style={{
+                                            color: "var(--color-gray-400)"
+                                        }}
+                                    />
+                                </div>
 
-                                {/* Right Column */}
-                                <Select
-                                    value={condition.rightColumn}
-                                    onValueChange={(value) => 
-                                        updateJoinCondition(condition.id, { rightColumn: value })
-                                    }
-                                >
-                                    <SelectTrigger className="flex-1">
-                                        <SelectValue placeholder="Right column" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {rightColumns.length === 0 ? (
-                                            <SelectItem value="_none" disabled>
-                                                No columns
-                                            </SelectItem>
-                                        ) : (
-                                            rightColumns.map(col => (
-                                                <SelectItem key={col} value={col}>
-                                                    {col}
+                                {/* Right table column */}
+                                <div className="flex-1">
+                                    <Select
+                                        onValueChange={(value) =>
+                                            updateJoinCondition(condition.id, { rightColumn: value })
+                                        }
+                                        value={condition.rightColumn}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select column" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {availableColumns.length === 0 ? (
+                                                <SelectItem value="_none" disabled>
+                                                    No available columns
                                                 </SelectItem>
-                                            ))
-                                        )}
-                                    </SelectContent>
-                                </Select>
+                                            ) : (
+                                                availableColumns.map(column => (
+                                                    <SelectItem key={column.name} value={column.name}>
+                                                        {column.name}
+                                                    </SelectItem>
+                                                ))
+                                            )}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
 
-                                {/* Remove Button */}
+                                {/* Remove condition */}
                                 <Button
-                                    className="rounded-sm h-8 w-8"
+                                    className="rounded-sm h-8 shrink-0 w-8"
                                     onClick={() => removeJoinCondition(condition.id)}
                                     size="icon"
                                     variant="ghost"
                                 >
-                                    <TrashIcon />
+                                    <DashIcon onPointerEnterCapture={() => {}} onPointerLeaveCapture={() => {}} />
                                 </Button>
                             </div>
-                        </div>
+
+                            {conditions.length > 0
+                                && conditions.length !== index + 1
+                                && (
+                                <Separator className="mb-2" />
+                            )}
+                        </>
                     ))}
                 </div>
 
-                {/* Add Condition Button */}
+                {/* Add condition */}
                 <Button
-                    className="rounded-sm mt-2 w-fit"
+                    className="rounded-sm w-fit"
                     onClick={handleAddCondition}
                     size="sm"
                     variant="outline"
                 >
-                    Add condition
+                    <PlusIcon
+                        onPointerEnterCapture={() => {}}
+                        onPointerLeaveCapture={() => {}}
+                        style={{
+                            color: "var(--color-gray-400)"
+                        }}
+                    /> Add condition
                 </Button>
             </div>
 
-            {/* Preview Summary */}
-            {joinData?.recordCount !== undefined && (
+            {/* Join columns */}
+            <div className="rounded-sm border overflow-hidden">
+                <Table className="text-sm">
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-12">
+                                <Checkbox aria-label="select-all" />
+                            </TableHead>
+                            <TableHead className="font-medium">Column name</TableHead>
+                            <TableHead className="font-medium">Type</TableHead>
+                            <TableHead className="font-medium">Rename</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {availableColumns.length === 0 ? (
+                            <TableRow>
+                                <TableCell className="text-center text-gray-400" colSpan={4} >
+                                    No columns available
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            availableColumns.map((column) => (
+                                <TableRow key={column.name}>
+                                    <TableCell>
+                                        <Checkbox aria-label={`select-${column.name}`} />
+                                    </TableCell>
+                                    <TableCell className="font-mono">
+                                        {column.name}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Select value={column.type || "string"}>
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="boolean">boolean</SelectItem>
+                                                <SelectItem value="date">date</SelectItem>
+                                                <SelectItem value="datetime">datetime</SelectItem>
+                                                <SelectItem value="float">float</SelectItem>
+                                                <SelectItem value="integer">integer</SelectItem>
+                                                <SelectItem value="string">string</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Input value={column.alias || ""} />
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+
+            {/* Preview summary */}
+            {joinData?.dataPreview !== undefined && (
                 <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
-                    <span className="font-medium">Preview:</span>
+                    <span className="font-medium">Output preview:</span>
                     <span>
-                        {joinData.previewData?.length || 0} of {joinData.recordCount} rows
+                        {joinData.dataPreview?.length || 0} of {joinData.dataPreview?.length} rows
                     </span>
                 </div>
             )}
