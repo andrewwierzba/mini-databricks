@@ -60,7 +60,7 @@ export interface AggregateNodeData {
     availableColumns?: string[]
     groupBy?: string[]
     name: string
-    type: "aggregate"
+    nodeType: "aggregate"
 }
 
 /* ========================================================================
@@ -71,7 +71,7 @@ export interface CombineNodeData {
     availableColumns?: string[]
     deduplicateRows: boolean
     name: string
-    type: "combine"
+    nodeType: "combine"
 }
 
 /* ========================================================================
@@ -104,7 +104,7 @@ export interface FilterNodeData {
     availableColumns?: string[]
     conditions: FilterCondition[]
     name: string
-    type: "filter"
+    nodeType: "filter"
 }
 
 /* ========================================================================
@@ -120,9 +120,9 @@ export interface InputNodeData {
     fileSize?: number
     fileType?: FileType
     name: string
+    nodeType: "input"
     schema?: string
     tableName?: string
-    type: "input"
     uploadedFile?: string
 }
 
@@ -148,9 +148,9 @@ export interface JoinNodeData {
     joinType: JoinType
     leftTableAlias?: string
     name: string
+    nodeType: "join"
     outputColumns?: SelectColumn[]
     rightTableAlias?: string
-    type: "join"
 }
 
 /* ========================================================================
@@ -166,10 +166,10 @@ export interface OutputNodeData {
     destinationPath?: string
     destinationTable?: string
     name: string
+    nodeType: "output"
     outputFormat?: OutputFormat
     schema?: string
     tableName?: string
-    type: "output"
     writeMode?: WriteMode
 }
 
@@ -188,7 +188,7 @@ export interface SelectNodeData {
     availableColumns?: string[]
     columns: SelectColumn[]
     name: string
-    type: "select"
+    nodeType: "select"
 }
 
 /* ========================================================================
@@ -206,7 +206,7 @@ export interface SortNodeData {
     availableColumns?: string[]
     columns: SortColumn[]
     name: string
-    type: "sort"
+    nodeType: "sort"
 }
 
 /* ========================================================================
@@ -224,7 +224,7 @@ export interface TransformNodeData {
     availableColumns?: string[]
     expressions: TransformExpression[]
     name: string
-    type: "transform"
+    nodeType: "transform"
 }
 
 export type NodeData =
