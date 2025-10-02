@@ -68,8 +68,8 @@ export function ConfigPanel({ onClose }: ConfigPanelProps) {
 	}
 
 	return (
-		<div className="bottom-0 p-4 absolute right-0 top-0 w-[352px]">
-			<div className="bg-white rounded-sm border shadow-xs h-full overflow-auto">
+		<div className="bottom-0 max-h-full p-4 absolute right-0 top-0 w-[352px]">
+			<div className="bg-white rounded-sm border shadow-xs h-fit max-h-full overflow-auto">
 				
 				{/* Header */}
 				<div className="bg-inherit items-center border-b flex gap-2 justify-between left-0 p-2 sticky right-0 top-0 z-1">
