@@ -221,57 +221,64 @@ export function JoinNodeConfig({ nodeId }: JoinNodeConfigProps) {
             </div>
 
             {/* Join columns */}
-            <div className="rounded-sm border overflow-hidden">
-                <Table className="text-sm">
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-12">
-                                <Checkbox aria-label="select-all" />
-                            </TableHead>
-                            <TableHead className="font-medium">Column name</TableHead>
-                            <TableHead className="font-medium">Type</TableHead>
-                            <TableHead className="font-medium">Rename</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {availableColumns.length === 0 ? (
+            <div>
+                <Typography>
+                    <Text style={{ fontWeight: 600 }}>
+                        Select columns
+                    </Text>
+                </Typography>
+                <div className="rounded-sm border overflow-hidden">
+                    <Table className="text-sm">
+                        <TableHeader>
                             <TableRow>
-                                <TableCell className="text-center text-gray-400" colSpan={4} >
-                                    No columns available
-                                </TableCell>
+                                <TableHead className="w-12">
+                                    <Checkbox aria-label="select-all" />
+                                </TableHead>
+                                <TableHead className="font-medium">Column name</TableHead>
+                                <TableHead className="font-medium">Type</TableHead>
+                                <TableHead className="font-medium">Rename</TableHead>
                             </TableRow>
-                        ) : (
-                            availableColumns.map((column) => (
-                                <TableRow key={column.name}>
-                                    <TableCell>
-                                        <Checkbox aria-label={`select-${column.name}`} />
-                                    </TableCell>
-                                    <TableCell className="font-mono">
-                                        {column.name}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Select value={column.type || "string"}>
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="boolean">boolean</SelectItem>
-                                                <SelectItem value="date">date</SelectItem>
-                                                <SelectItem value="datetime">datetime</SelectItem>
-                                                <SelectItem value="float">float</SelectItem>
-                                                <SelectItem value="integer">integer</SelectItem>
-                                                <SelectItem value="string">string</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Input value={column.alias || ""} />
+                        </TableHeader>
+                        <TableBody>
+                            {availableColumns.length === 0 ? (
+                                <TableRow>
+                                    <TableCell className="text-center text-gray-400" colSpan={4} >
+                                        No columns available
                                     </TableCell>
                                 </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
+                            ) : (
+                                availableColumns.map((column) => (
+                                    <TableRow key={column.name}>
+                                        <TableCell>
+                                            <Checkbox aria-label={`select-${column.name}`} />
+                                        </TableCell>
+                                        <TableCell className="font-mono">
+                                            {column.name}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Select value={column.type || "string"}>
+                                                <SelectTrigger>
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="boolean">boolean</SelectItem>
+                                                    <SelectItem value="date">date</SelectItem>
+                                                    <SelectItem value="datetime">datetime</SelectItem>
+                                                    <SelectItem value="float">float</SelectItem>
+                                                    <SelectItem value="integer">integer</SelectItem>
+                                                    <SelectItem value="string">string</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Input value={column.alias || ""} />
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
             </div>
 
             {/* Preview summary */}
