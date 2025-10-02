@@ -3,7 +3,7 @@
 import { createContext, ReactNode, useContext, useCallback, useEffect, useState } from "react"
 import { addEdge, applyEdgeChanges, applyNodeChanges, Connection, Edge, EdgeChange, Node, NodeChange } from "reactflow"
 
-import { getNodeTypeById, nodeTypes, NodeTypeConfig } from "@/app/designer/types/nodes"
+import { getNodeTypeById, NodeData, types, TypeConfig } from "@/app/designer/types/nodes"
 
 export type ResearchVariant = "combined" | "separate"
 
@@ -18,7 +18,7 @@ export interface DesignerContextType {
         nodeTypeId: string,
         position?: { x: number; y: number }
     ) => void;
-    availableNodeTypes: NodeTypeConfig[];
+    availableNodeTypes: TypeConfig[];
     canConnect: (connection: Connection) => boolean;
     clearDesigner: () => void;
     deleteEdge: (edgeId: string) => void;
@@ -26,7 +26,9 @@ export interface DesignerContextType {
     duplicateNode: (nodeId: string) => void;
     edges: Edge[];
     exportDesigner: () => string;
-    getNodeTypeConfig: (nodeTypeId: string) => NodeTypeConfig | undefined;
+    getNode: (nodeId: string) => Node | undefined;
+    getNodeTypeConfig: (nodeTypeId: string) => TypeConfig | undefined;
+    getNodeValidationErrors: (nodeId: string) => Array<{ message: string }>;
     importDesigner: (data: string) => void;
     nodes: Node[];
     onConnect: (connection: Connection) => void;
@@ -39,7 +41,8 @@ export interface DesignerContextType {
     setEdges: (edges: Edge[] | ((prev: Edge[]) => Edge[])) => void;
     setNodes: (nodes: Node[] | ((prev: Node[]) => Node[])) => void;
     undo: () => void;
-    updateNodeData: (nodeId: string, data: Partial<any>) => void;
+    updateNodeData: (nodeId: string, data: Partial<NodeData>) => void;
+    validateNode: (nodeId: string) => { isValid: boolean } | null;
 }
 
 const DesignerContext = createContext<DesignerContextType | null>(null);
@@ -108,12 +111,36 @@ const createDefaultNodes = (): { nodes: Node[], edges: Edge[] } => {
         }, {
             data: { 
                 ...joinNodeConfig.defaultData,
+                availableColumns: [{
+                        name: "id",
+                        type: "string",
+                    }, {
+                        name: "agent_id",
+                        type: "string",
+                    }, {
+                        name: "close_date",
+                        type: "datetime",
+                    }, {
+                        name: "created_at",
+                        type: "datetime",
+                    }, {
+                        name: "customer_id",
+                        type: "string",
+                    }, {
+                        name: "open_date",
+                        type: "datetime",
+                    }, {
+                        name: "status",
+                        type: "string",
+                    }, {
+                        name: "updated_at",
+                        type: "datetime",
+                    }],
                 conditions: [{
                     id: "condition-1",
                     leftColumn: "customer_id",
                     operator: "=" as const,
-                    logicalOperator: "AND" as const,
-                    rightColumn: "id"
+                    rightColumn: "id",
                 }],
                 joinType: "inner" as const,
                 label: joinNodeConfig.label,
@@ -128,12 +155,36 @@ const createDefaultNodes = (): { nodes: Node[], edges: Edge[] } => {
         }, {
             data: { 
                 ...joinNodeConfig.defaultData,
+                availableColumns: [{
+                        name: "id",
+                        type: "string",
+                    }, {
+                        name: "agent_id",
+                        type: "string",
+                    }, {
+                        name: "close_date",
+                        type: "datetime",
+                    }, {
+                        name: "created_at",
+                        type: "datetime",
+                    }, {
+                        name: "customer_id",
+                        type: "string",
+                    }, {
+                        name: "open_date",
+                        type: "datetime",
+                    }, {
+                        name: "status",
+                        type: "string",
+                    }, {
+                        name: "updated_at",
+                        type: "datetime",
+                    }],
                 conditions: [{
                     id: "condition-1",
                     leftColumn: "agent_id",
                     operator: "=" as const,
-                    logicalOperator: "AND" as const,
-                    rightColumn: "agents_id"
+                    rightColumn: "id",
                 }],
                 joinType: "inner" as const,
                 label: joinNodeConfig.label,
@@ -360,7 +411,7 @@ export const DesignerProvider = ({
         addToHistory();
     }, [nodes, nodeTypeCount, addToHistory]);
 
-    const updateNodeData = useCallback((nodeId: string, data: Partial<any>) => {
+    const updateNodeData = useCallback((nodeId: string, data: Partial<NodeData>) => {
         setNodes(prev => prev.map(node => 
             node.id === nodeId 
                 ? { ...node, data: { ...node.data, ...data } }
@@ -373,9 +424,29 @@ export const DesignerProvider = ({
         setSelectedNodeId(nodeId);
     }, [])
 
+    const getNode = useCallback((nodeId: string) => {
+        return nodes.find(n => n.id === nodeId);
+    }, [nodes])
+
     const getNodeTypeConfig = useCallback((nodeTypeId: string) => {
         return getNodeTypeById(nodeTypeId);
     }, [])
+
+    const validateNode = useCallback((nodeId: string) => {
+        const node = nodes.find(n => n.id === nodeId);
+        if (!node) return null;
+
+        // Basic validation - can be extended later
+        return { isValid: true };
+    }, [nodes])
+
+    const getNodeValidationErrors = useCallback((nodeId: string) => {
+        const node = nodes.find(n => n.id === nodeId);
+        if (!node) return [];
+
+        // Basic validation - can be extended later
+        return [];
+    }, [nodes])
 
     const canConnect = useCallback((connection: Connection): boolean => {
         if (!connection.source || !connection.target) return false;
@@ -448,7 +519,7 @@ export const DesignerProvider = ({
 
     const contextValue: DesignerContextType = {
         addNode,
-        availableNodeTypes: nodeTypes,
+        availableNodeTypes: types,
         canConnect,
         clearDesigner,
         deleteEdge,
@@ -456,7 +527,9 @@ export const DesignerProvider = ({
         duplicateNode,
         edges,
         exportDesigner,
+        getNode,
         getNodeTypeConfig,
+        getNodeValidationErrors,
         importDesigner,
         nodes,
         onConnect,
@@ -470,6 +543,7 @@ export const DesignerProvider = ({
         setNodes,
         undo,
         updateNodeData,
+        validateNode,
     }
 
     return (
