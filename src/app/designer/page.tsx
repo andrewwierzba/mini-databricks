@@ -6,69 +6,21 @@ import { useSearchParams } from "next/navigation"
 import ReactFlow, { addEdge, applyEdgeChanges, applyNodeChanges, Background, Connection, Controls, Edge, EdgeChange, MiniMap, Node as FlowNode, NodeChange, NodeMouseHandler, ReactFlowProvider } from "reactflow"
 import "reactflow/dist/style.css"
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import { Input } from "@/components/ui/input"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
-import { Progress } from "@/components/ui/progress"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 import { Navigation } from "@/components/ui/patterns/navigation"
 import { Workspace } from "@/components/ui/patterns/workspace-browser"
 import { Assistant } from "@/components/ui/patterns/assistant"
 
+import { ConfigPanel } from "@/app/designer/components/ConfigPanel"
 import Node from "@/app/designer/components/node"
 import { Toolbar } from "@/app/designer/components/toolbar"
 
-import { getNodeTypeById } from "@/app/designer/types/nodes"
 import { DesignerProvider, useDesigner, ResearchVariant } from "@/app/designer/contexts/DesignerContext"
-
-import Editor from "@/app/designer/components/ui/patterns/editor/page"
-
-import { ChevronDownIcon, ChevronRightIcon, CloseIcon, FileIcon, FunctionIcon, TrashIcon, Typography } from "@databricks/design-system"
-
-const { Title } = Typography
 
 function DesignerCanvas() {
     const { edges, nodes, researchVariant, selectedNodeId, selectNode, setEdges, setNodes } = useDesigner()
 
-    console.log("selectedNodeId:", selectedNodeId)
-
-    const [editorPopover, setEditorPopover] = useState<string | null>(null)
-    const [fileUploadProgress, setFileUploadProgress] = useState<Record<string, number>>({})
-    const [nodeConfigs, setNodeConfigs] = useState<Record<string, {
-            filter: {
-                column?: string
-                operator?: string
-                value?: string
-            },
-            input: {
-                data?: any[]
-                fileName?: string
-                fileType?: "csv" | "json"
-            }
-        }>>({})
-
-    console.log("nodeConfigs:", nodeConfigs)
-
-    const [previewPanelHeight, setPreviewPanelHeight] = useState(320)
     const [showAssistant, setShowAssistant] = useState(false)
     const [showNodeConfig, setShowNodeConfig] = useState(false)
 
@@ -137,8 +89,8 @@ function DesignerCanvas() {
                 <Workspace />
 
                 {/* Main */ }
-                <div className="flex-1 h-full">
-                    <div aria-label="designer-canvas" className="flex flex-col h-full relative">
+                <div className="flex flex-col flex-1">
+                    <div aria-label="designer-canvas" className="flex flex-col flex-1 relative">
 
                         {/* Directed Acyclic Graph (DAG) */ }
                         <ReactFlow
@@ -181,566 +133,50 @@ function DesignerCanvas() {
                         <Toolbar className="h-fit left-0 absolute top-0 w-fit" />
 
                         {/* Configuration Panel */ }
-                        {showNodeConfig && selectedNodeId && (() => {
-                            const selectedNodeData = nodes.find(node => node.id === selectedNodeId);
+                        {showNodeConfig && selectedNodeId && (
+                            <ConfigPanel onClose={() => setShowNodeConfig(false)} />
+                        )}
+                    </div>
 
-                            console.log(selectedNodeId, selectedNodeData);
-                            
-                            return selectedNodeData ? (
-                                <div className="bg-white rounded-sm border shadow-xs mr-4 mt-4 absolute right-0 top-0 w-[320px]">
-                                    <div className="items-center border-b flex gap-2 justify-between p-2">
-                                        <div className="items-center flex gap-2">
-                                            {(() => {
-                                                const nodeConfig = getNodeTypeById(selectedNodeData.data?.nodeType);
-                                                const Icon = nodeConfig?.icon;
-
-                                                return Icon ?
-                                                    <Icon
-                                                        className="bg-(--du-bois-color-background-secondary) rounded-sm p-1"
-                                                        style={{ color: "var(--du-bois-text-secondary)"}}
-                                                    />
-                                                    : null;
-                                            })()}
-                                            <Typography>
-                                                <Title level={4}>
-                                                    {selectedNodeData.data?.name || "Node"}
-                                                </Title>
-                                            </Typography>
-                                        </div>
-                                        <Button
-                                            aria-label="close-node"
-                                            className="rounded-[4px] h-6 w-6"
-                                            onClick={() => setShowNodeConfig(false)}
-                                            size="icon"
-                                            variant="ghost"
-                                        >
-                                            <CloseIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
-                                        </Button>
-                                    </div>
-                                    <div className="p-2">
-                                        {(() => {
-                                            switch (selectedNodeData.data?.nodeType) {
-                                                case "aggregate":
-                                                    return <div className="text-sm">Aggregate node configuration</div>;
-                                                case "combine":
-                                                    return <div className="text-sm">Combine node configuration</div>;
-                                                case "filter":
-                                                    return (
-                                                        <div>
-                                                            <div className="text-sm font-medium">Filter</div>
-                                                            <div className="text-gray-600 text-xs mb-2">Filter fields</div>
-
-                                                            <div className="flex flex-col gap-2">
-                                                                <div className="flex gap-2">
-                                                                    <Select aria-label="filter-column">
-                                                                        <SelectTrigger className="flex-1 min-w-0 overflow-hidden *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
-                                                                            <SelectValue className="inline" placeholder="Select a column" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                            <SelectItem value="id">id</SelectItem>
-                                                                            <SelectItem value="customer_id">customer_id</SelectItem>
-                                                                            <SelectItem value="agent_id">agent_id</SelectItem>
-                                                                            <SelectItem value="status">status</SelectItem>
-                                                                            <SelectItem value="created_at">created_at</SelectItem>
-                                                                        </SelectContent>
-                                                                    </Select>
-                                                                    <Select
-                                                                        aria-label="filter-operator"
-                                                                        defaultValue="="
-                                                                    >
-                                                                        <SelectTrigger className="min-w-0 [&>span]:truncate">
-                                                                            <SelectValue placeholder="Select an operator" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                            <SelectItem value="=">{'='}</SelectItem>
-                                                                            <SelectItem value="equals">equals</SelectItem>
-                                                                            <SelectItem value="!=">!=</SelectItem>
-                                                                            <SelectItem value="does not equal">does not equal</SelectItem>
-                                                                            <SelectItem value=">">{'>'}</SelectItem>
-                                                                            <SelectItem value=">=">{'>='}</SelectItem>
-                                                                            <SelectItem value="<">{'<'}</SelectItem>
-                                                                            <SelectItem value="<=">{'<='}</SelectItem>
-                                                                            <SelectItem value="is null">is null</SelectItem>
-                                                                            <SelectItem value="is not null">is not null</SelectItem>
-                                                                        </SelectContent>
-                                                                    </Select>
-
-                                                                    {/* If filter operator is not "is null" or "is not null", show filter value input */ }
-                                                                    <Input
-                                                                        aria-label="filter-value"
-                                                                        className="flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap"
-                                                                        placeholder="Enter a value"
-                                                                    />
-                                                                </div>
-                                                                
-                                                                {/* If column name, operator, and value returns rows, show filter output preview */}
-                                                                <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
-                                                                    <span className="font-medium">Preview:</span>
-                                                                    <span>5 out of 10 rows</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                case "input":
-                                                    const getFileName = (filePath?: string, uploadedFile?: string) => {
-                                                        if (uploadedFile) return uploadedFile;
-                                                        if (!filePath) return null;
-
-                                                        return filePath.split('/').pop() || filePath;
-                                                    };
-                                                    const inputNodeData = selectedNodeData.data as any;
-                                                    const fileName = getFileName(inputNodeData?.filePath, inputNodeData?.uploadedFile);
-                                                    
-                                                    return (
-                                                        <div>
-                                                            <div className="text-sm font-medium">File upload</div>
-                                                            <div className="text-gray-600 text-xs mb-2">Browse files to upload</div>
-
-                                                            <div className="flex flex-col gap-2">
-                                                                {/* Hidden file input */}
-                                                                <input
-                                                                    accept=".csv,.json"
-                                                                    className="hidden"
-                                                                    id={`file-upload-${selectedNodeId}`}
-                                                                    type="file"
-                                                                    onChange={(e) => {
-                                                                        const file = e.target.files?.[0];
-                                                                        if (file && selectedNodeId) {
-                                                                            // Update node data with uploaded file
-                                                                            setNodes(prev => prev.map(node => 
-                                                                                node.id === selectedNodeId 
-                                                                                    ? { 
-                                                                                        ...node, 
-                                                                                        data: { 
-                                                                                            ...node.data, 
-                                                                                            filePath: null, // Clear existing file path
-                                                                                            uploadedFile: file.name,
-                                                                                            fileSize: file.size
-                                                                                        }
-                                                                                    }
-                                                                                    : node
-                                                                            ));
-                                                                        }
-                                                                    }}
-                                                                />
-                                                                
-                                                                {/* File card - show if there's a file reference */}
-                                                                {fileName && (
-                                                                    <div className="align-start rounded-md border flex gap-2 mb-[2px] p-2">
-                                                                        <FileIcon className="pt-[2px]" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
-
-                                                                        <div className="flex flex-col w-full">
-                                                                            <div className="items-center flex gap-2 justify-between mb-2 w-full">
-                                                                                {/* File name */}
-                                                                                <div aria-label="file-name" className="text-sm font-medium">
-                                                                                    {fileName}
-                                                                                </div>
-
-                                                                            {/* Remove file */}
-                                                                            <Button 
-                                                                                aria-label="file-remove"
-                                                                                className="rounded-[4px] h-6 w-6"
-                                                                                onClick={() => {
-                                                                                    if (selectedNodeId) {
-                                                                                        setNodes(prev => prev.map(node => 
-                                                                                            node.id === selectedNodeId 
-                                                                                                ? { 
-                                                                                                    ...node, 
-                                                                                                    data: { 
-                                                                                                        ...node.data, 
-                                                                                                        filePath: null,
-                                                                                                        uploadedFile: null,
-                                                                                                        fileSize: null
-                                                                                                    }
-                                                                                                }
-                                                                                                : node
-                                                                                        ));
-                                                                                    }
-                                                                                }}
-                                                                                size="sm" 
-                                                                                variant="ghost"
-                                                                            >
-                                                                                <TrashIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
-                                                                            </Button>
-                                                                        </div>
-
-                                                                        {/* File progress */}
-                                                                        <div>
-                                                                            <Progress
-                                                                                className="h-1 mb-1"
-                                                                                value={100}
-                                                                            />
-                                                                            <div className="flex gap-2 justify-between">
-                                                                                <span className="text-gray-500 text-xs">
-                                                                                    {inputNodeData?.fileSize 
-                                                                                        ? `${(inputNodeData.fileSize / 1024 / 1024).toFixed(1)} Mb`
-                                                                                        : "Unknown file size"
-                                                                                    }
-                                                                                </span>
-                                                                                <span className="text-gray-500 text-xs">100%</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                )}
-                                                                
-                                                                {/* If no file, show upload button */}
-                                                                {!fileName && (
-                                                                    <Button 
-                                                                        aria-label="upload-file"
-                                                                        className="rounded-[4px] w-fit"
-                                                                        onClick={() => document.getElementById(`file-upload-${selectedNodeId}`)?.click()}
-                                                                        size="sm"
-                                                                    >
-                                                                        Upload a file
-                                                                    </Button>
-                                                                )}
-
-                                                                {/* If file returns rows, show input output preview */}
-                                                                <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
-                                                                    <span className="font-medium">Preview:</span>
-                                                                    <span>5 out of 10 rows</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                case "join":
-                                                    return <div className="text-sm">Join node configuration</div>;
-                                                case "select":
-                                                    return (
-                                                        <div className="flex flex-col gap-2">
-                                                            <div>
-                                                                <div className="text-sm font-medium">Select</div>
-                                                                <div className="text-gray-600 text-xs">Select fields to include, exclude, or rename</div>
-                                                            </div>
-
-                                                            <div className="rounded-sm border overflow-hidden">
-                                                                <Table className="text-sm">
-                                                                    <TableHeader>
-                                                                        <TableRow>
-                                                                            <TableHead>
-                                                                                <Checkbox aria-label="select-all" />
-                                                                            </TableHead>
-                                                                            <TableHead className="font-medium min-w-32 truncate">Column name</TableHead>
-                                                                            <TableHead className="font-medium min-w-32 truncate">Type</TableHead>
-                                                                            <TableHead className="font-medium min-w-32 truncate">Rename</TableHead>
-                                                                        </TableRow>
-                                                                    </TableHeader>
-                                                                    <TableBody>
-                                                                        <TableRow>
-                                                                            <TableCell className="text-xs max-w-32 truncate">
-                                                                                <Checkbox aria-label="select-single" />
-                                                                            </TableCell>
-                                                                            <TableCell
-                                                                                aria-label="column-name"
-                                                                                className="min-w-32 truncate"
-                                                                            >
-                                                                                column_name_001
-                                                                            </TableCell>
-                                                                            <TableCell className="min-w-32 truncate">
-                                                                                <Select aria-label="column-type">
-                                                                                    <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
-                                                                                        <SelectValue placeholder="Select a column type" />
-                                                                                    </SelectTrigger>
-                                                                                    <SelectContent>
-                                                                                        <SelectItem value="boolean">boolean</SelectItem>
-                                                                                        <SelectItem value="date">date</SelectItem>
-                                                                                        <SelectItem value="datetime">datetime</SelectItem>
-                                                                                        <SelectItem value="integer">integer</SelectItem>
-                                                                                        <SelectItem value="string">string</SelectItem>
-                                                                                    </SelectContent>
-                                                                                </Select>
-                                                                            </TableCell>
-                                                                            <TableCell className="min-w-32 truncate">
-                                                                                <Input aria-label="column-rename" />
-                                                                            </TableCell>
-                                                                        </TableRow>
-                                                                    </TableBody>
-                                                                </Table>
-                                                            </div>
-
-                                                            {/* If select returns rows, show select output preview */}
-                                                            <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
-                                                                <span className="font-medium">Preview:</span>
-                                                                <span>5 out of 10 rows</span>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                case "sort":
-                                                    return <div className="text-sm">Sort node configuration</div>;
-                                                case "transform":
-                                                    return (
-                                                        <div className="flex flex-col gap-2">
-                                                            <div>
-                                                                <div className="text-sm font-medium">Transform</div>
-                                                                <div className="text-gray-600 text-xs">Transform fields</div>
-                                                            </div>
-
-                                                            <div className="rounded-sm border overflow-hidden">
-                                                                <Table className="text-sm">
-                                                                    <TableHeader>
-                                                                        <TableRow>
-                                                                            <TableHead className="font-medium min-w-32 truncate">Expression</TableHead>
-                                                                            <TableHead className="font-medium min-w-32 truncate">Type</TableHead>
-                                                                            <TableHead className="font-medium min-w-32 truncate">Rename</TableHead>
-                                                                        </TableRow>
-                                                                    </TableHeader>
-                                                                    <TableBody>
-                                                                        <TableRow>
-                                                                            <TableCell
-                                                                                aria-label="column-name"
-                                                                                className="min-w-32"
-                                                                            >
-                                                                                <div className="items-center flex gap-2">
-                                                                                    <div className="max-w-32 truncate">column_name_001</div>
-                                                                                    <Popover 
-                                                                                        open={editorPopover === "column_name_001"}
-                                                                                        onOpenChange={(open) => setEditorPopover(open ? "column_name_001" : null)}
-                                                                                    >
-                                                                                        <PopoverTrigger asChild>
-                                                                                            <Button
-                                                                                                aria-label="edit-expression"
-                                                                                                className="h-6 w-6"
-                                                                                                size="icon"
-                                                                                                variant="outline"
-                                                                                            >
-                                                                                                <FunctionIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
-                                                                                            </Button>
-                                                                                        </PopoverTrigger>
-                                                                                        <PopoverContent 
-                                                                                            align="start"
-                                                                                            className="p-0 w-[320px]"
-                                                                                            side="right"
-                                                                                            sideOffset={4}
-                                                                                        >
-                                                                                            <div className="flex flex-col">
-                                                                                                <div className="p-2">
-                                                                                                    <div className="text-sm font-medium mb-1">Expression editor</div>
-                                                                                                    <Editor className="mb-1" />
-                                                                                                </div>
-                                                                                                <Separator />
-                                                                                                <div className="flex gap-2 justify-end p-2">
-                                                                                                    <Button
-                                                                                                        onClick={() => setEditorPopover(null)}
-                                                                                                        size="sm"
-                                                                                                        variant="outline"
-                                                                                                    >
-                                                                                                        Cancel
-                                                                                                    </Button>
-                                                                                                    <Button
-                                                                                                        onClick={() => setEditorPopover(null)}
-                                                                                                        size="sm"
-                                                                                                    >
-                                                                                                        Apply
-                                                                                                    </Button>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </PopoverContent>
-                                                                                    </Popover>
-                                                                                </div>
-                                                                            </TableCell>
-                                                                            <TableCell className="min-w-32 truncate">
-                                                                                <Select aria-label="column-type">
-                                                                                    <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
-                                                                                        <SelectValue placeholder="Select a column type" />
-                                                                                    </SelectTrigger>
-                                                                                    <SelectContent>
-                                                                                        <SelectItem value="boolean">boolean</SelectItem>
-                                                                                        <SelectItem value="date">date</SelectItem>
-                                                                                        <SelectItem value="datetime">datetime</SelectItem>
-                                                                                        <SelectItem value="integer">integer</SelectItem>
-                                                                                        <SelectItem value="string">string</SelectItem>
-                                                                                    </SelectContent>
-                                                                                </Select>
-                                                                            </TableCell>
-                                                                            <TableCell className="min-w-32 truncate">
-                                                                                <Input aria-label="column-rename" />
-                                                                            </TableCell>
-                                                                        </TableRow>
-                                                                    </TableBody>
-                                                                </Table>
-                                                            </div>
-
-                                                            {/* Allow for additional expressions with formulas */}
-                                                            <Button
-                                                                aria-label="add-expression"
-                                                                className="rounded-[4px] w-fit"
-                                                                size="sm"
-                                                                variant="outline"
-                                                            >
-                                                                Add expression
-                                                            </Button>
-
-                                                            {/* If formula returns rows, show formula output preview */}
-                                                            <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
-                                                                <span className="font-medium">Preview:</span>
-                                                                <span>5 out of 10 rows</span>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                case "transform-combined":
-                                                    return (
-                                                        <div className="flex flex-col gap-2">
-                                                            <div>
-                                                                <div className="text-sm font-medium">Transform</div>
-                                                                <div className="text-gray-600 text-xs">Select and transform fields</div>
-                                                            </div>
-
-                                                            <div className="rounded-sm border overflow-hidden">
-                                                                <Table className="text-sm">
-                                                                    <TableHeader>
-                                                                        <TableRow>
-                                                                            <TableHead>
-                                                                                <Checkbox aria-label="select-all" />
-                                                                            </TableHead>
-                                                                            <TableHead className="font-medium min-w-32 truncate">Column name</TableHead>
-                                                                            <TableHead className="font-medium min-w-32 truncate">Type</TableHead>
-                                                                            <TableHead className="font-medium min-w-32 truncate">Rename</TableHead>
-                                                                        </TableRow>
-                                                                    </TableHeader>
-                                                                    <TableBody>
-                                                                        <TableRow>
-                                                                            <TableCell className="text-xs max-w-32 truncate">
-                                                                                <Checkbox aria-label="select-single" />
-                                                                            </TableCell>
-                                                                            <TableCell
-                                                                                aria-label="column-name"
-                                                                                className="min-w-32 truncate"
-                                                                            >
-                                                                                <div className="items-center flex gap-2">
-                                                                                    <div className="max-w-32 truncate">column_name_001</div>
-                                                                                    <Popover 
-                                                                                        open={editorPopover === "column_name_001"}
-                                                                                        onOpenChange={(open) => setEditorPopover(open ? "column_name_001" : null)}
-                                                                                    >
-                                                                                        <PopoverTrigger asChild>
-                                                                                            <Button
-                                                                                                aria-label="edit-expression"
-                                                                                                className="h-6 w-6"
-                                                                                                size="icon"
-                                                                                                variant="outline"
-                                                                                            >
-                                                                                                <FunctionIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
-                                                                                            </Button>
-                                                                                        </PopoverTrigger>
-                                                                                        <PopoverContent 
-                                                                                            align="start"
-                                                                                            className="p-0 w-[320px]"
-                                                                                            side="right"
-                                                                                            sideOffset={4}
-                                                                                        >
-                                                                                            <div className="flex flex-col">
-                                                                                                <div className="p-2">
-                                                                                                    <div className="text-sm font-medium mb-1">Expression editor</div>
-                                                                                                    <Editor className="mb-1" />
-                                                                                                </div>
-                                                                                                <Separator />
-                                                                                                <div className="flex gap-2 justify-end p-2">
-                                                                                                    <Button
-                                                                                                        onClick={() => setEditorPopover(null)}
-                                                                                                        size="sm"
-                                                                                                        variant="outline"
-                                                                                                    >
-                                                                                                        Cancel
-                                                                                                    </Button>
-                                                                                                    <Button
-                                                                                                        onClick={() => setEditorPopover(null)}
-                                                                                                        size="sm"
-                                                                                                    >
-                                                                                                        Apply
-                                                                                                    </Button>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </PopoverContent>
-                                                                                    </Popover>
-                                                                                </div>
-                                                                            </TableCell>
-                                                                            <TableCell className="min-w-32 truncate">
-                                                                                <Select aria-label="column-type">
-                                                                                    <SelectTrigger className="min-w-0 w-full *:data-[slot=select-value]:line-clamp-1 [&>span]:truncate">
-                                                                                        <SelectValue placeholder="Select a column type" />
-                                                                                    </SelectTrigger>
-                                                                                    <SelectContent>
-                                                                                        <SelectItem value="boolean">boolean</SelectItem>
-                                                                                        <SelectItem value="date">date</SelectItem>
-                                                                                        <SelectItem value="datetime">datetime</SelectItem>
-                                                                                        <SelectItem value="integer">integer</SelectItem>
-                                                                                        <SelectItem value="string">string</SelectItem>
-                                                                                    </SelectContent>
-                                                                                </Select>
-                                                                            </TableCell>
-                                                                            <TableCell className="min-w-32 truncate">
-                                                                                <Input aria-label="column-rename" />
-                                                                            </TableCell>
-                                                                        </TableRow>
-                                                                    </TableBody>
-                                                                </Table>
-                                                            </div>
-
-                                                            {/* Allow for new custom columns with expressions */}
-                                                            <Button
-                                                                className="w-fit"
-                                                                size="sm"
-                                                                variant="outline"
-                                                            >
-                                                                Insert custom column
-                                                            </Button>
-
-                                                            <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
-                                                                <span className="font-medium">Preview:</span>
-                                                                <span>5 out of 10 rows</span>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                default:
-                                                    return <div className="text-sm">Node configuration</div>;
-                                            }
-                                        })()}
-                                    </div>
-                                </div>
-                            ) : null;
-                        })()}
-
-                        {/* Preview Panel */}
-                        <div className="bg-white border-t flex flex-col w-full" style={{ height: previewPanelHeight }}>
-                            <div className="border-b flex gap-2 justify-between px-3 py-1">
-                                <div className="text-xs">Preview</div>
-                                <div className="text-gray-600 text-xs">
-                                    Select a node to preview data
-                                </div>
+                    {/* Preview Panel */}
+                    <div className="bg-white border-t flex flex-col w-full" style={{ height: 320 }}>
+                        <div className="border-b flex gap-2 justify-between px-3 py-1">
+                            <div className="text-xs">Preview</div>
+                            <div className="text-gray-600 text-xs">
+                                Select a node to preview data
                             </div>
-                            <div className="flex-1 overflow-auto">
-                                <Table className="text-sm max-h-50">
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="font-medium min-w-32 truncate">column_name_001</TableHead>
-                                            <TableHead className="font-medium min-w-32 truncate">column_name_002</TableHead>
-                                            <TableHead className="font-medium min-w-32 truncate">column_name_003</TableHead>
-                                            <TableHead className="font-medium min-w-32 truncate">column_name_004</TableHead>
-                                            <TableHead className="font-medium min-w-32 truncate">column_name_005</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        <TableRow>
-                                            <TableCell className="min-w-32 truncate">
-                                                value_001
-                                            </TableCell>
-                                            <TableCell className="min-w-32 truncate">
-                                                value_002
-                                            </TableCell>
-                                            <TableCell className="min-w-32 truncate">
-                                                value_003
-                                            </TableCell>
-                                            <TableCell className="min-w-32 truncate">
-                                                value_004
-                                            </TableCell>
-                                            <TableCell className="min-w-32 truncate">
-                                                value_005
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableBody>
-                                </Table>
-                            </div>
+                        </div>
+                        <div className="flex-1 overflow-auto">
+                            <Table className="text-sm max-h-50">
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="font-medium min-w-32 truncate">column_name_001</TableHead>
+                                        <TableHead className="font-medium min-w-32 truncate">column_name_002</TableHead>
+                                        <TableHead className="font-medium min-w-32 truncate">column_name_003</TableHead>
+                                        <TableHead className="font-medium min-w-32 truncate">column_name_004</TableHead>
+                                        <TableHead className="font-medium min-w-32 truncate">column_name_005</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell className="min-w-32 truncate">
+                                            value_001
+                                        </TableCell>
+                                        <TableCell className="min-w-32 truncate">
+                                            value_002
+                                        </TableCell>
+                                        <TableCell className="min-w-32 truncate">
+                                            value_003
+                                        </TableCell>
+                                        <TableCell className="min-w-32 truncate">
+                                            value_004
+                                        </TableCell>
+                                        <TableCell className="min-w-32 truncate">
+                                            value_005
+                                        </TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
                         </div>
                     </div>
                 </div>
