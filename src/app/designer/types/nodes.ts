@@ -1,24 +1,22 @@
 import { ComponentType } from "react"
-import { z } from "zod"
 
 import {
     CheckIcon,
     FilterIcon,
     JoinOperatorIcon,
     LayerIcon,
+    PlusIcon,
     SortUnsortedIcon,
     TableCombineIcon,
-    TableIcon, 
-    TableLightningIcon,
-    PlusIcon
+    TableIcon,
+    TableLightningIcon
 } from "@databricks/design-system"
 
 /* ========================================================================
-   Heading: 
-   Column and Column Types (supported in all nodes) 
+   Column and Column Types (supported in all nodes)
 ======================================================================== */
 
-export type ColumnType = 
+export type ColumnType =
     | "boolean"
     | "date"
     | "datetime"
@@ -33,35 +31,16 @@ export interface Column {
 }
 
 /* ========================================================================
-   Heading: 
-   Logical Operators (supported in all nodes) 
+   Logical Operators (supported in all nodes)
 ======================================================================== */
 
 export type LogicalOperator = "AND" | "OR"
 
 /* ========================================================================
-   Heading: 
-   Validation (supported in all nodes) 
+   Aggregate Node
 ======================================================================== */
 
-export interface ValidationError {
-    field?: string
-    message: string
-    type: "error" | "warning"
-}
-
-export interface ValidationResult {
-    errors: ValidationError[]
-    isValid: boolean
-    warnings: ValidationError[]
-}
-
-/* ========================================================================
-   Heading: 
-   Aggregate Node 
-======================================================================== */
-
-export type AggregationFunction = 
+export type AggregationFunction =
     | "AVG"
     | "COUNT"
     | "COUNT_DISTINCT"
@@ -78,105 +57,124 @@ export interface Aggregation {
 
 export interface AggregateNodeData {
     aggregations: Aggregation[]
-    columnHeaders?: string[]
+    availableColumns?: string[]
     groupBy?: string[]
     name: string
-    nodeType: "aggregate"
-    previewData?: Array<Record<string, any>>
-    recordCount?: number
+    type: "aggregate"
 }
 
 /* ========================================================================
-   Heading: 
-   Combine Node 
+   Combine Node
 ======================================================================== */
 
 export interface CombineNodeData {
-    columnHeaders?: string[];
-    name: string;
-    outputOptions: "all" | "distinct";
-    previewData?: any[];
+    availableColumns?: string[]
+    deduplicateRows: boolean
+    name: string
+    type: "combine"
 }
 
 /* ========================================================================
-   Heading: 
-   Filter Node 
+   Filter Node
 ======================================================================== */
 
+export type FilterOperator =
+    | "!="
+    | "<"
+    | "<="
+    | "="
+    | ">"
+    | ">="
+    | "IN"
+    | "IS NOT NULL"
+    | "IS NULL"
+    | "LIKE"
+    | "NOT IN"
+    | "NOT LIKE"
+
 export interface FilterCondition {
-    column: string;
-    id: string;
-    logicalOperator?: "AND" | "OR";
-    operator: string;
-    value: any;
+    column: string
+    id: string
+    logicalOperator?: "AND" | "OR"
+    operator: FilterOperator
+    value?: string | number | boolean | null
 }
 
 export interface FilterNodeData {
-    columnHeaders?: string[];
-    conditions: FilterCondition[];
-    name: string;
-    previewData?: any[];
+    availableColumns?: string[]
+    conditions: FilterCondition[]
+    name: string
+    type: "filter"
 }
 
 /* ========================================================================
-   Heading: 
-   Input Node 
+   Input Node
 ======================================================================== */
+
+export type FileType = "csv" | "json" | "parquet"
 
 export interface InputNodeData {
-    columnHeaders?: string[];
-    filePath?: string;
-    fileSize?: number;
-    name: string;
-    previewData?: any[];
-    recordCount?: number;
-    schema?: string;
-    tableName?: string;
-    uploadedFile?: string;
+    availableColumns?: string[]
+    fileName?: string
+    filePath?: string
+    fileSize?: number
+    fileType?: FileType
+    name: string
+    schema?: string
+    tableName?: string
+    type: "input"
+    uploadedFile?: string
 }
 
 /* ========================================================================
-   Heading: 
-   Join Node 
+   Join Node
 ======================================================================== */
 
+export type JoinType = "full" | "inner" | "left" | "right"
+
+export type JoinOperator = "!=" | "<" | "<=" | "=" | ">" | ">=" | "LIKE"
+
 export interface JoinCondition {
-    id: string;
-    leftColumn: string;
-    logicalOperator?: "AND" | "OR";
-    operator: "=" | "!=" | "<" | ">" | "<=" | ">=" | "LIKE";
-    rightColumn: string;
+    id: string
+    leftColumn: string
+    logicalOperator?: "AND" | "OR"
+    operator: JoinOperator
+    rightColumn: string
 }
 
 export interface JoinNodeData {
-    columnHeaders?: string[];
-    conditions: JoinCondition[];
-    joinType: "inner" | "left" | "right" | "full";
-    leftTableAlias?: string;
-    name: string;
-    outputColumns?: {
-        leftColumns: string[];
-        rightColumns: string[];
-    };
-    previewData?: any[];
-    recordCount?: number;
-    rightTableAlias?: string;
+    availableColumns?: string[]
+    conditions: JoinCondition[]
+    joinType: JoinType
+    leftTableAlias?: string
+    name: string
+    outputColumns?: SelectColumn[]
+    rightTableAlias?: string
+    type: "join"
 }
 
 /* ========================================================================
-   Heading: 
-   Output Node 
+   Output Node
 ======================================================================== */
 
+export type OutputFormat = "csv" | "json" | "parquet" | "table"
+
+export type WriteMode = "append" | "error" | "overwrite"
+
 export interface OutputNodeData {
-    name: string;
-    schema?: string;
-    tableName?: string;
+    availableColumns?: string[]
+    destinationPath?: string
+    destinationTable?: string
+    name: string
+    outputFormat?: OutputFormat
+    schema?: string
+    tableName?: string
+    type: "output"
+    writeMode?: WriteMode
 }
 
 /* ========================================================================
-   Heading: 
-   Select Node 
+   Select Node
 ======================================================================== */
 
 export interface SelectColumn {
@@ -187,34 +185,32 @@ export interface SelectColumn {
 }
 
 export interface SelectNodeData {
+    availableColumns?: string[]
     columns: SelectColumn[]
-    columnHeaders?: string[]
     name: string
-    nodeType: "select"
-    previewData?: Array<Record<string, any>>
-    recordCount?: number
+    type: "select"
 }
 
 /* ========================================================================
-   Heading: 
-   Sort Node 
+   Sort Node
 ======================================================================== */
 
+export type SortDirection = "ASC" | "DESC"
+
 export interface SortColumn {
-    column: string;
-    direction: "ASC" | "DESC";
+    column: string
+    direction: SortDirection
 }
 
 export interface SortNodeData {
-    columns: SortColumn[];
-    columnHeaders?: string[];
-    name: string;
-    previewData?: any[];
+    availableColumns?: string[]
+    columns: SortColumn[]
+    name: string
+    type: "sort"
 }
 
 /* ========================================================================
-   Heading: 
-   Transform Node 
+   Transform Node
 ======================================================================== */
 
 export interface TransformExpression {
@@ -225,154 +221,158 @@ export interface TransformExpression {
 }
 
 export interface TransformNodeData {
-    columnHeaders?: string[]
+    availableColumns?: string[]
     expressions: TransformExpression[]
     name: string
-    nodeType: "transform"
-    previewData?: Array<Record<string, any>>
-    recordCount?: number
+    type: "transform"
 }
 
-// Node category types 
-export interface NodeCategoryConfig {
-    icon: ComponentType<any>;
-    name: string;
-}
-
-// Node data types 
-export type NodeData = 
+export type NodeData =
+    | AggregateNodeData
+    | CombineNodeData
     | FilterNodeData
     | InputNodeData
     | JoinNodeData
+    | OutputNodeData
+    | SelectNodeData
     | SortNodeData
-    | SelectNodeData;
+    | TransformNodeData
 
-export interface NodeTypeConfig {
-    category: NodeCategoryConfig;
-    defaultData?: NodeData;
-    description?: string;
-    icon: ComponentType<any>;
-    id: string;
-    label: string;
-    sourceNode: boolean;
-    targetNode: boolean;
+export interface GroupConfig {
+    icon: ComponentType<Record<string, unknown>>
+    name: string
 }
 
-export const nodeTypes: NodeTypeConfig[] = [{
-        category: {
-            icon: TableIcon,
-            name: "input"
-        },
+export interface TypeConfig {
+    defaultData?: Partial<NodeData>
+    description?: string
+    group: GroupConfig
+    icon: ComponentType<Record<string, unknown>>
+    id: string
+    label: string
+    sourceNode: boolean
+    targetNode: boolean
+}
+
+export const types: TypeConfig[] = [{
         defaultData: {
             name: "Input"
         } as InputNodeData,
-        icon: TableIcon,
+        description: "Connect to a table within a database or upload files into your workflow.",
+        group: {
+            icon: TableIcon as unknown as ComponentType<Record<string, unknown>>,
+            name: "input"
+        },
+        icon: TableIcon as unknown as ComponentType<Record<string, unknown>>,
         id: "input",
         label: "Input",
         sourceNode: true,
         targetNode: false
     }, {
-        category: {
-            icon: PlusIcon,
+        defaultData: { name: "Aggregate" },
+        group: {
+            icon: PlusIcon as unknown as ComponentType<Record<string, unknown>>,
             name: "transform"
         },
-        defaultData: { name: "Aggregate" },
-        icon: LayerIcon,
+        icon: LayerIcon as unknown as ComponentType<Record<string, unknown>>,
         id: "aggregate",
         label: "Aggregate",
         sourceNode: true,
         targetNode: true
     }, {
-        category: {
-            icon: PlusIcon,
+        defaultData: { name: "Combine" },
+        group: {
+            icon: PlusIcon as unknown as ComponentType<Record<string, unknown>>,
             name: "transform"
         },
-        defaultData: { name: "Combine" },
-        icon: TableCombineIcon,
+        icon: TableCombineIcon as unknown as ComponentType<Record<string, unknown>>,
         id: "combine",
         label: "Combine",
         sourceNode: true,
         targetNode: true
     }, {
-        category: {
-            icon: PlusIcon,
-            name: "transform"
-        },
         defaultData: {
             name: "Filter"
         } as FilterNodeData,
-        icon: FilterIcon,
+        group: {
+            icon: PlusIcon as unknown as ComponentType<Record<string, unknown>>,
+            name: "transform"
+        },
+        icon: FilterIcon as unknown as ComponentType<Record<string, unknown>>,
         id: "filter",
         label: "Filter",
         sourceNode: true,
         targetNode: true
     }, {
-        category: {
-            icon: PlusIcon,
-            name: "transform"
-        },
         defaultData: {
             name: "Join"
         } as JoinNodeData,
-        icon: JoinOperatorIcon,
+        description: "Merge rows from two datasets with matching keys or columns.",
+        group: {
+            icon: PlusIcon as unknown as ComponentType<Record<string, unknown>>,
+            name: "transform"
+        },
+        icon: JoinOperatorIcon as unknown as ComponentType<Record<string, unknown>>,
         id: "join",
         label: "Join",
         sourceNode: true,
         targetNode: true
     }, {
-        category: {
-            icon: PlusIcon,
-            name: "transform"
-        },
         defaultData: {
             name: "Select"
         } as SelectNodeData,
-        icon: CheckIcon,
+        description: "Select fields to include, exclude, or rename.",
+        group: {
+            icon: PlusIcon as unknown as ComponentType<Record<string, unknown>>,
+            name: "transform"
+        },
+        icon: CheckIcon as unknown as ComponentType<Record<string, unknown>>,
         id: "select",
         label: "Select",
         sourceNode: true,
         targetNode: true
     }, {
-        category: {
-            icon: PlusIcon,
-            name: "transform"
-        },
         defaultData: {
             name: "Sort"
         } as SortNodeData,
-        icon: SortUnsortedIcon,
+        description: "Sort rows based on the values in columns.",
+        group: {
+            icon: PlusIcon as unknown as ComponentType<Record<string, unknown>>,
+            name: "transform"
+        },
+        icon: SortUnsortedIcon as unknown as ComponentType<Record<string, unknown>>,
         id: "sort",
         label: "Sort",
         sourceNode: true,
         targetNode: true
     }, {
-        category: {
-            icon: PlusIcon,
+        defaultData: { name: "Transform" },
+        group: {
+            icon: PlusIcon as unknown as ComponentType<Record<string, unknown>>,
             name: "transform"
         },
-        defaultData: { name: "Transform" },
-        icon: PlusIcon,
+        icon: PlusIcon as unknown as ComponentType<Record<string, unknown>>,
         id: "transform",
         label: "Transform",
         sourceNode: true,
         targetNode: true
     }, {
-        category: {
-            icon: TableLightningIcon,
+        defaultData: { name: "Output" },
+        group: {
+            icon: TableLightningIcon as unknown as ComponentType<Record<string, unknown>>,
             name: "output"
         },
-        defaultData: { name: "Output" },
-        icon: TableLightningIcon,
+        icon: TableLightningIcon as unknown as ComponentType<Record<string, unknown>>,
         id: "output",
         label: "Output",
         sourceNode: false,
         targetNode: true
-    }];
+    }]
 
-export const getNodeTypesByCategory = (categoryName: string): NodeTypeConfig[] => {
-    return nodeTypes.filter(nodeType => nodeType.category.name === categoryName);
-};
+export const getNodeTypeById = (id: string): TypeConfig | undefined => {
+    return types.find(type => type.id === id)
+}
 
-export const getNodeTypeById = (id: string): NodeTypeConfig | undefined => {
-    return nodeTypes.find(nodeType => nodeType.id === id);
-};
+export const getNodeTypesByGroup = (groupName: string): TypeConfig[] => {
+    return types.filter(type => type.group.name === groupName)
+}
