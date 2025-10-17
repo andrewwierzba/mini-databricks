@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { Navigation } from "@/components/ui/patterns/navigation"
-import { Workspace } from "@/components/ui/patterns/workspace-browser"
 import { Assistant } from "@/components/ui/patterns/assistant"
 
 export default function Home() {
@@ -12,12 +11,11 @@ export default function Home() {
 		<div className="flex flex-col h-full">
 			<Navigation onOpenAssistant={() => setShowAssistant(true)} />
 			<div className="bg-(--du-bois-color-background-primary) border-(--du-bois-color-border) border rounded-sm flex font-sans h-full">
-				<Workspace />
-				<div className="w-full">
-					Mini Databricks
+				<div className="p-6 w-full">
+					<h1 className="text-4xl font-medium text-center w-full">Mini Databricks</h1>
 				</div>
 				{showAssistant && <Assistant onClose={() => setShowAssistant(false)} />}
 			</div>
 		</div>
-	);
+	)
 }
