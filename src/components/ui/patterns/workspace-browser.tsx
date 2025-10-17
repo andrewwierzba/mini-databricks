@@ -83,7 +83,7 @@ export function Workspace() {
                 <div className="flex flex-col gap-1 p-1">
                     <Button
                         aria-label="view-query-editor"
-                        className="rounded-sm"
+                        className="rounded-sm h-8 w-8"
                         size="icon"
                         variant="ghost"
                     >
@@ -96,7 +96,7 @@ export function Workspace() {
                         <TooltipTrigger>
                             <Button
                                 aria-label="view-file-browser"
-                                className="rounded-sm"
+                                className="rounded-sm h-8 w-8"
                                 size="icon"
                                 variant="ghost"
                                 onClick={() => setShowFileBrowser(!showFileBrowser)}
@@ -116,7 +116,7 @@ export function Workspace() {
                         <TooltipTrigger>
                             <Button
                                 aria-label="view-catalog"
-                                className="rounded-sm"
+                                className="rounded-sm h-8 w-8"
                                 size="icon"
                                 variant="ghost"
                             >
