@@ -141,6 +141,7 @@ export function FileEditor() {
 	const [cursorPosition, setCursorPosition] = useState({ column: 1, line: 1 })
 	const [indentSize, setIndentSize] = useState<IndentSize>(4)
 	const [indentType, setIndentType] = useState<IndentType>("spaces")
+	const [selectedLength, setSelectedLength] = useState(0)
 
 	const [fileTabs, setFileTabs] = useState<FileTab[]>([
 		{
@@ -170,12 +171,14 @@ export function FileEditor() {
 	const updateCursorPosition = (textarea: HTMLTextAreaElement) => {
 		const content = textarea.value
 		const cursorPos = textarea.selectionStart
+		const selectionEnd = textarea.selectionEnd
 		const textBeforeCursor = content.substring(0, cursorPos)
 		const lines = textBeforeCursor.split('\n')
 		const line = lines.length
 		const column = lines[lines.length - 1].length + 1
 
 		setCursorPosition({ column, line })
+		setSelectedLength(selectionEnd - cursorPos)
 	}
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -236,61 +239,40 @@ export function FileEditor() {
 					value={fileTabs[activeTabIndex].content}
 				/>
 			</div>
-			<div aria-label="Editor status bar" className="border-t border-(--du-bois-color-border) flex text-xs justify-end w-full">
-				<div aria-label="Editor line and column position" className="hover:bg-accent px-2 py-1">
-					Ln {cursorPosition.line}, Col {cursorPosition.column}
+			<div aria-label="editor-bar" className="border-t border-(--du-bois-color-border) flex text-xs justify-end w-full">
+				<div aria-label="editor-line-column-position" className="hover:bg-accent px-2 py-1">
+					Ln {cursorPosition.line}, Col {cursorPosition.column}{selectedLength > 0 && ` (${selectedLength} selected)`}
 				</div>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<div
-							aria-label="Editor indentation settings"
-							className="hover:bg-accent cursor-pointer px-2 py-1"
-						>
-							{indentType === "spaces" ? "Spaces" : "Tabs"}: {indentSize}
-						</div>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						<DropdownMenuLabel className="text-[13px]">Indent type</DropdownMenuLabel>
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<DropdownMenuRadioGroup value={indentType}>
-									<DropdownMenuRadioItem className="text-[13px]" value="spaces">Spaces</DropdownMenuRadioItem>
-								</DropdownMenuRadioGroup>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end" className="text-[13px]" side="right">
-								<DropdownMenuLabel className="text-[13px]">Indent size</DropdownMenuLabel>
-								<DropdownMenuRadioGroup value={String(indentSize)} onValueChange={(value) => {
-									setIndentType("spaces")
-									setIndentSize(Number(value) as IndentSize)
-								}}>
-									<DropdownMenuRadioItem className="text-[13px]" value="2">2</DropdownMenuRadioItem>
-									<DropdownMenuRadioItem className="text-[13px]" value="4">4</DropdownMenuRadioItem>
-								</DropdownMenuRadioGroup>
-							</DropdownMenuContent>
-						</DropdownMenu>
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<DropdownMenuRadioGroup value={indentType}>
-									<DropdownMenuRadioItem className="text-[13px]" value="tabs">Tabs</DropdownMenuRadioItem>
-								</DropdownMenuRadioGroup>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end" className="text-[13px]" side="right">
-								<DropdownMenuLabel>Indent size</DropdownMenuLabel>
-								<DropdownMenuRadioGroup value={String(indentSize)} onValueChange={(value) => {
-									setIndentType("tabs")
-									setIndentSize(Number(value) as IndentSize)
-								}}>
-									<DropdownMenuRadioItem value="2">2</DropdownMenuRadioItem>
-									<DropdownMenuRadioItem value="4">4</DropdownMenuRadioItem>
-								</DropdownMenuRadioGroup>
-							</DropdownMenuContent>
-						</DropdownMenu>
-					</DropdownMenuContent>
-				</DropdownMenu>
-				<div aria-label="Editor file type" className="hover:bg-accent px-2 py-1">
+				<div
+                    aria-label="editor-indentation"
+                    className="hover:bg-accent cursor-pointer px-2 py-1"
+                >
+                    {indentType === "spaces" ? "Spaces" : "Tabs"}: {indentSize}
+                </div>
+				<div aria-label="editor-file-type" className="hover:bg-accent px-2 py-1">
 					{getFileType(fileTabs[activeTabIndex].filename)}
 				</div>
 			</div>
+            <div aria-label="query" className="border-t border-(--du-bois-color-border) flex flex-col text-[13px] min-h-[180px]">
+                <div aria-label="" className="flex gap-2 px-2 py-1">
+                    <div aria-label="" className="flex">
+                        <div className="items-center hover:bg-accent rounded-sm flex px-2 py-1 relative after:bg-blue-600 after:-bottom-1 after:content-[''] after:h-[2px] after:left-0 after:absolute after:right-0">Results</div>
+                        <div className="items-center hover:bg-accent rounded-sm flex px-2 py-1">Charts</div>
+                    </div>
+                    <div className="flex flex-1 justify-end">
+                        <Button
+                            aria-label="run-query"
+                            className="rounded-sm text-[13px] h-8 px-3"
+                            size="sm"
+                        >
+                            Run ⌘ ⏎
+                        </Button>
+                    </div>
+                </div>
+                <div aria-label="query-result" className="bg-(--du-bois-color-background-secondary) border-t border-(--du-bois-color-border) p-4">
+                    Click <span className="bg-gray-200 rounded-sm px-1 py-[2px]">Run</span> to execute your query.
+                </div>
+            </div>
 		</div>
 	)
 }
