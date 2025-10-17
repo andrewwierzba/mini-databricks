@@ -3,6 +3,7 @@
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
@@ -44,7 +45,7 @@ export function Assistant({ onClose }: { onClose: () => void }) {
     }
     
     return (
-        <div aria-label="assistant" className="border-l border-(--du-bois-color-border) flex flex-col h-full p-2 w-[320px]">
+        <div aria-label="assistant" className="border-l border-(--du-bois-color-border) flex flex-col h-full max-w-[320px] min-w-[320px] p-2 w-full">
             <div className="items-center flex justify-between w-full">
                 <Typography>
                     <Text bold>Assistant</Text>
@@ -161,34 +162,54 @@ export function Assistant({ onClose }: { onClose: () => void }) {
                     placeholder="@ for objects, / for commands, ↑↓ for history"
                     value={inputValue}
                 />
-                <Tooltip>
-                    <TooltipTrigger className="bottom-2 left-2 absolute">
-                        <Button
-                            aria-label="close-assistant"
-                            className="rounded-sm h-6 w-6"
-                            size="icon"
-                            variant="ghost"
-                        >
-                            <AtIcon />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <Typography>
-                            <Paragraph style={{ color: 'var(--du-bois-text-white)' }}>
-                                Reference assets
-                            </Paragraph>
-                        </Typography>
-                    </TooltipContent>
-                </Tooltip>
-                <Button
-                    aria-label="send-assistant"
-                    className="rounded-sm bottom-2 absolute right-2"
-                    onClick={handleSend}
-                    size="icon"
-                    variant="ghost"
-                >
-                    <SendIcon />
-                </Button>
+                <div className="bottom-2 flex gap-1 left-2 absolute">
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <Button
+                                aria-label="close-assistant"
+                                className="rounded-sm h-6 w-6"
+                                size="icon"
+                                variant="ghost"
+                            >
+                                <AtIcon />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <Typography>
+                                <Paragraph style={{ color: 'var(--du-bois-text-white)' }}>
+                                    Reference assets
+                                </Paragraph>
+                            </Typography>
+                        </TooltipContent>
+                    </Tooltip>
+                    <Select defaultValue="chat">
+                        <SelectTrigger className="rounded-sm shadow-none text-[13px] h-6 px-2" style={{ height: "24px" }}>
+                            <SelectValue placeholder="Mode" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>Switch modes</SelectLabel>
+                                <SelectItem className="text-[13px]" value="agent">
+                                    Agent
+                                </SelectItem>
+                                <SelectItem className="text-[13px]" value="chat">
+                                    Chat
+                                </SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="bottom-2 flex gap-1 absolute right-2">
+                    <Button
+                        aria-label="send-assistant"
+                        className="rounded-sm"
+                        onClick={handleSend}
+                        size="icon"
+                        variant="ghost"
+                    >
+                        <SendIcon />
+                    </Button>
+                </div>
             </div>
             <Typography>
                 <Hint className="text-center w-full">
