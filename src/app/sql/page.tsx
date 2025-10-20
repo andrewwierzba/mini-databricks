@@ -6,7 +6,7 @@ import { Navigation } from "@/components/ui/patterns/navigation"
 import { Workspace } from "@/components/ui/patterns/workspace-browser"
 import { Assistant } from "@/components/ui/patterns/assistant"
 
-export default function Home() {
+export default function Page() {
     const [showAssistant, setShowAssistant] = useState(false)
 
     return (
