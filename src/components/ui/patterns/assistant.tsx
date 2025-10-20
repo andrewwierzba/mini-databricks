@@ -45,7 +45,7 @@ export function Assistant({ onClose }: { onClose: () => void }) {
     }
     
     return (
-        <div aria-label="assistant" className="border-l border-(--du-bois-color-border) flex flex-col h-full max-w-[320px] min-w-[320px] p-2 w-full">
+        <div aria-label="assistant" className="border-l border-(--du-bois-color-border) flex flex-col h-full p-2 w-100">
             <div className="items-center flex justify-between w-full">
                 <Typography>
                     <Text bold>Assistant</Text>
