@@ -48,7 +48,7 @@ export function Assistant({ onClose }: { onClose: () => void }) {
         <div aria-label="assistant" className="border-l border-(--du-bois-color-border) flex flex-col h-full p-2 w-100">
             <div className="items-center flex justify-between w-full">
                 <Typography>
-                    <Text bold>Assistant</Text>
+                    <Text bold className="-top-[2px] relative">Assistant</Text>
                 </Typography>
                 <div className="flex gap-1 justify-end w-full">
                     <Tooltip>
@@ -60,7 +60,7 @@ export function Assistant({ onClose }: { onClose: () => void }) {
                                 size="icon"
                                 variant="ghost"
                             >
-                                <PlusIcon />
+                                <PlusIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -79,7 +79,7 @@ export function Assistant({ onClose }: { onClose: () => void }) {
                                 size="icon"
                                 variant="ghost"
                             >
-                                <GearIcon />
+                                <GearIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -96,7 +96,7 @@ export function Assistant({ onClose }: { onClose: () => void }) {
                         size="icon"
                         variant="ghost"
                     >
-                        <OverflowIcon />
+                        <OverflowIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                     </Button>
                     <Tooltip>
                         <TooltipTrigger>
@@ -107,7 +107,7 @@ export function Assistant({ onClose }: { onClose: () => void }) {
                                 size="icon"
                                 variant="ghost"
                             >
-                                <CloseIcon />
+                                <CloseIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -171,7 +171,7 @@ export function Assistant({ onClose }: { onClose: () => void }) {
                                 size="icon"
                                 variant="ghost"
                             >
-                                <AtIcon />
+                                <AtIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -207,7 +207,7 @@ export function Assistant({ onClose }: { onClose: () => void }) {
                         size="icon"
                         variant="ghost"
                     >
-                        <SendIcon />
+                        <SendIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                     </Button>
                 </div>
             </div>
