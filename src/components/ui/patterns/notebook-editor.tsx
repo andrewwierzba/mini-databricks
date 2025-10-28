@@ -37,7 +37,7 @@ function NotebookCell({ content, id, isActive, metadata, onClick, outputs, type 
 			className="cursor-pointer text-sm relative"
 			onClick={onClick}
 		>
-			<div className={`border rounded-sm ${isActive ? "border-blue-600 border-2" : "border-(--du-bois-color-border)"} bottom-0 left-0 absolute right-0 top-0`} />
+			<div className={`border rounded-sm ${isActive ? "border-blue-600 border-2" : "border-(--du-bois-color-border)"} bottom-0 left-0 pointer-events-none absolute right-0 top-0`} />
 			<div className="flex flex-col gap-2 p-2">
 				<div className="items-center flex justify-between">
 					<Button className="rounded-sm h-6 pl-1.5 pr-3" size="sm">
