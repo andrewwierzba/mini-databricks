@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
-import { CloseIcon, ColumnSplitIcon, FileCodeIcon, Typography } from "@databricks/design-system"
+import { CloseSmallIcon, ColumnSplitIcon, FileCodeIcon, Typography } from "@databricks/design-system"
 
 const { Paragraph, Text } = Typography
 
@@ -51,7 +51,7 @@ export function EditorTab({ isActive = false, label = "Tab", onClick }: EditorTa
 						size="icon"
 						variant="ghost"
 					>
-						<CloseIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+						<CloseSmallIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
 					</Button>
 				</TooltipTrigger>
                 <TooltipContent>
