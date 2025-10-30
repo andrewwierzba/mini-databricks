@@ -76,15 +76,25 @@ function NotebookCell({ content, id, isActive, metadata, onChange, onClick, outp
 							<OverflowIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
 						</Button>
 					</div>
-				</div>
+			</div>
+		<div className="flex">
+			<div
+				aria-label="notebook-cell-line-count"
+				className="text-(--du-bois-color-text-secondary) font-mono text-xs pr-4 text-right"
+			>
+				{content?.split('\n').map((_, index) => (
+					<div key={index}>{index + 1}</div>
+				))}
+			</div>
 			<textarea
 				aria-label="notebook-cell-content"
 				className="flex-1 font-mono text-xs h-full min-h-0 outline-none resize-none whitespace-pre w-full"
 				onChange={(e) => onChange?.(e.target.value)}
-				rows={1}
+				rows={Math.max(1, (content?.split('\n').length || 1))}
 				value={content}
 			/>
-			</div>
+		</div>
+		</div>
 			{outputs && outputs.length > 0 && (
 				<div aria-label="notebook-cell-output" className="border-t border-(--du-bois-color-border) p-2">
 					{outputs.map((output, index) => (
