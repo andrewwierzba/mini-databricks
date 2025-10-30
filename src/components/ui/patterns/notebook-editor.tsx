@@ -22,6 +22,7 @@ interface NotebookCellProps {
 	id?: string
 	isActive?: boolean
 	metadata?: Record<string, unknown>
+	onChange?: (value: string) => void
 	onClick?: () => void
 	outputs?: {
 		content: string
@@ -30,17 +31,17 @@ interface NotebookCellProps {
 	type?: "code" | "markdown"
 }
 
-function NotebookCell({ content, id, isActive, metadata, onClick, outputs, type }: NotebookCellProps) {
+function NotebookCell({ content, id, isActive, metadata, onChange, onClick, outputs, type }: NotebookCellProps) {
 	return (
 		<div
 			aria-label="notebook-cell"
 			className="cursor-pointer text-sm relative"
 			onClick={onClick}
 		>
-			<div className={`border rounded-sm ${isActive ? "border-blue-600 border-2" : "border-(--du-bois-color-border)"} bottom-0 left-0 pointer-events-none absolute right-0 top-0`} />
+			<div className={`border rounded-sm ${isActive ? "border-(--du-bois-color-blue-600) border-2" : "border-(--du-bois-color-border)"} bottom-0 left-0 pointer-events-none absolute right-0 top-0`} />
 			<div className="flex flex-col gap-2 p-2">
 				<div className="items-center flex justify-between">
-					<Button className="rounded-sm h-6 pl-1.5 pr-3" size="sm">
+					<Button className="bg-(--du-bois-color-blue-600) rounded-sm h-6 pl-1.5 pr-3" size="sm">
 						<PlayIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
 						<span>Run cell</span>
 					</Button>
@@ -76,9 +77,13 @@ function NotebookCell({ content, id, isActive, metadata, onClick, outputs, type 
 						</Button>
 					</div>
 				</div>
-				<div aria-label="notebook-cell-content">
-					{content}
-				</div>
+			<textarea
+				aria-label="notebook-cell-content"
+				className="flex-1 font-mono text-xs h-full min-h-0 outline-none resize-none whitespace-pre w-full"
+				onChange={(e) => onChange?.(e.target.value)}
+				rows={1}
+				value={content}
+			/>
 			</div>
 			{outputs && outputs.length > 0 && (
 				<div aria-label="notebook-cell-output" className="border-t border-(--du-bois-color-border) p-2">
@@ -154,6 +159,14 @@ function NotebookMenuBar({ items }: NotebookMenuBarProps) {
 
 export function NotebookEditor() {
 	const [activeCellId, setActiveCellId] = useState<string | null>(null)
+	const [cells, setCells] = useState({
+		"cell-1": "print('Hello, world!')",
+		"cell-2": "%md Hello, world!",
+	})
+
+	const handleCellChange = (cellId: string, value: string) => {
+		setCells(prev => ({ ...prev, [cellId]: value }))
+	}
 
 	return (
 		<div>
@@ -219,9 +232,10 @@ export function NotebookEditor() {
 			/>
 			<div className="flex flex-col gap-4 p-4">
 				<NotebookCell
-					content="print('Hello, world!')"
+					content={cells["cell-1"]}
 					id="cell-1"
 					isActive={activeCellId === "cell-1"}
+					onChange={(value) => handleCellChange("cell-1", value)}
 					onClick={() => setActiveCellId("cell-1")}
 					outputs={[
 						{
@@ -232,9 +246,10 @@ export function NotebookEditor() {
 					type="code"
 				/>
 				<NotebookCell
-					content="%md Hello, world!"
+					content={cells["cell-2"]}
 					id="cell-2"
 					isActive={activeCellId === "cell-2"}
+					onChange={(value) => handleCellChange("cell-2", value)}
 					onClick={() => setActiveCellId("cell-2")}
 					type="markdown"
 					outputs={[
