@@ -1,17 +1,56 @@
 "use client";
 
-import { Copy } from "lucide-react";
 import { toast } from "sonner";
-
-import { Button } from "@/components/ui/button";
 
 export const colors = {
     black: {
-        black: {
+        "black-100": {
             contrast: "white",
-            hex: "#000000",
+            hex: "#0000000D",
             oklch: "oklch(0.000 0.000 0.0)",
-            rgb: "0, 0, 0"
+            rgb: "0, 0, 0, 0.05"
+        },
+        "black-200": {
+            contrast: "white",
+            hex: "#0000001A",
+            oklch: "oklch(0.000 0.000 0.0)",
+            rgb: "0, 0, 0, 0.1"
+        },
+        "black-300": {
+            contrast: "white",
+            hex: "#00000033",
+            oklch: "oklch(0.000 0.000 0.0)",
+            rgb: "0, 0, 0, 0.2"
+        },
+        "black-400": {
+            contrast: "white",
+            hex: "#00000066",
+            oklch: "oklch(0.000 0.000 0.0)",
+            rgb: "0, 0, 0, 0.4"
+        },
+        "black-500": {
+            contrast: "white",
+            hex: "#00000080",
+            oklch: "oklch(0.000 0.000 0.0)",
+            rgb: "0, 0, 0, 0.5"
+        },
+        "black-600": {
+            contrast: "white",
+            hex: "#00000099",
+            oklch: "oklch(0.000 0.000 0.0)",
+            rgb: "0, 0, 0, 0.6"
+        },
+        "black-700": {
+            contrast: "white",
+            hex: "#000000CC",
+            oklch: "oklch(0.000 0.000 0.0)",
+            rgb: "0, 0, 0, 0.8"
+        },
+        "black-800": {
+            contrast: "white",
+            hex: "#000000FF",
+            oklch: "oklch(0.000 0.000 0.0)",
+            rgb: "0, 0, 0, 1.0"
         },
     },
     blue: {
@@ -115,12 +154,6 @@ export const colors = {
         },
     },
     grey: {
-        "grey-050": {
-            contrast: "black",
-            hex: "#f6f7f9",
-            oklch: "oklch(0.974 0.024 169.4)",
-            rgb: "246, 247, 249"
-        },
         "grey-100": {
             contrast: "black",
             hex: "#e8ecf0",
@@ -139,12 +172,6 @@ export const colors = {
             oklch: "oklch(0.840 0.032 215.3)",
             rgb: "192, 205, 216"
         },
-        "grey-350": {
-            contrast: "white",
-            hex: "#92a4b3",
-            oklch: "oklch(0.708 0.040 229.7)",
-            rgb: "146, 164, 179"
-        },
         "grey-400": {
             contrast: "white",
             hex: "#8396a5",
@@ -162,12 +189,6 @@ export const colors = {
             hex: "#445461",
             oklch: "oklch(0.436 0.037 238.4)",
             rgb: "68, 84, 97"
-        },
-        "grey-650": {
-            contrast: "white",
-            hex: "#37444f",
-            oklch: "oklch(0.379 0.032 239.2)",
-            rgb: "55, 68, 79"
         },
         "grey-700": {
             contrast: "white",
@@ -283,11 +304,53 @@ export const colors = {
         },
     },
     white: {
-        white: {
+        "white-100": {
             contrast: "black",
-            hex: "#ffffff",
+            hex: "#ffffff0D",
             oklch: "oklch(0.998 0.026 160.7)",
-            rgb: "255, 255, 255"
+            rgb: "255, 255, 255, 0.05"
+        },
+        "white-200": {
+            contrast: "black",
+            hex: "#ffffff1A",
+            oklch: "oklch(0.998 0.026 160.7)",
+            rgb: "255, 255, 255, 0.1"
+        },
+        "white-300": {
+            contrast: "black",
+            hex: "#ffffff33",
+            oklch: "oklch(0.998 0.026 160.7)",
+            rgb: "255, 255, 255, 0.2"
+        },
+        "white-400": {
+            contrast: "black",
+            hex: "#ffffff66",
+            oklch: "oklch(0.998 0.026 160.7)",
+            rgb: "255, 255, 255, 0.4"
+        },
+        "white-500": {
+            contrast: "black",
+            hex: "#ffffff80",
+            oklch: "oklch(0.998 0.026 160.7)",
+            rgb: "255, 255, 255, 0.5"
+        },
+        "white-600": {
+            contrast: "black",
+            hex: "#ffffff99",
+            oklch: "oklch(0.998 0.026 160.7)",
+            rgb: "255, 255, 255, 0.6"
+        },
+        "white-700": {
+            contrast: "black",
+            hex: "#ffffffCC",
+            oklch: "oklch(0.998 0.026 160.7)",
+            rgb: "255, 255, 255, 0.8"
+        },
+        "white-800": {
+            contrast: "black",
+            hex: "#ffffffff",
+            oklch: "oklch(0.998 0.026 160.7)",
+            rgb: "255, 255, 255, 1.0"
         }
     }
 };
@@ -314,27 +377,29 @@ export default function Page() {
                     <div key={groupName} style={{ alignItems: "center", display: "flex", gap: "8px" }}>
                         <h2 style={{ fontWeight: 500, minWidth: "72px", textTransform: "capitalize" }}>{groupName}</h2>
                         <div style={{ display: "flex", gap: "4px" }}>
-                            {Object.entries(group).map(([colorName, colorData], index) => {
-                                const contrastColor = colorData.contrast as string;
-                                const contrastHex = (colors[contrastColor as keyof typeof colors] as any)?.[contrastColor]?.hex;
-                                return (
-                                    <div
-                                        aria-label="color"
-                                        key={colorName}
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(colorData.hex);
-                                            toast.success(`Copied ${colorData.hex}`);
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.outline = "2px solid #26251e";
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.outline = "none";
-                                        }}
-                                        style={{ backgroundColor: colorData.hex, color: contrastHex, height: "48px", minWidth: "80px" }}
-                                    />
-                                );
-                            })}
+                            {Object.entries(group).map(([colorName, colorData]) => (
+                                <div
+                                    aria-label="color"
+                                    key={colorName}
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(colorData.hex);
+                                        toast.success(`Copied ${colorData.hex}`);
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.outline = "2px solid #26251e";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.outline = "none";
+                                    }}
+                                    style={{
+                                        backgroundImage: `linear-gradient(${colorData.hex}, ${colorData.hex}), linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.1)), linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.1))`,
+                                        backgroundSize: "100% 100%, 16px 16px, 16px 16px",
+                                        backgroundPosition: "0 0, 0 0, 8px 8px",
+                                        height: "48px",
+                                        minWidth: "80px"
+                                    }}
+                                />
+                            ))}
                         </div>
                     </div>
                 ))}
