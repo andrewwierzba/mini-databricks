@@ -96,18 +96,10 @@ export default function Page() {
                             navigator.clipboard.writeText(color.hex);
                             toast.success(`Copied ${color.hex}`);
                         }}
-                        onMouseEnter={(e) => {
-                            const hex = colors[color.color as keyof typeof colors]?.hex;
-                            if (hex) e.currentTarget.style.backgroundColor = `${hex}19`;
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = 'transparent';
-                        }}
                         size="icon"
-                        style={{ color: colors[color.color as keyof typeof colors]?.hex }}
-                        variant="ghost"
+                        variant="outline"
                     >
-                        <Copy size={16} />
+                        <Copy />
                     </Button>
                 </div>
             ))}
