@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { DM_Sans, Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
+
+const dmSans = DM_Sans({
+	variable: "--font-dm-sans",
+	subsets: ["latin"],
+});
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -24,10 +30,11 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`${geistSans.variable} ${geistMono.variable} flex flex-col antialiased h-screen`}>
+			<body className={`${dmSans.variable} ${geistSans.variable} ${geistMono.variable} flex flex-col antialiased h-screen`}>
 				<div className="h-full px-2 py-2">
 					{children}
 				</div>
+				<Toaster />
 			</body>
 		</html>
 	);
