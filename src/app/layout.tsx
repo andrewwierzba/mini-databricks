@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { DM_Sans, Geist, Geist_Mono } from "next/font/google";
+import { EB_Garamond, Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const dmSans = DM_Sans({
-	variable: "--font-dm-sans",
+const ebGaramond = EB_Garamond({
+	variable: "--font-eb-garamond",
 	subsets: ["latin"],
 });
 
@@ -30,7 +30,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`${dmSans.variable} ${geistSans.variable} ${geistMono.variable} flex flex-col antialiased h-screen`}>
+			<body className={`${ebGaramond.variable} ${geistSans.variable} ${geistMono.variable} flex flex-col antialiased h-screen`}>
 				<div className="h-full px-2 py-2">
 					{children}
 				</div>
