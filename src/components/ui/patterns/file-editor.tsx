@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
+import { NotebookEditor } from "@/components/ui/patterns/notebook-editor"
+
 import { CloseSmallIcon, ColumnSplitIcon, FileCodeIcon, Typography } from "@databricks/design-system"
 
 const { Paragraph, Text } = Typography
@@ -125,6 +127,7 @@ function getFileType(filename: string): string {
 		js: "JavaScript",
 		jsx: "JavaScript",
 		json: "JSON",
+		ipynb: "Jupyter Notebook",
 		md: "Markdown",
 		py: "Python",
 		sql: "SQL",
@@ -134,6 +137,18 @@ function getFileType(filename: string): string {
 	}
     
 	return typeMap[extension || ""] || "Plain Text"
+}
+
+function isNotebookFile(filename: string): boolean {
+	return filename.toLowerCase().endsWith('.ipynb')
+}
+
+function parseNotebook(content: string): NotebookData | null {
+	try {
+		return JSON.parse(content) as NotebookData
+	} catch {
+		return null
+	}
 }
 
 export function FileEditor() {
@@ -160,12 +175,55 @@ export function FileEditor() {
 			content: "# Sample Python\ndef greet(name):\n    print(f'Hello, {name}!')",
 			filename: "script.py",
 		},
+		{
+			content: JSON.stringify({
+				cells: [
+					{
+						id: "cell-1",
+						type: "markdown",
+						source: "# Sample Notebook\n\nThis is a Jupyter-style notebook with interactive cells.",
+					},
+					{
+						id: "cell-2",
+						type: "code",
+						source: "# Sample Python code\nimport pandas as pd\nimport numpy as np\n\nprint('Hello from notebook!')",
+						execution_count: null,
+						outputs: [],
+					},
+					{
+						id: "cell-3",
+						type: "code",
+						source: "# Calculate something\ndata = [1, 2, 3, 4, 5]\nresult = sum(data)\nprint(f'Sum: {result}')",
+						execution_count: null,
+						outputs: [],
+					},
+				],
+				metadata: {
+					kernelspec: {
+						display_name: "Python 3",
+						language: "python",
+						name: "python3",
+					},
+					language_info: {
+						name: "python",
+						version: "3.11.0",
+					},
+				},
+				nbformat: 4,
+				nbformat_minor: 4,
+			}),
+			filename: "analysis.ipynb",
+		},
 	])
 
 	const updateFileContent = (index: number, newContent: string) => {
 		setFileTabs((prev) =>
 			prev.map((tab, i) => (i === index ? { ...tab, content: newContent } : tab))
 		)
+	}
+
+	const updateNotebookContent = (index: number, notebook: NotebookData) => {
+		updateFileContent(index, JSON.stringify(notebook, null, 2))
 	}
 
 	const updateCursorPosition = (textarea: HTMLTextAreaElement) => {
@@ -206,6 +264,10 @@ export function FileEditor() {
 		}
 	}
 
+	const currentFile = fileTabs[activeTabIndex]
+	const isNotebook = isNotebookFile(currentFile.filename)
+	const notebookData = isNotebook ? parseNotebook(currentFile.content) : null
+
 	return (
 		<div aria-label="editor" className="flex flex-col h-full w-full">
 			<EditorTabs
@@ -213,66 +275,72 @@ export function FileEditor() {
 				onTabClick={setActiveTabIndex}
 				tabs={fileTabs.map((tab) => tab.filename)}
 			/>
-			<div
-				aria-label="editor-content"
-				className="bg-(--du-bois-color-background-primary) flex flex-1 font-mono text-[13px] h-full overflow-hidden p-4"
-			>
-                <div
-                    aria-label="editor-line-count"
-                    className="text-(--du-bois-color-text-secondary) pr-4 text-right"
-                >
-                    {fileTabs[activeTabIndex].content.split('\n').map((_, index) => (
-                        <div key={index}>{index + 1}</div>
-                    ))}
-                </div>
-                <textarea
-					aria-label="editor-content-value"
-					className="flex-1 h-full min-h-0 outline-none resize-none whitespace-pre w-full"
-					onChange={(e) => {
-                        updateCursorPosition(e.target)
-						updateFileContent(activeTabIndex, e.target.value)
-					}}
-					onClick={(e) => updateCursorPosition(e.currentTarget)}
-					onKeyDown={handleKeyDown}
-					onKeyUp={(e) => updateCursorPosition(e.currentTarget)}
-					onSelect={(e) => updateCursorPosition(e.currentTarget)}
-					value={fileTabs[activeTabIndex].content}
-				/>
-			</div>
+			{isNotebook && notebookData ? (
+				<NotebookEditor />
+			) : (
+				<>
+					<div
+						aria-label="editor-content"
+						className="bg-(--du-bois-color-background-primary) flex flex-1 font-mono text-[13px] h-full overflow-hidden p-4"
+					>
+						<div
+							aria-label="editor-line-count"
+							className="text-(--du-bois-color-text-secondary) pr-4 text-right"
+						>
+							{fileTabs[activeTabIndex].content.split('\n').map((_, index) => (
+								<div key={index}>{index + 1}</div>
+							))}
+						</div>
+						<textarea
+							aria-label="editor-content-value"
+							className="flex-1 h-full min-h-0 outline-none resize-none whitespace-pre w-full"
+							onChange={(e) => {
+								updateCursorPosition(e.target)
+								updateFileContent(activeTabIndex, e.target.value)
+							}}
+							onClick={(e) => updateCursorPosition(e.currentTarget)}
+							onKeyDown={handleKeyDown}
+							onKeyUp={(e) => updateCursorPosition(e.currentTarget)}
+							onSelect={(e) => updateCursorPosition(e.currentTarget)}
+							value={fileTabs[activeTabIndex].content}
+						/>
+					</div>
+				</>
+			)}
 			<div aria-label="editor-bar" className="border-t border-(--du-bois-color-border) flex text-xs justify-end w-full">
 				<div aria-label="editor-line-column-position" className="hover:bg-accent px-2 py-1">
 					Ln {cursorPosition.line}, Col {cursorPosition.column}{selectedLength > 0 && ` (${selectedLength} selected)`}
 				</div>
 				<div
-                    aria-label="editor-indentation"
-                    className="hover:bg-accent cursor-pointer px-2 py-1"
-                >
-                    {indentType === "spaces" ? "Spaces" : "Tabs"}: {indentSize}
-                </div>
+					aria-label="editor-indentation"
+					className="hover:bg-accent cursor-pointer px-2 py-1"
+				>
+					{indentType === "spaces" ? "Spaces" : "Tabs"}: {indentSize}
+				</div>
 				<div aria-label="editor-file-type" className="hover:bg-accent px-2 py-1">
 					{getFileType(fileTabs[activeTabIndex].filename)}
 				</div>
 			</div>
-            <div aria-label="query" className="border-t border-(--du-bois-color-border) flex flex-col text-[13px] min-h-[180px]">
-                <div aria-label="" className="flex gap-2 px-2 py-1">
-                    <div aria-label="" className="flex">
-                        <div className="items-center hover:bg-accent rounded-sm flex px-2 py-1 relative after:bg-blue-600 after:-bottom-1 after:content-[''] after:h-[2px] after:left-0 after:absolute after:right-0">Results</div>
-                        <div className="items-center hover:bg-accent rounded-sm flex px-2 py-1">Charts</div>
-                    </div>
-                    <div className="flex flex-1 justify-end">
-                        <Button
-                            aria-label="run-query"
-                            className="rounded-sm text-[13px] h-8 px-3"
-                            size="sm"
-                        >
-                            Run ⌘ ⏎
-                        </Button>
-                    </div>
-                </div>
-                <div aria-label="query-result" className="bg-(--du-bois-color-background-secondary) border-t border-(--du-bois-color-border) p-4">
-                    Click <span className="bg-gray-200 rounded-sm px-1 py-[2px]">Run</span> to execute your query.
-                </div>
-            </div>
+			<div aria-label="query" className="border-t border-(--du-bois-color-border) flex flex-col text-[13px] min-h-[180px]">
+				<div aria-label="" className="flex gap-2 px-2 py-1">
+					<div aria-label="" className="flex">
+						<div className="items-center hover:bg-accent rounded-sm flex px-2 py-1 relative after:bg-(--du-bois-color-blue-600) after:-bottom-1 after:content-[''] after:h-[2px] after:left-0 after:absolute after:right-0">Results</div>
+						<div className="items-center hover:bg-accent rounded-sm flex px-2 py-1">Charts</div>
+					</div>
+					<div className="flex flex-1 justify-end">
+						<Button
+							aria-label="run-query"
+							className="rounded-sm text-[13px] h-8 px-3"
+							size="sm"
+						>
+							Run ⌘ ⏎
+						</Button>
+					</div>
+				</div>
+				<div aria-label="query-result" className="bg-(--du-bois-color-background-secondary) border-t border-(--du-bois-color-border) p-4">
+					Click <span className="bg-gray-200 rounded-sm px-1 py-[2px]">Run</span> to execute your query.
+				</div>
+			</div>
 		</div>
 	)
 }
