@@ -67,6 +67,17 @@ export function JoinNodeConfig({ nodeId }: JoinNodeConfigProps) {
         addJoinCondition(newCondition)
     }
 
+    const parseSample = (sample: string) => {
+        return sample
+            .trim()
+            .split('\n')
+            .map(line => line.trim())
+            .filter(line => line.length > 0)
+            .map(line => line.split(','));
+    };
+
+    console.log("Parsed sample data:", parseSample(joinData?.input?.sample || ""));
+
     return (
         <div className="flex flex-col gap-3">
             {/* Heading */}
@@ -282,11 +293,12 @@ export function JoinNodeConfig({ nodeId }: JoinNodeConfigProps) {
             </div>
 
             {/* Preview summary */}
-            {joinData?.dataPreview !== undefined && (
+            {joinData?.input?.sample !== undefined &&
+             joinData?.output?.sample !== undefined && (
                 <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
                     <span className="font-medium">Output preview:</span>
                     <span>
-                        {joinData.dataPreview?.length || 0} of {joinData.dataPreview?.length} rows
+                        Keep {parseSample(joinData?.output?.sample).length || 0} of {parseSample(joinData?.input?.sample).length} rows
                     </span>
                 </div>
             )}

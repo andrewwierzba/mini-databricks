@@ -31,6 +31,20 @@ export interface Column {
 }
 
 /* ========================================================================
+   Flow Types (supported in all nodes)
+======================================================================== */
+
+export interface Input {
+    columns: Column[]
+    sample?: Record<string, unknown>[]
+}
+
+export interface Output {
+    columns: Column[]
+    sample?: Record<string, unknown>[]
+}
+
+/* ========================================================================
    Logical Operators (supported in all nodes)
 ======================================================================== */
 
@@ -145,11 +159,12 @@ export interface JoinCondition {
 export interface JoinNodeData {
     availableColumns?: string[]
     conditions: JoinCondition[]
+    input?: Input
     joinType: JoinType
     leftTableAlias?: string
     name: string
     nodeType: "join"
-    outputColumns?: SelectColumn[]
+    output?: Output
     rightTableAlias?: string
 }
 
@@ -187,8 +202,10 @@ export interface SelectColumn {
 export interface SelectNodeData {
     availableColumns?: string[]
     columns: SelectColumn[]
+    input?: Input
     name: string
     nodeType: "select"
+    output?: Output
 }
 
 /* ========================================================================

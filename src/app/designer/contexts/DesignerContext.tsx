@@ -142,11 +142,79 @@ const createDefaultNodes = (): { nodes: Node[], edges: Edge[] } => {
                     operator: "=" as const,
                     rightColumn: "id",
                 }],
+                input: {
+                    columns: [{
+                        name: "id",
+                        type: "string",
+                    }, {
+                        name: "agent_id",
+                        type: "string",
+                    }, {
+                        name: "close_date",
+                        type: "datetime",
+                    }, {
+                        name: "created_at",
+                        type: "datetime",
+                    }, {
+                        name: "customer_id",
+                        type: "string",
+                    }, {
+                        name: "open_date",
+                        type: "datetime",
+                    }, {
+                        name: "status",
+                        type: "string",
+                    }, {
+                        name: "updated_at",
+                        type: "datetime",
+                    }],
+                    sample: `
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                    `
+                },
                 joinType: "inner" as const,
                 label: joinNodeConfig.label,
                 leftTableAlias: "customer_cases",
                 name: "join_1",
                 nodeType: "join",
+                output: {
+                    columns: [{
+                        name: "id",
+                        type: "string",
+                    }, {
+                        name: "agent_id",
+                        type: "string",
+                    }, {
+                        name: "close_date",
+                        type: "datetime",
+                    }, {
+                        name: "created_at",
+                        type: "datetime",
+                    }, {
+                        name: "customer_id",
+                        type: "string",
+                    }, {
+                        name: "open_date",
+                        type: "datetime",
+                    }, {
+                        name: "status",
+                        type: "string",
+                    }, {
+                        name: "updated_at",
+                        type: "datetime",
+                    }],
+                    sample: `
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                    `
+                },
                 rightTableAlias: "customers"
             },
             id: "join-1",
@@ -186,11 +254,79 @@ const createDefaultNodes = (): { nodes: Node[], edges: Edge[] } => {
                     operator: "=" as const,
                     rightColumn: "id",
                 }],
+                input: {
+                    columns: [{
+                        name: "id",
+                        type: "string",
+                    }, {
+                        name: "agent_id",
+                        type: "string",
+                    }, {
+                        name: "close_date",
+                        type: "datetime",
+                    }, {
+                        name: "created_at",
+                        type: "datetime",
+                    }, {
+                        name: "customer_id",
+                        type: "string",
+                    }, {
+                        name: "open_date",
+                        type: "datetime",
+                    }, {
+                        name: "status",
+                        type: "string",
+                    }, {
+                        name: "updated_at",
+                        type: "datetime",
+                    }],
+                    sample: `
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                    `
+                },
                 joinType: "inner" as const,
                 label: joinNodeConfig.label,
                 leftTableAlias: "join_1",
                 name: "join_2",
                 nodeType: "join",
+                output: {
+                    columns: [{
+                        name: "id",
+                        type: "string",
+                    }, {
+                        name: "agent_id",
+                        type: "string",
+                    }, {
+                        name: "close_date",
+                        type: "datetime",
+                    }, {
+                        name: "created_at",
+                        type: "datetime",
+                    }, {
+                        name: "customer_id",
+                        type: "string",
+                    }, {
+                        name: "open_date",
+                        type: "datetime",
+                    }, {
+                        name: "status",
+                        type: "string",
+                    }, {
+                        name: "updated_at",
+                        type: "datetime",
+                    }],
+                    sample: `
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                        1,2,3,4,5,6,7,2025-01-01T23:59:59
+                    `
+                },
                 rightTableAlias: "agents"
             },
             id: "join-2",

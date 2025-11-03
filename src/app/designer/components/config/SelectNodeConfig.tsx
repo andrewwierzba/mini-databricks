@@ -23,7 +23,11 @@ import {
 import { Typography } from "@databricks/design-system"
 
 import { useNodeConfiguration } from "@/app/designer/hooks/useNodeConfiguration"
-import { ColumnType, SelectNodeData } from "@/app/designer/types/nodes"
+import {
+    getNodeTypeById,
+    ColumnType,
+    SelectNodeData
+} from "@/app/designer/types/nodes"
 
 const { Paragraph, Text } = Typography
 
@@ -38,6 +42,9 @@ export function SelectNodeConfig({ nodeId }: SelectNodeConfigProps) {
         renameSelectColumn,
         updateSelectColumns
     } = useNodeConfiguration(nodeId)
+
+    const nodeTypeConfig = getNodeTypeById("select")
+    const description = nodeTypeConfig?.description || ""
 
     const selectData = nodeData as SelectNodeData | undefined
     const columns = selectData?.columns || []
@@ -60,14 +67,16 @@ export function SelectNodeConfig({ nodeId }: SelectNodeConfigProps) {
 
     return (
         <div className="flex flex-col gap-3">
-            {/* Header */}
+            {/* Heading */}
             <div>
                 <Typography>
-                    <Text className="font-medium text-sm">Select Columns</Text>
+                    <Text style={{ fontWeight: 600 }}>
+                        Select columns
+                    </Text>
                 </Typography>
                 <Typography>
-                    <Paragraph className="text-gray-600 text-xs">
-                        Select fields to include, exclude, or rename
+                    <Paragraph style={{ color: "var(--color-gray-600)" }}>
+                        {description}
                     </Paragraph>
                 </Typography>
             </div>
@@ -147,12 +156,13 @@ export function SelectNodeConfig({ nodeId }: SelectNodeConfigProps) {
                 </Table>
             </div>
 
-            {/* Preview Summary */}
-            {selectData?.recordCount !== undefined && (
+            {/* Preview summary */}
+            {selectData?.input?.sample !== undefined &&
+             selectData?.output?.sample !== undefined && (
                 <div className="bg-gray-100 rounded-sm text-gray-600 flex text-xs gap-2 justify-between p-2">
-                    <span className="font-medium">Preview:</span>
+                    <span className="font-medium">Output preview:</span>
                     <span>
-                        {selectData.previewData?.length || 0} of {selectData.recordCount} rows
+                        Keep {parseSample(selectData?.output?.sample).length || 0} of {parseSample(selectData?.input?.sample).length} rows
                     </span>
                 </div>
             )}
