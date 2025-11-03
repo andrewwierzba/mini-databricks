@@ -170,7 +170,7 @@ function Panel({
                 {allowDragResize && (
                     <div
                         aria-label="handle"
-                        className={`hover:bg-blue-600/20 ${handleClass} absolute transition-colors`}
+                        className={`hover:bg-sky-600/20 ${handleClass} absolute transition-colors`}
                         onMouseDown={handleMouseDown}
                     />
                 )}
