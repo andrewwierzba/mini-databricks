@@ -4,105 +4,90 @@ import { useState, useRef } from "react"
 
 import { cn } from "@/lib/utils"
 
-import { GridDashIcon, CheckCircleIcon } from "@databricks/design-system"
+import { CheckCircleIcon, GridDashIcon, ZoomInIcon, ZoomOutIcon, ZoomToFitIcon } from "@databricks/design-system"
 
+import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 
+interface Edge {
+    id: string
+    source: number
+    target: number
+}
+
+interface Node {
+    icon?: React.ReactNode
+    id: number
+    name: string
+    x: number
+    y: number
+}
+
+type EdgePath = 
+    | { type: 'line'; x1: number; y1: number; x2: number; y2: number }
+    | { type: 'curve'; d: string }
+    | null
+
 export function Graph({ className }: { className?: string }) {
-    const [selectedSteps, setSelectedSteps] = useState<Set<number>>(new Set())
-    const [selectionBox, setSelectionBox] = useState<{ startX: number; startY: number; endX: number; endY: number } | null>(null)
-    const [isDragging, setIsDragging] = useState(false)
     const graphRef = useRef<HTMLDivElement>(null)
-    const stepRef = useRef<HTMLDivElement>(null)
+    const nodeRefs = useRef<Map<number, HTMLDivElement>>(new Map())
+    const [zoom, setZoom] = useState(1)
 
-    const stepId = 0 // For now, we have one step with id 0
+    const edges: Edge[] = [
+        { id: "e0-1", source: 0, target: 1 },
+        { id: "e0-2", source: 0, target: 2 },
+        { id: "e1-3", source: 1, target: 3 },
+        { id: "e2-3", source: 2, target: 3 },
+    ]
 
-    // Helper function to check if a rectangle intersects with the selection box
-    const checkIntersection = (rect: DOMRect, box: { startX: number; startY: number; endX: number; endY: number }) => {
-        const boxLeft = Math.min(box.startX, box.endX)
-        const boxRight = Math.max(box.startX, box.endX)
-        const boxTop = Math.min(box.startY, box.endY)
-        const boxBottom = Math.max(box.startY, box.endY)
+    const nodes: Node[] = [
+        { id: 0, name: "Step 001", x: 50, y: 50 },
+        { id: 1, name: "Step 002", x: 340, y: 50 },
+        { id: 2, name: "Step 003", x: 340, y: 217 },
+        { id: 3, name: "Step 004", x: 630, y: 50 },
+    ]
 
-        return !(
-            rect.right < boxLeft ||
-            rect.left > boxRight ||
-            rect.bottom < boxTop ||
-            rect.top > boxBottom
-        )
+    const nodeHeight = 117
+    const nodeWidth = 240
+
+    const handleZoomIn = () => {
+        setZoom(prev => Math.min(prev + 0.1, 2))
     }
 
-    const handleMouseDown = (e: React.MouseEvent) => {
-        // Only start selection if clicking on the graph background, not on a step
-        if (e.target === graphRef.current) {
-            setIsDragging(true)
-            setSelectedSteps(new Set())
-            const rect = graphRef.current.getBoundingClientRect()
-            setSelectionBox({
-                startX: e.clientX - rect.left,
-                startY: e.clientY - rect.top,
-                endX: e.clientX - rect.left,
-                endY: e.clientY - rect.top,
-            })
-        }
+    const handleZoomOut = () => {
+        setZoom(prev => Math.max(prev - 0.1, 0.5))
     }
 
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (isDragging && selectionBox && graphRef.current) {
-            const rect = graphRef.current.getBoundingClientRect()
-            setSelectionBox({
-                ...selectionBox,
-                endX: e.clientX - rect.left,
-                endY: e.clientY - rect.top,
-            })
-        }
+    const handleZoomReset = () => {
+        setZoom(1)
     }
 
-    const handleMouseUp = () => {
-        if (isDragging && selectionBox && graphRef.current && stepRef.current) {
-            // Check if the step intersects with the selection box
-            const graphRect = graphRef.current.getBoundingClientRect()
-            const stepRect = stepRef.current.getBoundingClientRect()
-            
-            // Convert step rect to graph-relative coordinates
-            const relativeStepRect = new DOMRect(
-                stepRect.left - graphRect.left,
-                stepRect.top - graphRect.top,
-                stepRect.width,
-                stepRect.height
-            )
-
-            const newSelectedSteps = new Set<number>()
-            if (checkIntersection(relativeStepRect, selectionBox)) {
-                newSelectedSteps.add(stepId)
-            }
-
-            setSelectedSteps(newSelectedSteps)
-        }
-
-        setIsDragging(false)
-        setSelectionBox(null)
-    }
-
-    const handleStepClick = (e: React.MouseEvent) => {
-        e.stopPropagation()
-        setSelectedSteps(new Set([stepId]))
-    }
-
-    // Calculate selection box dimensions for rendering
-    const getSelectionBoxStyle = () => {
-        if (!selectionBox) return {}
+    const getEdgePath = (edge: Edge): EdgePath => {
+        const sourceNode = nodes.find(n => n.id === edge.source)
+        const targetNode = nodes.find(n => n.id === edge.target)
         
-        const left = Math.min(selectionBox.startX, selectionBox.endX)
-        const top = Math.min(selectionBox.startY, selectionBox.endY)
-        const width = Math.abs(selectionBox.endX - selectionBox.startX)
-        const height = Math.abs(selectionBox.endY - selectionBox.startY)
+        if (!sourceNode || !targetNode) return null
+
+        const x1 = sourceNode.x + nodeWidth
+        const y1 = sourceNode.y + nodeHeight / 2
+        const x2 = targetNode.x
+        const y2 = targetNode.y + nodeHeight / 2
+
+        if (Math.abs(y1 - y2) < 5) {
+            return { type: 'line', x1, y1, x2, y2 }
+        }
+
+        const dx = Math.abs(x2 - x1)
+        const dy = Math.abs(y2 - y1)
+        
+        const cx1 = x1 + Math.min(dx * 0.25, 50)
+        const cy1 = y1 + (y2 > y1 ? dy * 0.3 : -dy * 0.3)
+        const cx2 = x2 - Math.min(dx * 0.25, 50)
+        const cy2 = y2 - (y2 > y1 ? dy * 0.3 : -dy * 0.3)
 
         return {
-            left: `${left}px`,
-            top: `${top}px`,
-            width: `${width}px`,
-            height: `${height}px`,
+            type: 'curve',
+            d: `M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`
         }
     }
 
@@ -110,66 +95,151 @@ export function Graph({ className }: { className?: string }) {
         <div
             aria-label="graph" 
             className={cn("bg-gray-50 overflow-hidden p-2 relative", className)}
-            onMouseDown={handleMouseDown}
-            onMouseLeave={handleMouseUp}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
             ref={graphRef}
         >
-            <div
-                aria-label="graph-step"
-                className="bg-white rounded-sm shadow-xs inline-block w-[300px]"
-                onClick={handleStepClick}
-                ref={stepRef}
-                style={{
-                    left: "50%",
-                    position: "absolute",
-                    top: "50%",
-                    transform: "translate(-50%, -50%)",
-                }}
-            >
-                <div className="items-center flex gap-2 p-2">
-                    <div aria-label="step-icon" className="bg-gray-100 rounded-sm flex h-6 p-1 w-6">
-                        <GridDashIcon
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                            style={{
-                                color: "var(--du-bois-color-text-secondary)",
-                            }}
-                        />
-                    </div>
-                    <span aria-label="step-name" className="text-sm font-semibold w-full">
-                        Step 001
-                    </span>
-                    <div aria-label="step-status" className="flex h-6 p-1 w-6">
-                        <CheckCircleIcon
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                            style={{
-                                color: "var(--du-bois-color-validation-success)",
-                            }}
-                        />
-                    </div>
-                </div>
-                <Separator className="bg-gray-200" />
-                <div aria-label="" className="p-2">
-                    <div className="bg-gray-50 border border-gray-200 border-dashed h-[100px]" />
-                </div>
-
-                <div
-                    className={cn(
-                        "border rounded-sm bottom-0 left-0 absolute right-0 top-0",
-                        selectedSteps.has(stepId) ? "border-(--du-bois-blue-600) border-2" : "border-gray-200"
-                    )}
-                />
+            <div className="bottom-4 flex flex-col gap-2 absolute right-4 z-10">
+                <Button
+                    className="bg-white h-8 w-8"
+                    disabled={zoom === 1}
+                    onClick={handleZoomReset}
+                    size="icon"
+                    variant="outline"
+                >
+                    <ZoomToFitIcon
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                    />
+                </Button>
+                <Button
+                    className="bg-white h-8 w-8"
+                    disabled={zoom >= 2}
+                    onClick={handleZoomIn}
+                    size="icon"
+                    variant="outline"
+                >
+                    <ZoomInIcon
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                    />
+                </Button>
+                <Button
+                    className="bg-white h-8 w-8"
+                    disabled={zoom <= 0.5}
+                    onClick={handleZoomOut}
+                    size="icon"
+                    variant="outline"
+                >
+                    <ZoomOutIcon
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                    />
+                </Button>
             </div>
 
-            {selectionBox && (
-                <div
-                    className="border-(--du-bois-blue-600) border-1 bg-(--du-bois-blue-600)/4 pointer-events-none absolute"
-                    style={getSelectionBoxStyle()}
-                />
-            )}
+            <div
+                className="inset-0 absolute"
+                style={{
+                    transform: `scale(${zoom})`,
+                    transformOrigin: 'top left',
+                    transition: 'transform 0.2s ease-out'
+                }}
+            >
+                <svg className="h-full inset-0 pointer-events-none absolute w-full z-0">
+                    <defs>
+                        <pattern
+                            height="12"
+                            id="dot-grid"
+                            patternUnits="userSpaceOnUse"
+                            width="12"
+                        >
+                            <circle
+                                className="fill-gray-200"
+                                cx="1"
+                                cy="1"
+                                r="1"
+                            />
+                        </pattern>
+                    </defs>
+
+                    <rect
+                        fill="url(#dot-grid)"
+                        height="100%"
+                        width="100%"
+                    />
+
+                    {edges.map((edge) => {
+                        const path = getEdgePath(edge)
+                        if (!path) return null
+
+                        if (path.type === 'line') {
+                            return (
+                                <line
+                                    key={edge.id}
+                                    x1={path.x1}
+                                    y1={path.y1}
+                                    x2={path.x2}
+                                    y2={path.y2}
+                                    className="stroke-gray-400"
+                                    strokeWidth="1"
+                                />
+                            )
+                        }
+
+                        return (
+                            <path
+                                key={edge.id}
+                                d={path.d}
+                                fill="none"
+                                className="stroke-gray-400"
+                                strokeWidth="1"
+                            />
+                        )
+                    })}
+                </svg>
+
+                {nodes.map((node) => (
+                    <div
+                        aria-label="graph-step"
+                        className="bg-white rounded-sm shadow-xs absolute w-[240px] z-1"
+                        key={node.id}
+                        ref={(el) => {
+                            if (el) nodeRefs.current.set(node.id, el)
+                        }}
+                        style={{
+                            left: `${node.x}px`,
+                            top: `${node.y}px`,
+                        }}
+                    >
+                        <div className="items-center flex gap-2 p-2">
+                            <div aria-label="step-icon" className="bg-gray-100 rounded-sm flex h-6 p-1 w-6">
+                                <GridDashIcon
+                                    onPointerEnterCapture={undefined}
+                                    onPointerLeaveCapture={undefined}
+                                    style={{
+                                        color: "var(--du-bois-color-text-secondary)",
+                                    }}
+                                />
+                            </div>
+                            <span aria-label="step-name" className="text-sm font-semibold flex-1 truncate">
+                                {node.name}
+                            </span>
+                            <div aria-label="step-status" className="flex h-6 items-center justify-center w-6">
+                                <CheckCircleIcon
+                                    onPointerEnterCapture={undefined}
+                                    onPointerLeaveCapture={undefined}
+                                    style={{
+                                        color: "var(--du-bois-color-validation-success)",
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <Separator className="bg-gray-200" />
+                        <div aria-label="" className="p-2">
+                            <div className="bg-gray-50 border border-gray-200 border-dashed h-[60px] rounded" />
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }
