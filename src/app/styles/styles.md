@@ -14,14 +14,14 @@
 ### Black
 | Name | Hex | OKLCH | RGB | Usage |
 | ---- | --- | ----- | --- | ----- |
-| <img alt="black-100" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-100 | #0000000D | oklch(0.000 0.000 0.0) | rgba(0, 0, 0, 0.05) | Shadows, overlays, and text. |
-| <img alt="black-200" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-200 | #0000001A | oklch(0.000 0.000 0.0) | rgba(0, 0, 0, 0.1) | Shadows, overlays, and text. |
-| <img alt="black-300" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-300 | #00000033 | oklch(0.000 0.000 0.0) | rgba(0, 0, 0, 0.2) | Shadows, overlays, and text. |
-| <img alt="black-400" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-400 | #00000066 | oklch(0.000 0.000 0.0) | rgba(0, 0, 0, 0.4) | Shadows, overlays, and text. |
-| <img alt="black-500" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-500 | #00000080 | oklch(0.000 0.000 0.0) | rgba(0, 0, 0, 0.5) | Shadows, overlays, and text. |
-| <img alt="black-600" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-600 | #00000099 | oklch(0.000 0.000 0.0) | rgba(0, 0, 0, 0.6) | Shadows, overlays, and text. |
-| <img alt="black-700" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-700 | #000000CC | oklch(0.000 0.000 0.0) | rgba(0, 0, 0, 0.8) | Shadows, overlays, and text. |
-| <img alt="black-800" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-800 | #000000FF | oklch(0.000 0.000 0.0) | rgba(0, 0, 0, 1.0) | Shadows, overlays, and text. |
+| <img alt="black-100" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-100 | #0000000D | oklch(0 0 0) | rgba(0, 0, 0, 0.05) | Shadows, overlays, and text. |
+| <img alt="black-200" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-200 | #0000001A | oklch(0 0 0) | rgba(0, 0, 0, 0.1) | Shadows, overlays, and text. |
+| <img alt="black-300" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-300 | #00000033 | oklch(0 0 0) | rgba(0, 0, 0, 0.2) | Shadows, overlays, and text. |
+| <img alt="black-400" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-400 | #00000066 | oklch(0 0 0) | rgba(0, 0, 0, 0.4) | Shadows, overlays, and text. |
+| <img alt="black-500" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-500 | #00000080 | oklch(0 0 0) | rgba(0, 0, 0, 0.5) | Shadows, overlays, and text. |
+| <img alt="black-600" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-600 | #00000099 | oklch(0 0 0) | rgba(0, 0, 0, 0.6) | Shadows, overlays, and text. |
+| <img alt="black-700" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-700 | #000000CC | oklch(0 0 0) | rgba(0, 0, 0, 0.8) | Shadows, overlays, and text. |
+| <img alt="black-800" src="https://readme-swatches.vercel.app/000000" valign="middle" /> black-800 | #000000FF | oklch(0 0 0) | rgba(0, 0, 0, 1.0) | Shadows, overlays, and text. |
 
 ### Blue
 | Name | Hex | OKLCH | RGB | Usage |
@@ -86,14 +86,14 @@
 ### White
 | Name | Hex | OKLCH | RGB | Usage |
 | ---- | --- | ----- | --- | ----- |
-| <img alt="white-100" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-100 | #ffffff0D | oklch(0.998 0.026 160.7) | rgba(255, 255, 255, 0.05) | Shadows, highlights, and overlays. |
-| <img alt="white-200" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-200 | #ffffff1A | oklch(0.998 0.026 160.7) | rgba(255, 255, 255, 0.1) | Shadows, highlights, and overlays. |
-| <img alt="white-300" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-300 | #ffffff33 | oklch(0.998 0.026 160.7) | rgba(255, 255, 255, 0.2) | Shadows, highlights, and overlays. |
-| <img alt="white-400" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-400 | #ffffff66 | oklch(0.998 0.026 160.7) | rgba(255, 255, 255, 0.4) | Shadows, highlights, and overlays. |
-| <img alt="white-500" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-500 | #ffffff80 | oklch(0.998 0.026 160.7) | rgba(255, 255, 255, 0.5) | Shadows, highlights, and overlays. |
-| <img alt="white-600" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-600 | #ffffff99 | oklch(0.998 0.026 160.7) | rgba(255, 255, 255, 0.6) | Shadows, highlights, and overlays. |
-| <img alt="white-700" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-700 | #ffffffCC | oklch(0.998 0.026 160.7) | rgba(255, 255, 255, 0.8) | Shadows, highlights, and overlays. |
-| <img alt="white-800" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-800 | #ffffffff | oklch(0.998 0.026 160.7) | rgba(255, 255, 255, 1.0) | Shadows, highlights, and text. |
+| <img alt="white-100" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-100 | #ffffff0D | oklch(1 0 0) | rgba(255, 255, 255, 0.05) | Shadows, highlights, and overlays. |
+| <img alt="white-200" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-200 | #ffffff1A | oklch(1 0 0) | rgba(255, 255, 255, 0.1) | Shadows, highlights, and overlays. |
+| <img alt="white-300" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-300 | #ffffff33 | oklch(1 0 0) | rgba(255, 255, 255, 0.2) | Shadows, highlights, and overlays. |
+| <img alt="white-400" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-400 | #ffffff66 | oklch(1 0 0) | rgba(255, 255, 255, 0.4) | Shadows, highlights, and overlays. |
+| <img alt="white-500" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-500 | #ffffff80 | oklch(1 0 0) | rgba(255, 255, 255, 0.5) | Shadows, highlights, and overlays. |
+| <img alt="white-600" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-600 | #ffffff99 | oklch(1 0 0) | rgba(255, 255, 255, 0.6) | Shadows, highlights, and overlays. |
+| <img alt="white-700" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-700 | #ffffffCC | oklch(1 0 0) | rgba(255, 255, 255, 0.8) | Shadows, highlights, and overlays. |
+| <img alt="white-800" src="https://readme-swatches.vercel.app/ffffff" valign="middle" /> white-800 | #ffffffff | oklch(1 0 0) | rgba(255, 255, 255, 1.0) | Shadows, highlights, and text. |
 
 
 ## Typography
