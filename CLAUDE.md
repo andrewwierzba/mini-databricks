@@ -25,3 +25,13 @@
 ## Design System
 - Use the Databricks Design System as the base for all components
 - When a specific component does not exist within the Databricks Design System, fallback to using [ShadCN UI](https://ui.shadcn.com/) components
+
+## Charts
+- Use [ShadCN Charts](https://ui.shadcn.com/charts/area) for all charts
+
+## Icons
+- Do not create custom icons
+- When a specific icon does not exist with the Databricks Design system, fallback to using [Lucide] (https://lucide.dev/) icons
+
+## Style Guide
+- Refer to styles.md
