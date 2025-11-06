@@ -158,7 +158,6 @@ function Panel({
             panelStyle.height = `${size}px`
         }
     }
-    console.log('[Panel] Computed style', { size, panelStyle, isHorizontal })
 
     return (
         <PanelContext.Provider value={{ setShowPanel, showPanel }}>
