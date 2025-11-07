@@ -7,11 +7,9 @@ import { ApplicationShell } from "@/components/ui/patterns/application-shell"
 export default function Page() {
     return (
         <ApplicationShell>
-            <div className="flex h-full overflow-hidden">
+            <div aria-label="editor" className="flex h-full">
                 <Workspace />
-                <div className="w-full">
-                    <FileEditor />
-                </div>
+                <FileEditor />
             </div>
         </ApplicationShell>
     )
