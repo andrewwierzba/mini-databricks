@@ -41,7 +41,7 @@ export function EditorTab({ isActive = false, label = "Tab", onClick }: EditorTa
                     color: 'var(--du-bois-color-text-secondary)'
                 }}
             />
-            <Text className="pointer-events-none">{label}</Text>
+            <Text className="pointer-events-none text-nowrap">{label}</Text>
 			<Tooltip>
 				<TooltipTrigger
 					className={`h-6 w-6 ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
@@ -78,16 +78,18 @@ export function EditorTabs({ activeTabIndex = 0, onTabClick, tabs = ["query-1.sq
 	return (
 		<div
 			aria-label="tabs"
-			className="bg-(--du-bois-color-background-secondary) flex w-full"
+			className="bg-(--du-bois-color-background-secondary) flex"
 		>
-			{tabs.map((tab, index) => (
-				<EditorTab
-					isActive={index === activeTabIndex}
-					key={index}
-					label={tab}
-					onClick={() => onTabClick?.(index)}
-				/>
-			))}
+			<div className="flex overflow-x-scroll">
+				{tabs.map((tab, index) => (
+					<EditorTab
+						isActive={index === activeTabIndex}
+						key={index}
+						label={tab}
+						onClick={() => onTabClick?.(index)}
+					/>
+				))}
+			</div>
             <div className="items-center border-b border-(--du-bois-color-border) flex flex-1 h-full justify-end px-2">
                 <Tooltip>
                     <TooltipTrigger className="h-6 w-6">
@@ -269,7 +271,7 @@ export function FileEditor() {
 	const notebookData = isNotebook ? parseNotebook(currentFile.content) : null
 
 	return (
-		<div aria-label="editor" className="flex flex-col h-full w-full">
+		<div aria-label="editor" className="flex flex-col flex-1 h-full overflow-hidden">
 			<EditorTabs
 				activeTabIndex={activeTabIndex}
 				onTabClick={setActiveTabIndex}
