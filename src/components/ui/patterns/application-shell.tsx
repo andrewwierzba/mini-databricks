@@ -43,13 +43,13 @@ export function ApplicationShell({
 				{/* Application Navigation */}
 				{showSideNavigation && <SideNavigation navigationItems={navigationItems} onClose={() => setShowSideNavigation(false)} />}
 				
-				{/* Application Content */}
-				<div className="bg-(--du-bois-color-background-primary) border-(--du-bois-color-border) border rounded-sm flex flex-1 font-sans h-full">
-					<div className="flex-1">
-						{children}
-					</div>
-					{showAssistant && <Assistant onClose={() => setShowAssistant(false)} />}
+			{/* Application Content */}
+			<div className="bg-(--du-bois-color-background-primary) border-(--du-bois-color-border) border rounded-sm flex flex-1 font-sans overflow-hidden">
+				<div aria-label="application-content" className="flex-1 overflow-hidden">
+					{children}
 				</div>
+				{showAssistant && <Assistant onClose={() => setShowAssistant(false)} />}
+			</div>
 			</div>
 
             {/* Application Notifications */}
