@@ -2,9 +2,8 @@
 
 import { useState } from "react"
 
-import { Navigation } from "@/components/ui/patterns/navigation"
+import { ApplicationShell } from "@/components/ui/patterns/application-shell"
 import { Panel, PanelContent, PanelTrigger } from "@/components/ui/patterns/panel"
-import { Assistant } from "@/components/ui/patterns/assistant"
 import { Graph } from "@/components/ui/patterns/graph"
 
 import { Button } from "@/components/ui/button"
@@ -15,7 +14,6 @@ import { SidebarCollapseIcon, Typography } from "@databricks/design-system"
 const { Text } = Typography
 
 export default function Page() {
-    const [showAssistant, setShowAssistant] = useState(false)
     const [showPanel, setShowPanel] = useState(true)
 
     const sections = [{
@@ -71,10 +69,8 @@ export default function Page() {
     }]
 
     return (
-        <div className="flex flex-col h-full">
-            <Navigation onOpenAssistant={() => setShowAssistant(true)} />
-            <div className="bg-(--du-bois-color-background-primary) border-(--du-bois-color-border) border rounded-sm flex font-sans h-full overflow-hidden">
-                <div className="flex flex-1 flex-col">
+        <ApplicationShell>
+            <div className="flex flex-1 flex-col h-full">
                     <div className="border-b border-(--du-bois-color-border) flex items-center gap-2 p-2">
                         <div className="flex items-center gap-2">
                             <div className="bg-gray-100 rounded-sm h-6 w-6"></div>
@@ -204,8 +200,6 @@ export default function Page() {
                         )}
                     </div>
                 </div>
-                {showAssistant && <Assistant onClose={() => setShowAssistant(false)} />}
-            </div>
-        </div>
+        </ApplicationShell>
     )
 }
