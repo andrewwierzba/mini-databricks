@@ -28,7 +28,7 @@ export function ApplicationShell({
     navigationItems,
 }: ApplicationShellProps) {
     const [showAssistant, setShowAssistant] = useState(false)
-    const [showSideNavigation, setShowSideNavigation] = useState(true)
+    const [showSideNavigation, setShowSideNavigation] = useState(false)
 
     return (
         <div className="flex flex-1 flex-col h-full p-2">
