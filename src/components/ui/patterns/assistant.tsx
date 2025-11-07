@@ -19,7 +19,7 @@ interface Message {
     type: "assistant" | "user"
 }
 
-export function Assistant({ defaultSize = 384, minSize = 256, onClose }: { defaultSize?: number, minSize?: number, onClose: () => void }) {
+export function Assistant({ defaultWidth = "384px", minWidth = "256px", onClose }: { defaultWidth?: string, minWidth?: string, onClose: () => void }) {
     const [inputValue, setInputValue] = useState("")
     const [messages, setMessages] = useState<Message[]>([])
 
@@ -45,7 +45,14 @@ export function Assistant({ defaultSize = 384, minSize = 256, onClose }: { defau
     }
     
     return (
-        <div aria-label="assistant" className={`border-l border-(--du-bois-color-border) flex flex-col h-full min-w-[${minSize}] p-2 w-[${defaultSize}]`}>
+        <div
+            aria-label="assistant"
+            className="border-l border-(--du-bois-color-border) flex flex-col h-full p-2"
+            style={{
+                minWidth: minWidth,
+                width: defaultWidth
+            }}
+        >
             <div className="items-center flex justify-between w-full">
                 <Typography>
                     <Text bold className="-top-[2px] relative">Assistant</Text>
