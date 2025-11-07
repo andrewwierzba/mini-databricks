@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { AppIcon, MenuIcon, SearchIcon } from "@databricks/design-system"
 import { Avatar } from "@databricks/design-system"
 
-const GradientSparkle = () => {
+const GradientSparkle = ({ isActive }: { isActive?: boolean }) => {
     return (
         <>
             {/* Gradient definition */}
@@ -29,7 +29,7 @@ const GradientSparkle = () => {
             {/* Icon */}
             <svg height="16" width="16" viewBox="0 0 16 16">
                 <path
-                    className="transition-all duration-200 group-hover:[fill-rule:nonzero]"
+                    className={`transition-all duration-200 group-hover:[fill-rule:nonzero] ${isActive ? '[fill-rule:nonzero]' : ''}`}
                     clipRule="evenodd"
                     d="M10.726 8.813 13.199 8l-2.473-.813a3 3 0 0 1-1.913-1.913L8 2.801l-.813 2.473a3 3 0 0 1-1.913 1.913L2.801 8l2.473.813a3 3 0 0 1 1.913 1.913L8 13.199l.813-2.473a3 3 0 0 1 1.913-1.913m2.941.612c1.376-.452 1.376-2.398 0-2.85l-2.472-.813a1.5 1.5 0 0 1-.957-.956l-.813-2.473c-.452-1.376-2.398-1.376-2.85 0l-.813 2.473a1.5 1.5 0 0 1-.956.956l-2.473.813c-1.376.452-1.376 2.398 0 2.85l2.473.813a1.5 1.5 0 0 1 .956.957l.813 2.472c.452 1.376 2.398 1.376 2.85 0l.813-2.472a1.5 1.5 0 0 1 .957-.957z"
                     fill="url(#ai-gradient)"
@@ -40,7 +40,15 @@ const GradientSparkle = () => {
     );
 };
 
-export function Navigation({ onOpenAssistant }: { onOpenAssistant?: () => void }) {
+export function Navigation({ 
+    isAssistantOpen = false,
+    onToggleAssistant,
+    onToggleSideNavigation, 
+}: { 
+    isAssistantOpen?: boolean;
+    onToggleAssistant?: () => void;
+    onToggleSideNavigation?: () => void;
+}) {
     return (
         <nav aria-label="navigation" className="items-center flex gap-2 justify-between mb-2 px-2">
             {/* Navigation menu */}
@@ -48,10 +56,11 @@ export function Navigation({ onOpenAssistant }: { onOpenAssistant?: () => void }
                 <Button
                     aria-label="navigation-menu"
                     className="rounded-sm"
+                    onClick={onToggleSideNavigation}
                     size="icon"
                     variant="ghost"
                 >
-                    <MenuIcon />
+                    <MenuIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                 </Button>
                 <div className="bg-white rounded-sm h-6 w-6" />
             </div>
@@ -60,6 +69,8 @@ export function Navigation({ onOpenAssistant }: { onOpenAssistant?: () => void }
             <div className="items-center flex max-w-[560px] relative w-full">
                 <SearchIcon
                     className="bottom left-3 absolute top"
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
                     style={{
                         color: 'var(--du-bois-text-secondary)'
                     }}
@@ -77,11 +88,11 @@ export function Navigation({ onOpenAssistant }: { onOpenAssistant?: () => void }
                     <Button
                         aria-label="global-assistant"
                         className="rounded-sm group transition-all"
-                        onClick={onOpenAssistant}
+                        onClick={onToggleAssistant}
                         size="icon"
                         variant="ghost"
                     >
-                        <GradientSparkle />
+                        <GradientSparkle isActive={isAssistantOpen} />
                     </Button>
                     <Button
                         aria-label="app-switcher"
@@ -89,7 +100,7 @@ export function Navigation({ onOpenAssistant }: { onOpenAssistant?: () => void }
                         size="icon"
                         variant="ghost"
                     >
-                        <AppIcon />
+                        <AppIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                     </Button>
                 </div>
                 <Avatar
