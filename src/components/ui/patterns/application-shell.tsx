@@ -4,9 +4,6 @@ import { useState } from "react";
 
 import { Toaster } from "sonner";
 
-import { StoreIcon } from "lucide-react"
-
-import { CatalogIcon, ClockIcon, CloudIcon, GridIcon, NotebookIcon, WorkflowsIcon, WorkspacesIcon } from "@databricks/design-system"
 
 import { Assistant } from "@/components/ui/patterns/assistant";
 import { Navigation } from "@/components/ui/patterns/navigation";
