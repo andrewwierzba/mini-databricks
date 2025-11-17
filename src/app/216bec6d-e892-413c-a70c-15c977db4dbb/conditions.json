@@ -1,0 +1,129 @@
+[
+  {
+    "id": "data-freshness-check",
+    "label": "Sales data updated today",
+    "category": "data-freshness",
+    "description": "Ensures sales table has been updated within the last 24 hours",
+    "operator": "AND",
+    "type": "sql",
+    "value": "SELECT COUNT(*) > 0 FROM sales WHERE updated_at >= CURRENT_DATE()"
+  },
+  {
+    "id": "row-count-threshold",
+    "label": "Minimum order rows",
+    "category": "data-volume",
+    "description": "Verifies at least 1000 orders exist before processing",
+    "operator": "AND",
+    "type": "sql",
+    "value": "SELECT COUNT(*) >= 1000 FROM orders WHERE order_date = CURRENT_DATE()"
+  },
+  {
+    "id": "partition-available",
+    "label": "Daily partition exists",
+    "category": "partition-check",
+    "description": "Checks that the current date partition exists in the partitioned table",
+    "operator": "AND",
+    "type": "sql",
+    "value": "SELECT COUNT(*) > 0 FROM information_schema.partitions WHERE table_name = 'events' AND partition_value = CAST(CURRENT_DATE() AS STRING)"
+  },
+  {
+    "id": "data-quality-null-check",
+    "label": "No null customer IDs",
+    "category": "data-quality",
+    "description": "Ensures all records have valid customer identifiers",
+    "operator": "AND",
+    "type": "sql",
+    "value": "SELECT COUNT(*) = 0 FROM transactions WHERE customer_id IS NULL AND transaction_date = CURRENT_DATE()"
+  },
+  {
+    "id": "table-exists",
+    "label": "Source table exists",
+    "category": "table-existence",
+    "description": "Verifies the upstream source table is available",
+    "operator": "AND",
+    "type": "sql",
+    "value": "SELECT COUNT(*) > 0 FROM information_schema.tables WHERE table_schema = 'analytics' AND table_name = 'customer_events'"
+  },
+  {
+    "id": "incremental-load-check",
+    "label": "New records available",
+    "category": "incremental-load",
+    "description": "Checks for new records since last run timestamp",
+    "operator": "AND",
+    "type": "sql",
+    "value": "SELECT COUNT(*) > 0 FROM user_activity WHERE created_at > (SELECT MAX(last_processed_at) FROM pipeline_metadata WHERE pipeline_name = 'hourly_orders')"
+  },
+  {
+    "id": "referential-integrity",
+    "label": "All orders have customers",
+    "category": "data-quality",
+    "description": "Validates referential integrity before processing",
+    "operator": "AND",
+    "type": "sql",
+    "value": "SELECT COUNT(*) = 0 FROM orders o LEFT JOIN customers c ON o.customer_id = c.id WHERE o.order_date = CURRENT_DATE() AND c.id IS NULL"
+  },
+  {
+    "id": "aggregate-threshold",
+    "label": "Revenue threshold met",
+    "category": "business-logic",
+    "description": "Ensures daily revenue exceeds minimum threshold",
+    "operator": "AND",
+    "type": "sql",
+    "value": "SELECT SUM(amount) >= 10000 FROM transactions WHERE transaction_date = CURRENT_DATE() AND status = 'completed'"
+  },
+  {
+    "id": "file-arrival-check",
+    "label": "Source file processed",
+    "category": "file-arrival",
+    "description": "Checks if the expected source file has been loaded",
+    "operator": "OR",
+    "type": "sql",
+    "value": "SELECT COUNT(*) > 0 FROM file_metadata WHERE file_name LIKE 'sales_%' AND processed_date = CURRENT_DATE() AND status = 'loaded'"
+  },
+  {
+    "id": "time-window-check",
+    "label": "Hourly window complete",
+    "category": "time-window",
+    "description": "Verifies all data for the previous hour is available",
+    "operator": "AND",
+    "type": "sql",
+    "value": "SELECT COUNT(*) > 0 FROM events WHERE event_timestamp >= DATE_TRUNC('hour', CURRENT_TIMESTAMP() - INTERVAL '1 hour') AND event_timestamp < DATE_TRUNC('hour', CURRENT_TIMESTAMP())"
+  },
+  {
+    "id": "data-completeness",
+    "label": "All required columns populated",
+    "category": "data-quality",
+    "description": "Ensures critical columns are not null or empty",
+    "operator": "AND",
+    "type": "sql",
+    "value": "SELECT COUNT(*) = 0 FROM products WHERE product_id IS NULL OR product_name IS NULL OR category IS NULL OR updated_at < CURRENT_DATE() - INTERVAL '7 days'"
+  },
+  {
+    "id": "snowflake-table-update",
+    "label": "Table updated in last hour",
+    "category": "data-freshness",
+    "description": "Snowflake-specific check for table modification time",
+    "operator": "AND",
+    "type": "sql",
+    "value": "SELECT LAST_ALTERED >= CURRENT_TIMESTAMP() - INTERVAL '1 hour' FROM information_schema.tables WHERE table_schema = 'ANALYTICS' AND table_name = 'HOURLY_ORDERS'"
+  },
+  {
+    "id": "azure-data-factory-pipeline",
+    "label": "Upstream pipeline succeeded",
+    "category": "pipeline-dependency",
+    "description": "Checks if the upstream Azure Data Factory pipeline completed successfully",
+    "operator": "AND",
+    "type": "sql",
+    "value": "SELECT COUNT(*) > 0 FROM pipeline_runs WHERE pipeline_name = 'extract_sales_data' AND run_date = CURRENT_DATE() AND status = 'Succeeded'"
+  },
+  {
+    "id": "airflow-dag-run",
+    "label": "DAG run completed",
+    "category": "workflow-dependency",
+    "description": "Verifies the upstream Airflow DAG has completed successfully",
+    "operator": "AND",
+    "type": "sql",
+    "value": "SELECT COUNT(*) > 0 FROM dag_run WHERE dag_id = 'daily_sales_etl' AND execution_date::date = CURRENT_DATE() AND state = 'success'"
+  }
+]
+
