@@ -15,11 +15,21 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toggle } from "@/components/ui/toggle";
 
+import { Condition } from "@/app/216bec6d-e892-413c-a70c-15c977db4dbb/components/condition";
+
 // Types 
 type TimeUnit = "minute" | "hour" | "day" | "week" | "month";
 type TriggerType = "continuous-run" | "file-arrival" | "model-update" | "schedule" | "table-update";
 
+interface ConditionConfig {
+    id: string;
+    label: string;
+    type: "sql" | "python";
+    value: string;
+}
+
 interface BaseTriggerConfig {
+    conditions: ConditionConfig[];
     status: boolean;
     type: TriggerType;
 }
@@ -82,20 +92,33 @@ export default function Page({
     onSubmit
 }: Props) {
     const [config, setConfig] = useState<TriggerConfig>(() => {
-        if (initialConfig?.type === "schedule") {
-            return {
-                status: true,
-                type: "schedule",
-                scheduleMode: "simple",
-                interval: 1,
-                timeUnit: "day",
-                ...initialConfig,
-            } as TriggerConfig;
+        if (initialConfig) {
+            if (initialConfig.type === "schedule") {
+                return {
+                    status: true,
+                    type: "schedule",
+                    scheduleMode: "simple",
+                    interval: 1,
+                    timeUnit: "day",
+                    conditions: [],
+                    ...initialConfig,
+                } as TriggerConfig;
+            } else {
+                return {
+                    status: true,
+                    conditions: [],
+                    ...initialConfig,
+                } as TriggerConfig;
+            }
         }
+
         return {
             status: true,
-            type: initialConfig?.type || "schedule",
-            ...initialConfig,
+            type: "schedule",
+            scheduleMode: "simple",
+            interval: 1,
+            timeUnit: "day",
+            conditions: [],
         } as TriggerConfig;
     });
 
@@ -137,11 +160,13 @@ export default function Page({
                                 scheduleMode: "simple",
                                 interval: 1,
                                 timeUnit: "day",
+                                conditions: [],
                             });
                         } else {
                             setConfig({
                                 status: config.status,
                                 type: value as Exclude<TriggerType, "schedule">,
+                                conditions: [],
                             });
                         }
                     }}
@@ -175,6 +200,7 @@ export default function Page({
                                     scheduleMode: "simple",
                                     interval: 1,
                                     timeUnit: "day",
+                                    conditions: [],
                                 });
                             } else {
                                 setConfig({
@@ -186,6 +212,7 @@ export default function Page({
                                     minute: 0,
                                     hour: 0,
                                     useCronExpression: false,
+                                    conditions: [],
                                 });
                             }
                         }}
@@ -290,6 +317,7 @@ export default function Page({
                                             Interval
                                         </Label>
                                         <Select
+                                            disabled={config.useCronExpression}
                                             onValueChange={(value) =>
                                                 updateConfig("timeUnit", value as TimeUnit)
                                             }
@@ -313,6 +341,7 @@ export default function Page({
                                             Minutes
                                         </Label>
                                         <Select
+                                            disabled={config.useCronExpression}
                                             onValueChange={(value) =>
                                                 updateConfig("minute", Number(value))
                                             }
@@ -336,6 +365,7 @@ export default function Page({
                                             Hours
                                         </Label>
                                         <Select
+                                            disabled={config.useCronExpression}
                                             onValueChange={(value) =>
                                                 updateConfig("hour", Number(value))
                                             }
@@ -384,7 +414,7 @@ export default function Page({
                                                     }
                                                     placeholder="Enter a cron expression"
                                                     type="text"
-                                                    value={config.cronExpression || "0 0 * * *"}
+                                                    value={config.cronExpression || (config.hour || config.minute ? `${config.minute} ${config.hour} * * *` : "0 0 * * *")}
                                                 />
                                             )}
                                         </div>
@@ -403,6 +433,12 @@ export default function Page({
                 <ButtonGroup>
                     <Button
                         className="rounded-[4px]"
+                        onClick={() => {
+                            setConfig({
+                                ...config,
+                                conditions: [...config.conditions, { id: crypto.randomUUID(), label: `Condtion ${config.conditions.length + 1}`, type: "sql", value: "" }],
+                            });
+                        }}
                         variant="outline"
                     >
                         Add condition
@@ -415,6 +451,40 @@ export default function Page({
                     </Button>
                 </ButtonGroup>
             </div>
+
+            {/* Trigger Conditions */}
+            {config.conditions.length > 0 && (
+                <div className="flex flex-col gap-4">
+                    {config.conditions.map((condition) => (
+                        <Condition
+                            key={condition.id}
+                            onDelete={() => {
+                                setConfig({
+                                    ...config,
+                                    conditions: config.conditions.filter((c) => c.label !== condition.label),
+                                });
+                            }}
+                            onRun={() => {
+                                setConfig({
+                                    ...config,
+                                    conditions: config.conditions.map((c) =>
+                                        c.id === condition.id ? { ...c, isRunning: true } : c
+                                    ),
+                                });
+                                setTimeout(() => {
+                                    setConfig({
+                                        ...config,
+                                        conditions: config.conditions.map((c) =>
+                                            c.id === condition.id ? { ...c, isRunning: false } : c
+                                        ),
+                                    });
+                                }, 3000);
+                            }}
+                            {...condition}
+                        />
+                    ))}
+                </div>
+            )}
 
             {/* Debug: Config */}
             {process.env.NODE_ENV === "development" && (
