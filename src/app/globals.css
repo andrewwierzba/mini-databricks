@@ -234,3 +234,35 @@ body {
 		@apply bg-background text-foreground;
 	}
 }
+
+@keyframes thinking {
+	0%, 60%, 100% { opacity: 0; }
+	30% { opacity: 1; }
+}
+
+.scrollbar-hide-on-hover {
+	scrollbar-width: thin;
+	scrollbar-color: transparent transparent;
+}
+
+.scrollbar-hide-on-hover::-webkit-scrollbar {
+	width: 8px;
+}
+
+.scrollbar-hide-on-hover::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.scrollbar-hide-on-hover::-webkit-scrollbar-thumb {
+	background-color: transparent;
+	border-radius: 4px;
+	transition: background-color 0.2s;
+}
+
+.scrollbar-hide-on-hover:hover::-webkit-scrollbar-thumb {
+	background-color: rgb(209 213 219);
+}
+
+.scrollbar-hide-on-hover:hover {
+	scrollbar-color: rgb(209 213 219) transparent;
+}

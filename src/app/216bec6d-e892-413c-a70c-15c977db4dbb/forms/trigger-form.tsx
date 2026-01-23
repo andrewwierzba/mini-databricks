@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Check, Ellipsis } from "lucide-react";
 
@@ -61,7 +61,7 @@ interface AdvancedScheduleConfig extends BaseTriggerConfig {
 
 type TriggerConfig = OtherTriggerConfig | SimpleScheduleConfig | AdvancedScheduleConfig;
 
-type AllKeys<T> = T extends any ? keyof T : never;
+type AllKeys<T> = T extends unknown ? keyof T : never;
 type TriggerConfigKeys = AllKeys<TriggerConfig>;
 
 // Constants 
@@ -83,15 +83,18 @@ const triggerTypes: { value: TriggerType; label: string }[] = [
 
 // Form 
 export interface Props {
+    debug?: boolean;
     initialConfig?: Partial<TriggerConfig>;
     onBrowseConditions?: () => void;
+    onChange?: (config: TriggerConfig) => void;
     onSubmit?: (config: TriggerConfig) => void;
 }
 
 export default function TriggerForm({
+    debug = false,
     initialConfig,
     onBrowseConditions,
-    onSubmit
+    onChange
 }: Props) {
     const [config, setConfig] = useState<TriggerConfig>(() => {
         if (initialConfig) {
@@ -124,12 +127,16 @@ export default function TriggerForm({
         } as TriggerConfig;
     });
 
-    const updateConfig = <K extends TriggerConfigKeys>(
-        key: K,
-        value: any
+    const updateConfig = (
+        key: TriggerConfigKeys,
+        value: unknown
     ) => {
         setConfig((prev) => ({ ...prev, [key]: value }));
     };
+
+    useEffect(() => {
+        onChange?.(config);
+    }, [config, onChange]);
     
     return (
         <div className="flex flex-col gap-4">
@@ -137,11 +144,13 @@ export default function TriggerForm({
             <div className="flex gap-2 justify-between">
                 <Label className="font-semibold min-w-[144px]" htmlFor="status">Trigger status</Label>
                 <div className="items-center flex gap-2">
-                    <span className="text-gray-600 text-sm">
-                    {config.status ? "Active" : "Paused"}
+                    <span className="text-neutral-600 text-sm">
+                        {config.status ? "Active" : "Paused"}
                     </span>
                     <Switch
+                        className="data-[state=on]:bg-blue-600"
                         checked={config.status}
+                        data-state={config.status ? "on" : "off"}
                         id="status"
                         onCheckedChange={(checked) =>
                             updateConfig("status", checked)
@@ -162,13 +171,13 @@ export default function TriggerForm({
                                 scheduleMode: "simple",
                                 interval: 1,
                                 timeUnit: "day",
-                                conditions: [],
+                                conditions: config.conditions,
                             });
                         } else {
                             setConfig({
                                 status: config.status,
                                 type: value as Exclude<TriggerType, "schedule">,
-                                conditions: [],
+                                conditions: config.conditions,
                             });
                         }
                     }}
@@ -177,7 +186,7 @@ export default function TriggerForm({
                     <SelectTrigger className="rounded-[4px] w-full" id="type">
                         <SelectValue placeholder="Select a type" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="border-neutral-200 ">
                         {triggerTypes.map((trigger) => (
                             <SelectItem key={trigger.value} value={trigger.value}>
                                 {trigger.label}
@@ -202,7 +211,7 @@ export default function TriggerForm({
                                     scheduleMode: "simple",
                                     interval: 1,
                                     timeUnit: "day",
-                                    conditions: [],
+                                    conditions: config.conditions,
                                 });
                             } else {
                                 setConfig({
@@ -214,7 +223,7 @@ export default function TriggerForm({
                                     minute: 0,
                                     hour: 0,
                                     useCronExpression: false,
-                                    conditions: [],
+                                    conditions: config.conditions,
                                 });
                             }
                         }}
@@ -246,7 +255,7 @@ export default function TriggerForm({
                                             <SelectTrigger className="rounded-[4px] w-full">
                                                 <SelectValue placeholder="Select a frequency" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="border-neutral-200">
                                                 {Array.from({ length: 30 }, (_, index) => (
                                                     <SelectItem
                                                         key={index + 1}
@@ -272,7 +281,7 @@ export default function TriggerForm({
                                             <SelectTrigger className="rounded-[4px] w-full" id="interval">
                                                 <SelectValue placeholder="Select an interval" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="border-neutral-200">
                                                 {timeUnits.map((unit) => (
                                                     <SelectItem key={unit.value} value={unit.value}>
                                                         {unit.label}
@@ -302,7 +311,7 @@ export default function TriggerForm({
                                             <SelectTrigger className="rounded-[4px] truncate w-full" id="timezone">
                                                 <SelectValue placeholder="Select a timezone" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="border-neutral-200">
                                                 <SelectItem value="UTC-06:00">(UTC-06:00) Central Time (US and Canada)</SelectItem>
                                                 <SelectItem value="UTC-05:00">(UTC-05:00) Eastern Time (US and Canada)</SelectItem>
                                                 <SelectItem value="UTC-04:00">(UTC-04:00) Atlantic Time (Canada)</SelectItem>
@@ -328,7 +337,7 @@ export default function TriggerForm({
                                             <SelectTrigger className="rounded-[4px] w-full" id="interval">
                                                 <SelectValue placeholder="Select an interval" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="border-neutral-200">
                                                 {timeUnits.map((unit) => (
                                                     <SelectItem key={unit.value} value={unit.value}>
                                                         {unit.label}
@@ -352,7 +361,7 @@ export default function TriggerForm({
                                             <SelectTrigger className="rounded-[4px] w-full" id="minutes">
                                                 <SelectValue placeholder="Select minutes" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="border-neutral-200">
                                                 {Array.from({ length: 60 }, (_, index) => (
                                                     <SelectItem key={index} value={String(index)}>
                                                         {String(index).padStart(2, "0")}
@@ -376,7 +385,7 @@ export default function TriggerForm({
                                             <SelectTrigger className="rounded-[4px] w-full" id="hours">
                                                 <SelectValue placeholder="Select hours" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="border-neutral-200">
                                                 {Array.from({ length: 24 }, (_, index) => (
                                                     <SelectItem key={index} value={String(index)}>
                                                         {String(index).padStart(2, "0")}
@@ -434,7 +443,7 @@ export default function TriggerForm({
                 <span className="text-sm font-semibold mt-1.5 min-w-[144px]">Trigger conditions</span>
                 <ButtonGroup>
                     <Button
-                        className="rounded-[4px]"
+                        className="border-neutral-200 rounded-[4px]"
                         onClick={() => {
                             setConfig({
                                 ...config,
@@ -447,11 +456,11 @@ export default function TriggerForm({
                     </Button>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline">
-                                <Ellipsis className="h-4 w-4" />
+                            <Button className="border-neutral-200 rounded-[4px]" variant="outline">
+                                <Ellipsis className="text-neutral-600 h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent>
+                        <DropdownMenuContent className="border-neutral-200">
                             <DropdownMenuItem onClick={() => onBrowseConditions?.()}>
                                 Browse trigger conditions
                             </DropdownMenuItem>
@@ -466,6 +475,14 @@ export default function TriggerForm({
                     {config.conditions.map((condition) => (
                         <Condition
                             key={condition.id}
+                            onChange={(newValue) => {
+                                setConfig({
+                                    ...config,
+                                    conditions: config.conditions.map((c) =>
+                                        c.id === condition.id ? { ...c, value: newValue } : c
+                                    ),
+                                });
+                            }}
                             onDelete={() => {
                                 setConfig({
                                     ...config,
@@ -488,6 +505,14 @@ export default function TriggerForm({
                                     });
                                 }, 3000);
                             }}
+                            onTypeChange={(type) => {
+                                setConfig({
+                                    ...config,
+                                    conditions: config.conditions.map((c) =>
+                                        c.id === condition.id ? { ...c, type } : c
+                                    ),
+                                });
+                            }}
                             {...condition}
                         />
                     ))}
@@ -495,7 +520,7 @@ export default function TriggerForm({
             )}
 
             {/* Debug: Config */}
-            {process.env.NODE_ENV === "development" && (
+            {debug && (
                 <pre className="text-xs bg-gray-100 p-2 rounded">
                     {JSON.stringify(config, null, 2)}
                 </pre>

@@ -8,7 +8,7 @@ import { ChevronDownIcon, ChevronRightIcon, FileIcon, FolderFillIcon, HomeIcon, 
 
 interface LinkProps {
     description?: string;
-    href: string;
+    href?: string;
     icon?: React.ReactNode;
     sublinks?: LinkProps[];
     title: string;
@@ -22,23 +22,18 @@ interface Props {
 export default function Panel({ 
     activeItem = "New Job 2026-01-01 23:59:59",
     links = [{
-        href: "/",
         icon: <HomeIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />,
         title: "Home",
     }, {
-        href: "/",
         icon: 
             <span className="inline-flex text-sky-400">
                 <FolderFillIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
             </span>,
         sublinks: [{
-            href: "/",
             icon: <UserGroupIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />,
             sublinks: [{
-                href: "/",
                 icon: <HomeIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />,
                 sublinks: [{
-                    href: "/",
                     icon: 
                         <span className="inline-flex text-sky-400">
                             <FolderFillIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
@@ -49,13 +44,11 @@ export default function Panel({
             }],
             title: "Users",
         }, {
-            href: "/",
             icon: 
                 <span className="inline-flex text-sky-400">
                     <FolderFillIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                 </span>,
             sublinks: [{
-                href: "/",
                 icon: <FileIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />,
                 title: "Filename 001",
             }],
@@ -63,11 +56,9 @@ export default function Panel({
         }],
         title: "Workspace",
     }, {
-        href: "/",
         icon: <StarIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />,
         title: "Favorites",
     }, {
-        href: "/",
         icon: <TrashIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />,
         title: "Trash",
     }],
@@ -114,7 +105,7 @@ export default function Panel({
                             ) : (
                                 <div className="w-4" />
                             )}
-                            <Link href={link.href} className="flex-1 min-w-0">
+                            <Link href={link.href ?? "#"} className="flex-1 min-w-0">
                                 <div
                                     aria-label="panel-workspace-link"
                                     className="items-center flex gap-2 min-w-0"
@@ -164,7 +155,7 @@ export default function Panel({
                                                 ) : (
                                                     <div className="w-4" />
                                                 )}
-                                                <Link href={sublink.href} className="flex-1 min-w-0">
+                                                <Link href={sublink.href ?? "#"} className="flex-1 min-w-0">
                                                     <div
                                                         aria-label="panel-workspace-sublink"
                                                         className="items-center flex gap-2 min-w-0"
@@ -214,7 +205,7 @@ export default function Panel({
                                                                     ) : (
                                                                         <div className="w-4" />
                                                                     )}
-                                                                    <Link href={subSubLink.href} className="flex-1 min-w-0">
+                                                                    <Link href={subSubLink.href ?? "#"} className="flex-1 min-w-0">
                                                                         <div
                                                                             aria-label="panel-workspace-sub-sublink"
                                                                             className="items-center flex gap-2 min-w-0"
@@ -239,7 +230,7 @@ export default function Panel({
                                                                                     data-active={isSubSubSubActive}
                                                                                 >
                                                                                     <div className="w-4" />
-                                                                                    <Link href={subSubSubLink.href} className="flex-1 min-w-0">
+                                                                                    <Link href={subSubSubLink.href ?? "#"} className="flex-1 min-w-0">
                                                                                         <div
                                                                                             aria-label="panel-workspace-sub-sub-sublink"
                                                                                             className="items-center flex gap-2 min-w-0"

@@ -13,9 +13,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { OverflowIcon, PlayIcon, TrashIcon, Typography } from "@databricks/design-system"
-
-const { Paragraph, Text } = Typography
+import { OverflowIcon, PlayIcon, TrashIcon } from "@databricks/design-system"
 
 interface NotebookCellProps {
 	content?: string
@@ -31,7 +29,7 @@ interface NotebookCellProps {
 	type?: "code" | "markdown"
 }
 
-function NotebookCell({ content, id, isActive, metadata, onChange, onClick, outputs, type }: NotebookCellProps) {
+function NotebookCell({ content, id, isActive, onChange, onClick, outputs }: NotebookCellProps) {
 	return (
 		<div
 			aria-label="notebook-cell"
@@ -61,11 +59,9 @@ function NotebookCell({ content, id, isActive, metadata, onChange, onClick, outp
 								</Button>
 							</TooltipTrigger>
 							<TooltipContent>
-								<Typography>
-									<Paragraph style={{ color: 'var(--du-bois-text-white)' }}>
-										Delete cell
-									</Paragraph>
-								</Typography>
+								<span style={{ color: 'var(--du-bois-text-white)' }}>
+									Delete cell
+								</span>
 							</TooltipContent>
 						</Tooltip>
 						<Button

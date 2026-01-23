@@ -6,9 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
-import { ArrowLeftIcon, CloseIcon, DataIcon, FileIcon, FolderIcon, FolderFillIcon, QueryEditorIcon, Typography } from "@databricks/design-system"
+import { ArrowLeftIcon, CloseIcon, DataIcon, FileIcon, FolderIcon, FolderFillIcon, QueryEditorIcon } from "@databricks/design-system"
 
-const { Paragraph, Text } = Typography
 
 const data = [{
     name: "folder_1",
@@ -34,11 +33,9 @@ export function FileBrowser({ onClose }: { onClose: () => void }) {
                     size="icon"
                     variant="ghost"
                 >
-                    <ArrowLeftIcon />
+                    <ArrowLeftIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                 </Button>
-                <Typography className="mb-[2px]">
-                    <Text bold>minidatabricks@databricks.com</Text>
-                </Typography>
+                <span className="text-[13px] font-bold mb-[2px]">minidatabricks@databricks.com</span>
                 <Button
                     aria-label="close-file-browser"
                     className="rounded-sm h-6 w-6"
@@ -46,26 +43,22 @@ export function FileBrowser({ onClose }: { onClose: () => void }) {
                     size="icon"
                     variant="ghost"
                 >
-                    <CloseIcon />
+                    <CloseIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                 </Button>
             </div>
             <div className="items-center flex gap-2 h-6 px-3">
-                <FolderFillIcon style={{ color: 'var(--du-bois-text-secondary)' }} />
-                <Typography>
-                    <Text className="mb-[2px]">Drafts</Text>
-                </Typography>
+                <FolderFillIcon style={{ color: 'var(--du-bois-text-secondary)' }} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+                <span className="text-[13px] mb-[2px]">Drafts</span>
             </div>
             { data.map((object, i) => {
                 return (
                     <div className="items-center flex gap-2 h-6 px-3" key={i}>
                         {object.type === 'file' ? (
-                            <FileIcon style={{ color: 'var(--du-bois-text-secondary)' }} />
+                            <FileIcon style={{ color: 'var(--du-bois-text-secondary)' }} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                         ) : (
-                            <FolderFillIcon style={{ color: 'var(--du-bois-color-blue-400)' }} />
+                            <FolderFillIcon style={{ color: 'var(--du-bois-color-blue-400)' }} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                         )}
-                        <Typography>
-                            <Text className="mb-[2px]">{object.name}</Text>
-                        </Typography>
+                        <span className="text-[13px] mb-[2px]">{object.name}</span>
                     </div>
                 )
             }) }
@@ -87,7 +80,7 @@ export function Workspace() {
                         size="icon"
                         variant="ghost"
                     >
-                        <QueryEditorIcon />
+                        <QueryEditorIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                     </Button>
                 </div>
                 <Separator />
@@ -101,15 +94,13 @@ export function Workspace() {
                                 variant="ghost"
                                 onClick={() => setShowFileBrowser(!showFileBrowser)}
                             >
-                                <FolderIcon />
+                                <FolderIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent side="right">
-                            <Typography>
-                                <Paragraph style={{ color: 'var(--du-bois-text-white)' }}>
-                                    Workspace (Ctrl + Option + E)
-                                </Paragraph>
-                            </Typography>
+                            <span style={{ color: 'var(--du-bois-text-white)' }}>
+                                Workspace (Ctrl + Option + E)
+                            </span>
                         </TooltipContent>
                     </Tooltip>
                     <Tooltip>
@@ -120,15 +111,13 @@ export function Workspace() {
                                 size="icon"
                                 variant="ghost"
                             >
-                                <DataIcon />
+                                <DataIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent side="right">
-                            <Typography>
-                                <Paragraph style={{ color: 'var(--du-bois-text-white)' }}>
-                                    Catalog (Ctrl + Option + C)
-                                </Paragraph>
-                            </Typography>
+                            <span style={{ color: 'var(--du-bois-text-white)' }}>
+                                Catalog (Ctrl + Option + C)
+                            </span>
                         </TooltipContent>
                     </Tooltip>
                 </div>

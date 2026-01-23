@@ -3,21 +3,12 @@
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuLabel,
-	DropdownMenuRadioGroup,
-	DropdownMenuRadioItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 import { NotebookEditor } from "@/components/ui/patterns/notebook-editor"
 
-import { CloseSmallIcon, ColumnSplitIcon, FileCodeIcon, Typography } from "@databricks/design-system"
+import { CloseSmallIcon, ColumnSplitIcon, FileCodeIcon } from "@databricks/design-system"
 
-const { Paragraph, Text } = Typography
 
 interface EditorTabProps {
 	isActive?: boolean
@@ -41,7 +32,7 @@ export function EditorTab({ isActive = false, label = "Tab", onClick }: EditorTa
                     color: 'var(--du-bois-color-text-secondary)'
                 }}
             />
-            <Text className="pointer-events-none text-nowrap">{label}</Text>
+            <span className="text-[13px] pointer-events-none text-nowrap">{label}</span>
 			<Tooltip>
 				<TooltipTrigger
 					className={`h-6 w-6 ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
@@ -57,11 +48,9 @@ export function EditorTab({ isActive = false, label = "Tab", onClick }: EditorTa
 					</Button>
 				</TooltipTrigger>
                 <TooltipContent>
-                    <Typography>
-                        <Paragraph style={{ color: 'var(--du-bois-text-white)' }}>
-                            Close
-                        </Paragraph>
-                    </Typography>
+                    <span style={{ color: 'var(--du-bois-text-white)' }}>
+                        Close
+                    </span>
                 </TooltipContent>
             </Tooltip>
         </div>
@@ -80,7 +69,7 @@ export function EditorTabs({ activeTabIndex = 0, onTabClick, tabs = ["query-1.sq
 			aria-label="tabs"
 			className="bg-(--du-bois-color-background-secondary) flex"
 		>
-			<div className="flex overflow-x-scroll">
+			<div className="flex overflow-x-auto overflow-y-hidden">
 				{tabs.map((tab, index) => (
 					<EditorTab
 						isActive={index === activeTabIndex}
@@ -90,6 +79,7 @@ export function EditorTabs({ activeTabIndex = 0, onTabClick, tabs = ["query-1.sq
 					/>
 				))}
 			</div>
+			<div className="items-center border-b border-(--du-bois-color-border) flex px-2" />
             <div className="items-center border-b border-(--du-bois-color-border) flex flex-1 h-full justify-end px-2">
                 <Tooltip>
                     <TooltipTrigger className="h-6 w-6">
@@ -103,11 +93,9 @@ export function EditorTabs({ activeTabIndex = 0, onTabClick, tabs = ["query-1.sq
                         </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                        <Typography>
-                            <Paragraph style={{ color: 'var(--du-bois-text-white)' }}>
-                                Split editor right
-                            </Paragraph>
-                        </Typography>
+                        <span style={{ color: 'var(--du-bois-text-white)' }}>
+                            Split editor right
+                        </span>
                     </TooltipContent>
                 </Tooltip>
             </div>
@@ -122,6 +110,22 @@ interface FileTab {
 
 type IndentType = "spaces" | "tabs"
 type IndentSize = 2 | 4
+
+interface NotebookData {
+	cells: Array<{
+		cell_type: "code" | "markdown"
+		source: string[]
+		metadata?: Record<string, unknown>
+		outputs?: Array<{
+			output_type: string
+			data?: Record<string, unknown>
+			text?: string[]
+		}>
+	}>
+	metadata?: Record<string, unknown>
+	nbformat: number
+	nbformat_minor: number
+}
 
 function getFileType(filename: string): string {
 	const extension = filename.split('.').pop()?.toLowerCase()
@@ -156,8 +160,8 @@ function parseNotebook(content: string): NotebookData | null {
 export function FileEditor() {
 	const [activeTabIndex, setActiveTabIndex] = useState(0)
 	const [cursorPosition, setCursorPosition] = useState({ column: 1, line: 1 })
-	const [indentSize, setIndentSize] = useState<IndentSize>(4)
-	const [indentType, setIndentType] = useState<IndentType>("spaces")
+	const [indentSize] = useState<IndentSize>(4)
+	const [indentType] = useState<IndentType>("spaces")
 	const [selectedLength, setSelectedLength] = useState(0)
 
 	const [fileTabs, setFileTabs] = useState<FileTab[]>([
@@ -224,9 +228,9 @@ export function FileEditor() {
 		)
 	}
 
-	const updateNotebookContent = (index: number, notebook: NotebookData) => {
-		updateFileContent(index, JSON.stringify(notebook, null, 2))
-	}
+	// const updateNotebookContent = (index: number, notebook: NotebookData) => {
+	//	updateFileContent(index, JSON.stringify(notebook, null, 2))
+	// }
 
 	const updateCursorPosition = (textarea: HTMLTextAreaElement) => {
 		const content = textarea.value

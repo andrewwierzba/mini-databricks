@@ -358,7 +358,7 @@ export const colors = {
 };
 
 export default function Page() {
-    const [selectedColor, setSelectedColor] = useState<{ name: string; data: any; group: string } | null>(null);
+    const [selectedColor, setSelectedColor] = useState<{ name: string; data: {contrast?: string | string[]; hex: string; oklch: string; rgb: string; usage?: string}; group: string } | null>(null);
 
     return (
         <div style={{ color: "#26251e", display: "flex", flexDirection: "column", gap: "40px", padding: "16px" }}>
@@ -501,7 +501,7 @@ export default function Page() {
                                             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                                                 {contrastColors.map((contrastColorName: string) => {
                                                     const contrastFamily = contrastColorName.split('-')[0] as keyof typeof colors;
-                                                    const contrastHex = (colors[contrastFamily] as any)?.[contrastColorName]?.hex || '#ffffff';
+                                                    const contrastHex = (colors[contrastFamily] as Record<string, {contrast?: string | string[]; hex: string; oklch: string; rgb: string; usage?: string}>)?.[contrastColorName]?.hex || '#ffffff';
                                                     
                                                     return (
                                                         <div 

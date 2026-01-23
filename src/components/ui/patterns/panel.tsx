@@ -71,11 +71,9 @@ function PanelTrigger({ onClick, ...props }: PanelTriggerProps) {
 function Panel({
     allowDragResize = true,
     children,
-    collapsible = true,
     defaultSize,
     maxSize,
     minSize,
-    onClose,
     side = "right"
 }: PanelProps) {
     {/* Panel direction */}

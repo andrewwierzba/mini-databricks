@@ -1,39 +1,184 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import React, { useEffect, useRef, useState } from "react";
 
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils";
 
-import { AtIcon, CloseIcon, GearIcon, OverflowIcon, PlusIcon, SendIcon, Typography } from "@databricks/design-system"
-import { Avatar } from "@databricks/design-system"
+import { AtIcon, ChevronDownIcon, ChevronUpIcon, CloseIcon, GearIcon, OverflowIcon, PlusIcon, SendIcon } from "@databricks/design-system";
+import { Avatar } from "@databricks/design-system";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { GradientSparkle } from "./navigation";
 
-const { Hint, Paragraph, Text, Title } = Typography
-
-interface Message {
-    content: string
-    id: string
-    timestamp: Date
-    type: "assistant" | "user"
+interface PreviewCard {
+    content?: React.ReactNode
+    disabled?: boolean
+    header: {
+        title?: string | React.ReactNode
+    }
+    isExpanded?: boolean
 }
 
-export function Assistant({ defaultWidth = "384px", minWidth = "256px", onClose }: { defaultWidth?: string, minWidth?: string, onClose: () => void }) {
+export function AssistantPreviewCard({ content, disabled, header, isExpanded = true }: PreviewCard) {
+    const [expanded, setExpanded] = useState(isExpanded)
+
+    useEffect(() => {
+        if (disabled) {
+            setExpanded(false)
+        }
+    }, [disabled])
+
+    const handleToggle = () => {
+        setExpanded(!expanded)
+    }
+
+    return (
+        <Card 
+            className={cn(
+                "border border-neutral-100 rounded-md shadow-xs text-sm gap-0 max-h-32 overflow-y-auto py-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-thumb]:opacity-0 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:transition-opacity [&::-webkit-scrollbar-track]:bg-transparent [scrollbar-color:rgb(209_213_219)_transparent] [scrollbar-width:thin] hover:[&::-webkit-scrollbar-thumb]:bg-gray-600 hover:[&::-webkit-scrollbar-thumb]:opacity-100",
+                disabled && "bg-neutral-50"
+            )}
+        >
+            <CardHeader className="items-center flex justify-between px-3 py-1.5">
+                <span className="text-neutral-500">{header.title}</span>
+                <Button onClick={handleToggle} size="icon-sm" variant="ghost">
+                    {expanded ? (
+                        <ChevronUpIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+                    ) : (
+                        <ChevronDownIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+                    )}
+                </Button>
+            </CardHeader>
+            {expanded && content && (
+                <CardContent className="border-t border-neutral-100 overflow-x-auto px-0">
+                    {content}
+                </CardContent>
+            )}
+        </Card>
+    )
+}
+
+interface Action {
+    label: string
+    onClick: () => void
+}
+
+interface Responses {
+    actions?: Action[]
+    content: string | React.ReactNode
+    delay?: number
+    previewCard?: PreviewCard
+}
+
+interface AssistantProps {
+    defaultWidth?: string
+    minWidth?: string
+    onApplyChanges?: () => void
+    onClose: () => void
+    previewCardExpanded?: boolean
+    responses?: Responses[]
+}
+
+interface Message {
+    actions?: Action[]
+    content: string | React.ReactNode
+    id: string
+    isThinking?: boolean
+    previewCard?: PreviewCard
+    timestamp: Date
+    type: "assistant" | "user"
+    actionsDismissed?: boolean
+    rejected?: boolean
+}
+
+export function Assistant({ defaultWidth = "384px", minWidth = "256px", onApplyChanges, onClose, previewCardExpanded = true, responses = [] }: AssistantProps) {
     const [inputValue, setInputValue] = useState("")
     const [messages, setMessages] = useState<Message[]>([])
+    const hasAppliedChangesRef = useRef(false)
+    const timeoutRefsRef = useRef<Map<string, NodeJS.Timeout>>(new Map())
+
+    useEffect(() => {
+        const assistantMessages = messages.filter(m => m.type === "assistant" && !m.isThinking)
+        const userMessages = messages.filter(m => m.type === "user")
+        
+        if (assistantMessages.length === 2 && userMessages.length === 2 && onApplyChanges && !hasAppliedChangesRef.current) {
+            hasAppliedChangesRef.current = true
+            onApplyChanges()
+        }
+    }, [messages, onApplyChanges])
+
+    useEffect(() => {
+        return () => {
+            timeoutRefsRef.current.forEach(timeout => clearTimeout(timeout))
+            timeoutRefsRef.current.clear()
+        }
+    }, [])
 
     const handleSend = () => {
         if (!inputValue.trim()) return
 
-        const newMessage: Message = {
+        const userMessage: Message = {
             content: inputValue,
             id: Date.now().toString(),
             timestamp: new Date(),
             type: "user"
         }
 
-        setMessages(prev => [...prev, newMessage])
+        setMessages(prev => {
+            const newMessages = [...prev, userMessage]
+            const userMessageCount = prev.filter(m => m.type === "user").length
+            
+            if (userMessageCount < responses.length) {
+                const response = responses[userMessageCount]
+                const messageId = (Date.now() + 1).toString()
+                
+                if (response.delay && response.delay > 0) {
+                    const thinkingMessage: Message = {
+                        content: "Thinking...",
+                        id: messageId,
+                        isThinking: true,
+                        timestamp: new Date(),
+                        type: "assistant"
+                    }
+                    
+                    const timeoutId = setTimeout(() => {
+                        setMessages(current => {
+                            return current.map(msg => 
+                                msg.id === messageId 
+                                    ? {
+                                        actions: response.actions,
+                                        content: response.content,
+                                        id: messageId,
+                                        previewCard: response.previewCard || response.suggestion?.previewCard,
+                                        timestamp: new Date(),
+                                        type: "assistant"
+                                    }
+                                    : msg
+                            )
+                        })
+                        timeoutRefsRef.current.delete(messageId)
+                    }, response.delay)
+                    
+                    timeoutRefsRef.current.set(messageId, timeoutId)
+                    return [...newMessages, thinkingMessage]
+                } else {
+                    const aiMessage: Message = {
+                        actions: response.actions,
+                        content: response.content,
+                        id: messageId,
+                        previewCard: response.previewCard || response.suggestion?.previewCard,
+                        timestamp: new Date(),
+                        type: "assistant"
+                    }
+                    return [...newMessages, aiMessage]
+                }
+            }
+            
+            return newMessages
+        })
         setInputValue("")
     }
 
@@ -54,9 +199,7 @@ export function Assistant({ defaultWidth = "384px", minWidth = "256px", onClose 
             }}
         >
             <div className="items-center flex justify-between w-full">
-                <Typography>
-                    <Text bold className="-top-[2px] relative">Assistant</Text>
-                </Typography>
+                <span className="text-sm font-semibold relative -top-[2px]">Assistant</span>
                 <div className="flex gap-1 justify-end w-full">
                     <Tooltip>
                         <TooltipTrigger>
@@ -71,11 +214,9 @@ export function Assistant({ defaultWidth = "384px", minWidth = "256px", onClose 
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <Typography>
-                                <Paragraph style={{ color: 'var(--du-bois-text-white)' }}>
-                                    New thread
-                                </Paragraph>
-                            </Typography>
+                            <span style={{ color: 'var(--du-bois-text-white)' }}>
+                                New thread
+                            </span>
                         </TooltipContent>
                     </Tooltip>
                     <Tooltip>
@@ -90,11 +231,9 @@ export function Assistant({ defaultWidth = "384px", minWidth = "256px", onClose 
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <Typography>
-                                <Paragraph style={{ color: 'var(--du-bois-text-white)' }}>
-                                    Settings
-                                </Paragraph>
-                            </Typography>
+                            <span style={{ color: 'var(--du-bois-text-white)' }}>
+                                Settings
+                            </span>
                         </TooltipContent>
                     </Tooltip>
                     <Button
@@ -118,44 +257,112 @@ export function Assistant({ defaultWidth = "384px", minWidth = "256px", onClose 
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <Typography>
-                                <Paragraph style={{ color: 'var(--du-bois-text-white)' }}>
-                                    Close
-                                </Paragraph>
-                            </Typography>
+                            <span style={{ color: 'var(--du-bois-text-white)' }}>
+                                Close
+                            </span>
                         </TooltipContent>
                     </Tooltip>
                 </div>
             </div>
-            <div className="flex-1 overflow-y-auto py-4">
+            <div className="flex-1 overflow-y-auto py-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-thumb]:opacity-0 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:transition-opacity [&::-webkit-scrollbar-track]:bg-transparent [scrollbar-color:rgb(209_213_219)_transparent] [scrollbar-width:thin] hover:[&::-webkit-scrollbar-thumb]:bg-gray-600 hover:[&::-webkit-scrollbar-thumb]:opacity-100">
                 {messages.length === 0 ? (
-                    <div className="items-center flex text-(--du-bois-text-secondary) justify-center h-full">
-                        <Typography>
-                            <Paragraph style={{ color: "var(--du-bois-text-secondary)" }}>Ask questions about your code</Paragraph>
-                        </Typography>
+                    <div className="items-center flex flex-col gap-3 justify-center h-full">
+                        <GradientSparkle isFilled={true} size={24} />
+                        <div className="items-center flex flex-col gap-1">
+                            <span className="text-md font-semibold">Databricks Assistant</span>
+                            <span className="text-neutral-500 text-sm">Ask questions about your code</span>
+                        </div>
                     </div>
                 ) : (
                     <div className="space-y-4">
                         {messages.map((message) => (
                             <div className="flex flex-col gap-2" key={message.id}>
-                                <div className="flex gap-2">
-                                    <Avatar
-                                        aria-label="profile"
-                                        label="Andrew"
-                                        size="sm"
-                                        type="user"
-                                    />
-                                    <Typography>
-                                        <Title style={{ color: "var(--du-bois-text-secondary)" }}>first.lastname@databricks.com</Title>
-                                    </Typography>
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <Typography>
-                                        <Paragraph className="text-sm whitespace-pre-wrap break-words">
-                                            {message.content}
-                                        </Paragraph>
-                                    </Typography>
-                                </div>
+                                {message.type === "user" && (
+                                    <>
+                                        {/* <div className="flex gap-2">
+                                            <Avatar
+                                                aria-label="profile"
+                                                label="Andrew"
+                                                size="sm"
+                                                type="user"
+                                            />
+                                            <span style={{ color: "var(--du-bois-text-secondary)", fontSize: "14px", fontWeight: "600" }}>
+                                                first.lastname@databricks.com
+                                            </span>
+                                        </div> */}
+                                        <div className="bg-neutral-100 rounded-sm px-3 py-2 w-fit ml-auto">
+                                            <span className="text-sm leading-normal">
+                                                {message.content}
+                                            </span>
+                                        </div>
+                                    </>
+                                )}
+
+                                {message.type === "assistant" && (
+                                    <>
+                                        {/* <div className="flex gap-2">
+                                            <Avatar
+                                                aria-label="profile"
+                                                label="AI"
+                                                size="sm"
+                                                type="user"
+                                            />
+                                            <span style={{ color: "var(--du-bois-text-secondary)", fontSize: "14px", fontWeight: "600" }}>
+                                                Assistant
+                                            </span>
+                                        </div> */}
+                                        <div className="flex flex-col gap-4">
+                                            {message.isThinking ? (
+                                                <span className="text-gray-500 text-sm">
+                                                    Thinking
+                                                    <span className="inline-flex gap-0.5 ml-1">
+                                                        <span className="animate-[thinking_1.4s_ease-in-out_infinite] opacity-0">.</span>
+                                                        <span className="animate-[thinking_1.4s_ease-in-out_0.2s_infinite] opacity-0">.</span>
+                                                        <span className="animate-[thinking_1.4s_ease-in-out_0.4s_infinite] opacity-0">.</span>
+                                                    </span>
+                                                </span>
+                                            ) : (
+                                                <span className="text-sm leading-normal">
+                                                    {message.content}
+                                                </span>
+                                            )}
+
+                                            {!message.isThinking && message.previewCard && (
+                                                <>
+                                                    <AssistantPreviewCard
+                                                        content={message.previewCard.content}
+                                                        disabled={message.rejected}
+                                                        header={message.previewCard.header}
+                                                        isExpanded={previewCardExpanded ?? true}
+                                                    />
+
+                                                    {message.actions && message.actions.length > 0 && !message.actionsDismissed && (
+                                                        <div className="flex gap-2">
+                                                            {message.actions.map((action, index) => (
+                                                                <Button
+                                                                    key={index}
+                                                                    className={`rounded-sm h-6 px-2 py-1 ${index === 0 ? '' : 'border-neutral-200'}`}
+                                                                    onClick={() => {
+                                                                        action.onClick();
+                                                                        setMessages(prev => prev.map(msg => 
+                                                                            msg.id === message.id 
+                                                                                ? { ...msg, actionsDismissed: true, rejected: action.label === "Reject" }
+                                                                                : msg
+                                                                        ));
+                                                                    }}
+                                                                    size="sm"
+                                                                    variant={index === 0 ? "default" : "outline"}
+                                                                >
+                                                                    {action.label}
+                                                                </Button>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -182,11 +389,9 @@ export function Assistant({ defaultWidth = "384px", minWidth = "256px", onClose 
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <Typography>
-                                <Paragraph style={{ color: 'var(--du-bois-text-white)' }}>
-                                    Reference assets
-                                </Paragraph>
-                            </Typography>
+                            <span style={{ color: 'var(--du-bois-text-white)' }}>
+                                Reference assets
+                            </span>
                         </TooltipContent>
                     </Tooltip>
                     <Select defaultValue="chat">
@@ -218,11 +423,9 @@ export function Assistant({ defaultWidth = "384px", minWidth = "256px", onClose 
                     </Button>
                 </div>
             </div>
-            <Typography>
-                <Hint className="text-center w-full">
-                    Always review the accuracy of responses.
-                </Hint>
-            </Typography>
+            <span className="text-gray-500 text-[12px] text-center w-full">
+                Always review the accuracy of responses.
+            </span>
         </div>
     )
 }

@@ -4,35 +4,47 @@ import { useState } from "react";
 
 import { Toaster } from "sonner";
 
-
-import { Assistant } from "@/components/ui/patterns/assistant";
 import { Navigation } from "@/components/ui/patterns/navigation";
 import { Navigation as SideNavigation } from "@/components/ui/patterns/side-navigation";
+
+interface NavigationGroup {
+    items: NavigationItem[];
+    name?: string;
+}
 
 interface NavigationItem {
     href: string;
     icon: React.ReactNode;
     name: string;
-};
+}
 
 interface ApplicationShellProps {
     children: React.ReactNode;
-    navigationItems?: NavigationItem[];
-};
+    navigationItems?: NavigationGroup[];
+    showAssistant?: boolean;
+    onApplyChanges?: () => void;
+    onRevertChanges?: () => void;
+    onToggleAssistant?: (show: boolean) => void;
+}
 
 export function ApplicationShell({
     children,
     navigationItems,
+    onToggleAssistant,
+    showAssistant = false,
 }: ApplicationShellProps) {
-    const [showAssistant, setShowAssistant] = useState(false);
     const [showSideNavigation, setShowSideNavigation] = useState(false);
+
+    const handleToggleAssistant = () => {
+        onToggleAssistant?.(!showAssistant);
+    };
 
     return (
         <div className="flex flex-1 flex-col h-full p-2">
             {/* Application Header */}
 			<Navigation 
                 isAssistantOpen={showAssistant}
-                onToggleAssistant={() => setShowAssistant(!showAssistant)}
+                onToggleAssistant={handleToggleAssistant}
                 onToggleSideNavigation={() => setShowSideNavigation(!showSideNavigation)}
             />
             
@@ -41,11 +53,10 @@ export function ApplicationShell({
 				{showSideNavigation && <SideNavigation navigationItems={navigationItems} onClose={() => setShowSideNavigation(false)} />}
 				
                 {/* Application Content */}
-                <div className="bg-(--white-800) border-(--gray-100) border rounded-sm flex flex-1 font-sans overflow-hidden">
+                <div className="bg-white border-gray-200 border rounded-sm flex flex-1 font-sans overflow-hidden">
                     <div aria-label="application-content" className="flex-1 overflow-hidden">
                         {children}
                     </div>
-                    {showAssistant && <Assistant onClose={() => setShowAssistant(false)} />}
                 </div>
 			</div>
 

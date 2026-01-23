@@ -2,12 +2,12 @@ import * as React from "react";
 
 import { Button as BaseButton, buttonVariants } from "@/components/ui/button";
 
-import { type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
+import { type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
-import "@/app/styles/styles.css"
+import "@/app/styles/styles.css";
 
-type ButtonVariant = "default" | "destructive" | "ghost" | "link" | "outline" | "secondary"
+type ButtonVariant = "default" | "destructive" | "ghost" | "link" | "outline" | "secondary";
 
 const buttonVariantStyles: Record<ButtonVariant, string> = {
     default: "bg-[var(--blue-600)] text-[var(--white-800)] hover:bg-[var(--blue-700)] active:bg-[var(--blue-800)]",
