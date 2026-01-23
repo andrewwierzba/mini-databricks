@@ -406,6 +406,7 @@ export default function TriggerDialog({ open, onOpenChange, onSubmit, resetTrigg
                                                                         pressed={showCronSyntax}
                                                                         variant="outline"
                                                                     >
+                                                                        {showCronSyntax ? (<CheckIcon className="size-4" />) : (<div className="border rounded-[4px] size-4" />)}
                                                                         Show cron syntax
                                                                     </Toggle>
                                                                 </Field>
@@ -499,7 +500,7 @@ export default function TriggerDialog({ open, onOpenChange, onSubmit, resetTrigg
                                                         })}
                                                         variant="outline"
                                                     >
-                                                        <PlusIcon className="size-4" />
+                                                        <PlusIcon className="text-neutral-600 size-4" />
                                                         <span>Add table</span>
                                                     </Button>
                                                 </div>
@@ -634,7 +635,7 @@ export default function TriggerDialog({ open, onOpenChange, onSubmit, resetTrigg
                                                     </Tooltip>
                                                 </div>
                                                 <Toggle
-                                                    className="data-[state=on]:bg-(--du-bois-blue-700)/10 data-[state=on]:border-(--du-bois-blue-800) data-[state=on]:text-(--du-bois-blue-800) gap-1"
+                                                    className="data-[state=on]:bg-(--du-bois-blue-700)/10 data-[state=on]:border-(--du-bois-blue-800) data-[state=on]:text-(--du-bois-blue-800) gap-1.5 px-3"
                                                     onPressedChange={(pressed) => setTrigger((prev) => ({
                                                         ...prev,
                                                         activation: pressed ? {
@@ -650,12 +651,12 @@ export default function TriggerDialog({ open, onOpenChange, onSubmit, resetTrigg
                                                     {trigger.activation ? (
                                                         <>
                                                             <CheckIcon className="size-4" />
-                                                            Remove time restriction
+                                                            Remove activation window
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <PlusIcon className="size-4" />
-                                                            Add time restriction
+                                                            <PlusIcon className="text-neutral-600 size-4" />
+                                                            Add activation window
                                                         </>
                                                     )}
                                                 </Toggle>
@@ -752,8 +753,8 @@ export default function TriggerDialog({ open, onOpenChange, onSubmit, resetTrigg
                                                 onClick={() => setDepth(1)}
                                                 variant="outline"
                                             >
-                                                <PlusIcon className="size-4" />
-                                                Browse conditions
+                                                <PlusIcon className="text-neutral-600 size-4" />
+                                                Add trigger condition
                                             </Button>
                                         </div>
                                         <div className="flex flex-col gap-4">
