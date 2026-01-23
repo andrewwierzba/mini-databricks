@@ -152,7 +152,7 @@ export function Assistant({ defaultWidth = "384px", minWidth = "256px", onApplyC
                                         actions: response.actions,
                                         content: response.content,
                                         id: messageId,
-                                        previewCard: response.previewCard || response.suggestion?.previewCard,
+                                        previewCard: response.previewCard,
                                         timestamp: new Date(),
                                         type: "assistant"
                                     }
@@ -169,7 +169,7 @@ export function Assistant({ defaultWidth = "384px", minWidth = "256px", onApplyC
                         actions: response.actions,
                         content: response.content,
                         id: messageId,
-                        previewCard: response.previewCard || response.suggestion?.previewCard,
+                        previewCard: response.previewCard,
                         timestamp: new Date(),
                         type: "assistant"
                     }

@@ -81,7 +81,7 @@ export default function Trigger({ onClose }: Props) {
     const [trigger, setTrigger] = useState<TriggerProps>({
         type: "schedule",
     });
-	const [triggerConditions, setTriggerConditions] = useState<ConditionProps[]>([]);
+	const [triggerConditions, setTriggerConditions] = useState<TriggerConditionProps[]>([]);
 
     return (
         <Dialog onOpenChange={(open) => !open && onClose?.()} open={true}>

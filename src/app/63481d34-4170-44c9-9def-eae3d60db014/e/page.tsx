@@ -158,7 +158,7 @@ export default function Page({ enabled = false }: Props) {
                                 ],
                                 content: (
                                     <>
-                                        <p className="mb-2">I'll update the job to include the requested parameters and Slack notification.</p>
+                                        <p className="mb-2">I&apos;ll update the job to include the requested parameters and Slack notification.</p>
                                         <div>
                                             <p className="font-semibold mb-1">Changes to apply:</p>
                                             <ol className="list-decimal list-outside pl-6">

@@ -23,6 +23,7 @@ function useTabsContext() {
 }
 
 interface TabProps {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	icon?: React.ComponentType<any>;
 	isActive?: boolean;
 	label?: string;
@@ -80,6 +81,7 @@ function Tab({ icon: Icon, isActive = false, label = "Tab", onClick, onClose }: 
 }
 
 interface TabsTriggerProps extends React.HTMLAttributes<HTMLDivElement> {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	icon?: React.ComponentType<any>;
 	value: string;
 	onClose?: () => void;

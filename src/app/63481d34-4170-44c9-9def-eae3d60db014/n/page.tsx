@@ -256,7 +256,7 @@ schedule:
                                 ],
                                 content: (
                                     <>
-                                        <p className="mb-2">I'll update the job to include a notebook task.</p>
+                                        <p className="mb-2">I&apos;ll update the job to include a notebook task.</p>
                                         <div>
                                             <p className="font-semibold mb-1">Changes to apply:</p>
                                             <ol className="list-decimal list-outside pl-6">

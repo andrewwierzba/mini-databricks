@@ -131,7 +131,12 @@ interface ParameterProps {
     value: string;
 }
 
-export default function Resizable() {
+interface ResizableProps {
+    notifications?: NotificationProps[];
+    parameters?: ParameterProps[];
+}
+
+export default function Resizable({ notifications, parameters }: ResizableProps) {
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
     const [showPanel1, setShowPanel1] = useState<boolean>(true);
     const [showPanel2, setShowPanel2] = useState<boolean>(false);
