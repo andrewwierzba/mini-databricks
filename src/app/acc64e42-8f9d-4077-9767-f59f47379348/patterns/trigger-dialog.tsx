@@ -169,6 +169,7 @@ export default function TriggerDialog({ open, onOpenChange, onSubmit, resetTrigg
     const [depth, setDepth] = useState(0);
     const [showAdvancedConfiguration, setShowAdvancedConfiguration] = useState<boolean>(false);
     const [showCronSyntax, setShowCronSyntax] = useState<boolean>(false);
+    const [activationWindowMode, setActivationWindowMode] = useState<string>("on");
     const [trigger, setTrigger] = useState<TriggerProps>(() => {
         if (initialTrigger) {
             return { type: "schedule", ...initialTrigger } as TriggerProps;
@@ -191,6 +192,7 @@ export default function TriggerDialog({ open, onOpenChange, onSubmit, resetTrigg
             }
             setDepth(0);
             setShowAdvancedConfiguration(false);
+            setActivationWindowMode("on");
             lastResetRef.current = resetTrigger;
         }
     }, [resetTrigger, initialTrigger]);
@@ -567,11 +569,11 @@ export default function TriggerDialog({ open, onOpenChange, onSubmit, resetTrigg
                                         {(trigger.type === "file-arrival" || trigger.type === "table-update") && (
                                             <>
                                                 <Field className="items-start gap-2" orientation="horizontal">
-                                                    <div className="items-center flex text-sm font-medium gap-1.5 w-[144px]">
+                                                    <div className="items-start flex text-sm font-medium gap-1.5 w-[144px]">
                                                         Minimum time between triggers
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
-                                                                <InfoIcon className="text-neutral-400 size-4" />
+                                                                <InfoIcon className="text-neutral-400 shrink-0 size-4" />
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 Minimum time to wait before triggering again
@@ -592,11 +594,11 @@ export default function TriggerDialog({ open, onOpenChange, onSubmit, resetTrigg
                                                     />
                                                 </Field>
                                                 <Field className="items-start gap-2" orientation="horizontal">
-                                                    <div className="items-center flex text-sm font-medium gap-1.5 w-[144px]">
+                                                    <div className="items-start flex text-sm font-medium gap-1.5 w-[144px]">
                                                         Wait after last change
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
-                                                                <InfoIcon className="text-neutral-400 size-4" />
+                                                                <InfoIcon className="text-neutral-400 shrink-0 size-4" />
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 Time to wait after detecting the last change
@@ -623,7 +625,7 @@ export default function TriggerDialog({ open, onOpenChange, onSubmit, resetTrigg
                                         {/* All types: Activation Window */}
                                         <>
                                             <div className="items-center flex gap-2">
-                                                <div className="items-center flex text-sm font-medium gap-1.5 w-[144px]">
+                                                <div className="items-center flex shrink-0 text-sm font-medium gap-1.5 w-[144px]">
                                                     Activation window
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
@@ -634,34 +636,39 @@ export default function TriggerDialog({ open, onOpenChange, onSubmit, resetTrigg
                                                         </TooltipContent>
                                                     </Tooltip>
                                                 </div>
-                                                <Toggle
-                                                    className="data-[state=on]:bg-(--du-bois-blue-700)/10 data-[state=on]:border-(--du-bois-blue-800) data-[state=on]:text-(--du-bois-blue-800) gap-1.5 px-3"
-                                                    onPressedChange={(pressed) => setTrigger((prev) => ({
-                                                        ...prev,
-                                                        activation: pressed ? {
-                                                            days: ["Mon", "Tue", "Wed", "Thu", "Fri"],
-                                                            endTime: "17:30:00",
-                                                            startTime: "09:30:00",
-                                                            timezone: "UTC-04:00"
-                                                        } : undefined
-                                                    }))}
-                                                    pressed={!!trigger.activation}
-                                                    variant="outline"
+
+                                                <Select 
+                                                    value={activationWindowMode}
+                                                    onValueChange={(value) => {
+                                                        setActivationWindowMode(value);
+                                                        if (value === "on") {
+                                                            setTrigger((prev) => ({
+                                                                ...prev,
+                                                                activation: undefined
+                                                            }));
+                                                        } else {
+                                                            setTrigger((prev) => ({
+                                                                ...prev,
+                                                                activation: {
+                                                                    days: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+                                                                    endTime: "17:30:00",
+                                                                    startTime: "09:30:00",
+                                                                    timezone: "UTC-04:00"
+                                                                }
+                                                            }));
+                                                        }
+                                                    }}
                                                 >
-                                                    {trigger.activation ? (
-                                                        <>
-                                                            <CheckIcon className="size-4" />
-                                                            Remove activation window
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <PlusIcon className="text-neutral-600 size-4" />
-                                                            Add activation window
-                                                        </>
-                                                    )}
-                                                </Toggle>
+                                                    <SelectTrigger className="w-full" id="activation-window">
+                                                        <SelectValue placeholder="Select an activation window" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="on">Always on</SelectItem>
+                                                        <SelectItem value="custom">Custom</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
                                             </div>
-                                            {trigger.activation && (
+                                            {activationWindowMode !== "on" && (
                                                 <div className="flex flex-col gap-4">
                                                     <Field className="items-start gap-2" orientation="horizontal">
                                                         <FieldLabel className="!flex-none mt-2 w-[144px]" htmlFor="time-days">Days</FieldLabel>
