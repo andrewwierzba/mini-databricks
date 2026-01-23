@@ -19,7 +19,7 @@ import Settings from "@/app/acc64e42-8f9d-4077-9767-f59f47379348/patterns/settin
 import TriggerDialog from "@/app/acc64e42-8f9d-4077-9767-f59f47379348/patterns/trigger-dialog";
 
 export default function Page() {
-    const [showDialog, setShowDialog] = useState<boolean>(false);
+    const [showDialog, setShowDialog] = useState<boolean>(true);
 
     return (
         <ApplicationShell>
