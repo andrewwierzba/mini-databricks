@@ -17,7 +17,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-import { Condition, Props as TriggerConditionProps } from "@/app/81ae035b-057f-45d5-8d8b-e82583bc2a65/components/condition";
+import { Condition, Props as TriggerConditionProps } from "@/app/5cb1397d-9d5c-4725-a406-5fba531fa9f1/components/condition";
 
 interface ConditionProps {
     condition: "all-updated" | "any-updated";
@@ -111,7 +111,7 @@ export default function Trigger({ onClose }: Props) {
                         </Field>
                         <Separator />
 
-                        {/* Trigger types */}
+                        {/* Trigger type */}
                         { trigger.type === "schedule" && (
                             <Field className="items-start relative" orientation="horizontal">
                                 <Field className="items-start relative" orientation="horizontal">

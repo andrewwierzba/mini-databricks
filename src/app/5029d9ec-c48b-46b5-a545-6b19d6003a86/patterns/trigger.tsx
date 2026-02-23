@@ -17,7 +17,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-import { Condition, Props as TriggerConditionProps } from "../../../app/216bec6d-e892-413c-a70c-15c977db4dbb/components/condition";
+import { Condition, Props as TriggerConditionProps } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/components/condition";
 
 interface ConditionProps {
     condition: "all-updated" | "any-updated";
