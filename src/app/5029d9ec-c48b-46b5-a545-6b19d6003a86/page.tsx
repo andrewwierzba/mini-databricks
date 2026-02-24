@@ -30,68 +30,72 @@ export default function Page() {
 
     return (
         <>
-            <ApplicationShell>
-                <ResizablePanelGroup direction="horizontal">
-                    <ResizablePanel className="p-4" defaultSize={75}>
-                        <div className="flex flex-col gap-4 h-full">
-                            <div className="flex gap-2">
-                                <Box className="bg-gray-50 border-gray-200 rounded-sm border-dashed flex h-full items-center justify-center w-full">
-                                    <span className="text-center">Navigation / toolbar</span>
-                                </Box>
-                                <div className="flex gap-2 justify-end">
-                                    <Button size="icon-sm" variant="ghost">
-                                        <OverflowIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
-                                    </Button>
-                                    <ButtonGroup>
-                                        <Button className="bg-(--du-bois-blue-600) border-b-0 border-l-0 rounded-sm border-r-white border-r-1 border-t-0 text-white hover:bg-(--du-bois-blue-700) hover:text-white" size="sm" variant="outline">Run now</Button>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button className="bg-(--du-bois-blue-600) rounded-sm border-none text-white hover:bg-(--du-bois-blue-700) hover:text-white" size="icon-sm" variant="outline">
-                                                    <ChevronDownIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent className="border-gray-200">
-                                                <DropdownMenuItem>Run now with different settings</DropdownMenuItem>
-                                                <DropdownMenuItem>Run backfill</DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </ButtonGroup>
+            <div className="h-full pb-8">
+                <ApplicationShell>
+                    <ResizablePanelGroup direction="horizontal">
+                        <ResizablePanel className="p-4" defaultSize={75}>
+                            <div className="flex flex-col gap-4 h-full">
+                                <div className="flex gap-2">
+                                    <Box className="bg-gray-50 border-gray-200 rounded-sm border-dashed flex h-full items-center justify-center w-full">
+                                        <span className="text-center">Navigation / toolbar</span>
+                                    </Box>
+                                    <div className="flex gap-2 justify-end">
+                                        <Button size="icon-sm" variant="ghost">
+                                            <OverflowIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+                                        </Button>
+                                        <ButtonGroup>
+                                            <Button className="bg-(--du-bois-blue-600) border-b-0 border-l-0 rounded-sm border-r-white border-r-1 border-t-0 text-white hover:bg-(--du-bois-blue-700) hover:text-white" size="sm" variant="outline">Run now</Button>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button className="bg-(--du-bois-blue-600) rounded-sm border-none text-white hover:bg-(--du-bois-blue-700) hover:text-white" size="icon-sm" variant="outline">
+                                                        <ChevronDownIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="border-gray-200">
+                                                    <DropdownMenuItem>Run now with different settings</DropdownMenuItem>
+                                                    <DropdownMenuItem>Run backfill</DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </ButtonGroup>
+                                    </div>
                                 </div>
+
+                                {/* Directed Acyclic Graph (DAG) */}
+                                <Graph className="border rounded-sm min-h-0 flex-1" />
                             </div>
+                        </ResizablePanel>
+                        <ResizableHandle />
+                        <ResizablePanel className="p-4" defaultSize={25}>
+                            <Settings
+                                author="andrew.wierzba@databricks.com"
+                                compute="Serverless"
+                                description="This job processes raw customer activity logs from the previous 24 hours and generates aggregated metrics for dashboard reporting."
+                                id="63481d34-4170-44c9-9def-eae3d60db014"
+                                onAddTrigger={() => setShowDialog(true)}
+                                onDeleteTrigger={() => setTrigger(undefined)}
+                                onEditTrigger={() => setShowDialog(true)}
+                                trigger={trigger}
+                            />
+                        </ResizablePanel>
+                    </ResizablePanelGroup>
 
-                            {/* Directed Acyclic Graph (DAG) */}
-                            <Graph className="border rounded-sm min-h-0 flex-1" />
-                        </div>
-                    </ResizablePanel>
-                    <ResizableHandle />
-                    <ResizablePanel className="p-4" defaultSize={25}>
-                        <Settings
-                            author="andrew.wierzba@databricks.com"
-                            compute="Serverless"
-                            description="This job processes raw customer activity logs from the previous 24 hours and generates aggregated metrics for dashboard reporting."
-                            id="63481d34-4170-44c9-9def-eae3d60db014"
-                            onAddTrigger={() => setShowDialog(true)}
-                            onDeleteTrigger={() => setTrigger(undefined)}
-                            onEditTrigger={() => setShowDialog(true)}
-                            trigger={trigger}
-                        />
-                    </ResizablePanel>
-                </ResizablePanelGroup>
+                    {/* Trigger Dialog */}
+                    <TriggerDialog
+                        onOpenChange={setShowDialog}
+                        onSubmit={(trigger) => {
+                            console.log('Trigger created:', trigger);
 
-                {/* Trigger Dialog */}
-                <TriggerDialog
-                    onOpenChange={setShowDialog}
-                    onSubmit={(trigger) => {
-                        console.log('Trigger created:', trigger);
+                            setTrigger(trigger);
+                            setShowDialog(false);
+                        }}
+                        open={showDialog}
+                        orientation={orientation}
+                        variant={variant}
+                    />
+                </ApplicationShell>
+            </div>
 
-                        setTrigger(trigger);
-                        setShowDialog(false);
-                    }}
-                    open={showDialog}
-                    orientation={orientation}
-                    variant={variant}
-                />
-            </ApplicationShell>
+            {/* Application settings */}
             <ApplicationSettings
                 controls={[
                     {
