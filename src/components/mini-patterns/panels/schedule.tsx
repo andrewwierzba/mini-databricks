@@ -59,7 +59,7 @@ interface TriggerProps {
 }
 
 interface Props {
-    advanced: AdvancedProps;
+    advanced?: AdvancedProps;
     author: string;
     compute?: ComputeProps[];
     description?: string;
