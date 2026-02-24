@@ -99,26 +99,26 @@ export function Graph({ className }: { className?: string }) {
 
     return (
         <div
-            aria-label="graph" 
+            aria-label="directed-acyclic-graph" 
             className={cn("bg-gray-50", className)}
         >
             <ReactFlow
-                nodes={initialNodes}
-                edges={initialEdges}
-                nodeTypes={nodeTypes}
-                fitView
                 defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+                edges={initialEdges}
+                fitView
+                nodes={initialNodes}
+                nodeTypes={nodeTypes}
             >
                 <Background 
-                    variant={BackgroundVariant.Dots} 
+                    color="#e5e7eb"
                     gap={12} 
                     size={1}
-                    color="#e5e7eb"
+                    variant={BackgroundVariant.Dots} 
                 />
                 <Controls 
-                    showZoom={true}
                     showFitView={true}
                     showInteractive={false}
+                    showZoom={true}
                 />
             </ReactFlow>
         </div>

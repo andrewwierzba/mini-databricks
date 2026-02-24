@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ArrowLeft, X } from "lucide-react";
 
@@ -28,17 +28,26 @@ interface TriggerDialogProps {
     variant?: TriggerFormProps["variant"];
 }
 
+const DEFAULT_TRIGGER: TriggerProps = {
+    conditions: [],
+    interval: 1,
+    scheduleMode: "interval",
+    status: true,
+    time: "09:00:00",
+    timeUnit: "day",
+    type: "schedule"
+};
+
 export default function TriggerDialog({ onOpenChange, onSubmit, open, orientation, variant }: TriggerDialogProps) {
     const [depth, setDepth] = useState(0);
-    const [trigger, setTrigger] = useState<TriggerProps>({
-        conditions: [],
-        interval: 1,
-        scheduleMode: "interval",
-        status: true,
-        time: "09:00:00",
-        timeUnit: "day",
-        type: "schedule"
-    });
+    const [trigger, setTrigger] = useState<TriggerProps>(DEFAULT_TRIGGER);
+
+    useEffect(() => {
+        if (open) {
+            setDepth(0);
+            setTrigger(DEFAULT_TRIGGER);
+        }
+    }, [open]);
 
     return (
         <Dialog

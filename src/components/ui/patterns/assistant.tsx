@@ -4,25 +4,39 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { AtIcon, ChevronDownIcon, ChevronUpIcon, CloseIcon, GearIcon, OverflowIcon, PlusIcon, SendIcon } from "@databricks/design-system";
-import { Avatar } from "@databricks/design-system";
+import { AtIcon, CheckIcon, ChevronDownIcon, ChevronUpIcon, CloseIcon, GearIcon, OverflowIcon, PlusIcon, SendIcon } from "@databricks/design-system";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { GradientSparkle } from "./navigation";
 
 interface PreviewCard {
     content?: React.ReactNode
+    diff?: {
+        added?: number
+        removed?: number
+    }
     disabled?: boolean
     header: {
         title?: string | React.ReactNode
     }
     isExpanded?: boolean
+    status?: "completed" | "pending"
+    verification?: {
+        actions?: Array<{
+            id?: string
+            label: string | React.ReactNode
+            onClick: () => void
+            variant?: "default" | "outline"
+        }>
+        required: boolean
+    }
 }
 
-export function AssistantPreviewCard({ content, disabled, header, isExpanded = true }: PreviewCard) {
+export function AssistantPreviewCard({ content, diff, disabled, header, isExpanded = true, status, verification }: PreviewCard) {
     const [expanded, setExpanded] = useState(isExpanded)
 
     useEffect(() => {
@@ -38,24 +52,63 @@ export function AssistantPreviewCard({ content, disabled, header, isExpanded = t
     return (
         <Card 
             className={cn(
-                "border border-neutral-100 rounded-md shadow-xs text-sm gap-0 max-h-32 overflow-y-auto py-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-thumb]:opacity-0 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:transition-opacity [&::-webkit-scrollbar-track]:bg-transparent [scrollbar-color:rgb(209_213_219)_transparent] [scrollbar-width:thin] hover:[&::-webkit-scrollbar-thumb]:bg-gray-600 hover:[&::-webkit-scrollbar-thumb]:opacity-100",
+                "border border-neutral-100 rounded-md shadow-xs text-sm gap-0 py-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-thumb]:opacity-0 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:transition-opacity [&::-webkit-scrollbar-track]:bg-transparent [scrollbar-color:rgb(209_213_219)_transparent] [scrollbar-width:thin] hover:[&::-webkit-scrollbar-thumb]:bg-gray-600 hover:[&::-webkit-scrollbar-thumb]:opacity-100",
                 disabled && "bg-neutral-50"
             )}
         >
             <CardHeader className="items-center flex justify-between px-3 py-1.5">
-                <span className="text-neutral-500">{header.title}</span>
-                <Button onClick={handleToggle} size="icon-sm" variant="ghost">
-                    {expanded ? (
-                        <ChevronUpIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
-                    ) : (
-                        <ChevronDownIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+                <div className="items-center flex gap-2">
+                    <Button onClick={handleToggle} size="icon-sm" variant="ghost">
+                        {expanded ? (
+                            <ChevronUpIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+                        ) : (
+                            <ChevronDownIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+                        )}
+                    </Button>
+                    <span className="text-neutral-500">{header.title}</span>
+
+                    {/* Diff */}
+                    {diff && (
+                        <div className="items-center flex gap-1">
+                            {diff?.added !== undefined && 
+                                <span className="text-green-600">+{diff?.added.toString()}</span>
+                            }
+                            {diff?.removed !== undefined && 
+                                <span className="text-red-600">-{diff?.removed.toString()}</span>
+                            }
+                        </div>
                     )}
-                </Button>
+                </div>
+
+                {/* Status */}
+                {status === "completed" && (
+                    <CheckIcon className="size-4 text-green-500" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+                )}
+                {status === "pending" && (
+                    <Spinner className="size-4 text-neutral-500" />
+                )}
             </CardHeader>
             {expanded && content && (
-                <CardContent className="border-t border-neutral-100 overflow-x-auto px-0">
+                <CardContent className="border-t border-neutral-100 max-h-32 overflow-x-auto px-0">
                     {content}
                 </CardContent>
+            )}
+            {verification && (
+                <CardFooter className="items-center border-t-[1px] border-neutral-100 flex gap-2 justify-between px-3 py-1.5">
+                    <span>Ask every time</span>
+                    <div className="flex gap-1.5">
+                        {verification.actions?.map((action) => (
+                            <Button
+                                key={action.id}
+                                onClick={action.onClick}
+                                size="sm"
+                                variant={action.variant ?? "default"}
+                            >
+                                {action.label}
+                            </Button>
+                        ))}
+                    </div>
+                </CardFooter>
             )}
         </Card>
     )
@@ -192,7 +245,7 @@ export function Assistant({ defaultWidth = "384px", minWidth = "256px", onApplyC
     return (
         <div
             aria-label="assistant"
-            className="border-l border-(--du-bois-color-border) flex flex-col h-full p-2"
+            className="flex flex-col h-full p-2"
             style={{
                 minWidth: minWidth,
                 width: defaultWidth
@@ -331,9 +384,12 @@ export function Assistant({ defaultWidth = "384px", minWidth = "256px", onApplyC
                                                 <>
                                                     <AssistantPreviewCard
                                                         content={message.previewCard.content}
+                                                        diff={message.previewCard.diff}
                                                         disabled={message.rejected}
                                                         header={message.previewCard.header}
                                                         isExpanded={previewCardExpanded ?? true}
+                                                        status={message.previewCard.status}
+                                                        verification={message.previewCard.verification}
                                                     />
 
                                                     {message.actions && message.actions.length > 0 && !message.actionsDismissed && (

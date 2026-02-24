@@ -174,7 +174,7 @@ export function Code({
                     />
                 </div>
             </div>
-            <div aria-label="code-configuration" className="items-center bg-gray-50 border-gray-200 border-t-1 text-gray-400 flex justify-between px-2 w-full">
+            {/* <div aria-label="code-configuration" className="items-center bg-gray-50 border-gray-200 border-t-1 text-gray-400 flex justify-between px-2 w-full">
                 <div />
                 <div className="items-center flex gap-2">
                     <button className="items-center hover:bg-black/5 flex px-0.5">
@@ -182,7 +182,7 @@ export function Code({
                         <span className="text-xs p-0.5">{type === "sql" ? "SQL" : type.charAt(0).toUpperCase() + type.slice(1)}</span>
                     </button>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }

@@ -1,9 +1,26 @@
-import { PauseIcon, PlayIcon } from "@databricks/design-system";
+import { PauseIcon, PencilIcon, PlayIcon } from "@databricks/design-system";
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 
 import { SlackIcon } from "@/assets/icons/slack-icon";
+
+interface AdvancedProps {
+    maximumConcurrentRuns: number;
+    queue: boolean;
+}
+
+interface ComputeProps {
+    id: string;
+    value: string;
+}
+
+interface GitProps {
+    branch?: string;
+    commit?: string;
+    provider: "awsCodeCommit" | "azureDevOpsServices" | "bitbucketCloud" | "bitbucketServer" | "gitHub" | "gitHubEnterprise" | "gitLab" | "gitLabEnterpriseEdition";
+    url: string;
+}
 
 interface NotificationProps {
     failure?: boolean;
@@ -40,23 +57,35 @@ interface TriggerProps {
 }
 
 interface Props {
+    advanced: AdvancedProps;
     author: string;
+    compute?: ComputeProps[];
     description?: string;
+    git?: GitProps;
     id: string;
     notifications?: NotificationProps[];
     parameters?: ParameterProps[];
     tags?: TagProps[];
     triggers?: TriggerProps[];
+    onAddTrigger?: () => void;
+    onDeleteTrigger?: () => void;
+    onEditTrigger?: () => void;
 }
 
 export default function Panel({ 
+    advanced = { maximumConcurrentRuns: 1, queue: true },
     author = "andrew.wierzba@databricks.com",
+    compute,
     description,
+    git,
     id = "216bec6d-e892-413c-a70c-15c977db4dbb",
     notifications = [],
     parameters = [],
     tags = [],
     triggers = [],
+    onAddTrigger,
+    onDeleteTrigger,
+    onEditTrigger,
 }: Props) {
     const sections = [{
         content: 
@@ -70,8 +99,19 @@ export default function Panel({
                     <span className="truncate flex-1 min-w-0">{author}</span>
                 </div>
                 <div aria-label="run-as" className="flex gap-2">
-                    <span className="max-w-24 w-full">Run as</span>
-                    <span className="truncate flex-1 min-w-0">{author}</span>
+                    <span className="mt-0.5 max-w-24 w-full">Run as</span>
+                    <span className="mt-0.5 truncate min-w-0">{author}</span>
+                    <Button
+                        aria-label="edit-run-as"
+                        className="border-neutral-200 rounded-sm size-6"
+                        size="icon-sm"
+                        variant="ghost"
+                    >
+                        <PencilIcon
+                            onPointerEnterCapture={undefined}
+                            onPointerLeaveCapture={undefined}
+                        />
+                    </Button>
                 </div>
                 <div aria-label="description" className="items-start flex gap-2">
                     <span className="max-w-24 w-full">Description</span>
@@ -125,6 +165,7 @@ export default function Panel({
                                     <Button
                                         aria-label="add-trigger"
                                         className="border-neutral-200 rounded-sm h-6 px-2 w-fit"
+                                        onClick={onEditTrigger}
                                         size="sm"
                                         variant="outline"
                                     >
@@ -164,6 +205,7 @@ export default function Panel({
                                     <Button
                                         aria-label="delete-trigger"
                                         className="border-neutral-200 rounded-sm h-6 px-2 w-fit"
+                                        onClick={onDeleteTrigger}
                                         size="sm"
                                         variant="outline"
                                     >
@@ -179,6 +221,7 @@ export default function Panel({
                         <Button
                             aria-label="add-trigger"
                             className="border-neutral-200 rounded-sm h-6 px-2 w-fit"
+                            onClick={onAddTrigger}
                             size="sm"
                             variant="outline"
                         >
@@ -221,7 +264,25 @@ export default function Panel({
         label: "Parameters"
     }, {
         content: 
-            <span>No compute configured.</span>,
+            <>
+                {compute ? (
+                    <div className="flex flex-wrap gap-2">
+                        {compute.map((compute) => (
+                            <span className="bg-gray-200 rounded-sm px-1.5" key={compute.id}>{compute.value}</span>
+                        ))}
+                    </div>
+                ) : (
+                    <span>No compute configured.</span>
+                )}
+                <Button
+                    aria-label="configure-compute"
+                    className="border-gray-200 rounded-sm h-6 px-2 w-fit"
+                    size="sm"
+                    variant="outline"
+                >
+                    {compute && compute.length > 0 ? "Swap" : "Add compute"}
+                </Button>
+            </>,
         label: "Compute"
     }, {
         content: 
@@ -288,7 +349,50 @@ export default function Panel({
                     </Button>
                 </>,
         label: "Notifications"
-    }];
+    }, {
+        content: 
+            <>
+                <span>No git settings configured.</span>
+                <Button
+                    aria-label="add-git"
+                    className="border-neutral-200 rounded-sm h-6 px-2 w-fit"
+                    size="sm"
+                    variant="outline"
+                >
+                    Add git
+                </Button>
+            </>,
+        label: "Git"
+    }, {
+        content: 
+            <div className="flex flex-col gap-2">
+                <div aria-label="queue" className="flex gap-2">
+                    <span className="max-w-24 w-full">Queue</span>
+                    <Switch
+                        aria-label="queue-switch"
+                        checked={advanced?.queue}
+                        className="data-[state=checked]:bg-sky-600"
+                        onCheckedChange={() => {}}
+                    />
+                </div>
+                <div aria-label="maximum-concurrent-runs" className="flex gap-2">
+                    <span className="mt-0.5 max-w-24 w-full">Maximum concurrent runs</span>
+                    <span className="mt-0.5">{advanced?.maximumConcurrentRuns}</span>
+                    <Button
+                        aria-label="edit-maximum-concurrent-runs"
+                        className="border-neutral-200 rounded-sm size-6"
+                        size="icon-sm"
+                        variant="ghost"
+                    >
+                        <PencilIcon
+                            onPointerEnterCapture={undefined}
+                            onPointerLeaveCapture={undefined}
+                        />
+                    </Button>
+                </div>
+            </div>,
+        label: "Advanced"
+    }, ];
 
     return (
         <div aria-label="panel-1" className="bg-white h-full overflow-y-scroll p-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-thumb]:opacity-0 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:transition-opacity [&::-webkit-scrollbar-track]:bg-transparent [scrollbar-color:rgb(209_213_219)_transparent] [scrollbar-width:thin] hover:[&::-webkit-scrollbar-thumb]:bg-gray-600 hover:[&::-webkit-scrollbar-thumb]:opacity-100">
