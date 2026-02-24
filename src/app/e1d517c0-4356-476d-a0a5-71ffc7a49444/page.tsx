@@ -30,14 +30,14 @@ export default function Page() {
 								</Box>
 								<div className="flex gap-2 justify-end">
 									<Button size="icon-sm" variant="ghost">
-										<OverflowIcon />
+										<OverflowIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
 									</Button>
 									<ButtonGroup>
 										<Button className="bg-(--du-bois-blue-600) border-b-0 border-l-0 rounded-sm border-r-white border-r-1 border-t-0 text-white hover:bg-(--du-bois-blue-700) hover:text-white" size="sm" variant="outline">Run now</Button>
 										<DropdownMenu>
 											<DropdownMenuTrigger asChild>
 												<Button className="bg-(--du-bois-blue-600) rounded-sm border-none text-white hover:bg-(--du-bois-blue-700) hover:text-white" size="icon-sm" variant="outline">
-													<ChevronDownIcon />
+													<ChevronDownIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
 												</Button>
 											</DropdownMenuTrigger>
 											<DropdownMenuContent className="border-gray-200">
