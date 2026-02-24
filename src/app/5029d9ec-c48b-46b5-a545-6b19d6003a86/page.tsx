@@ -60,7 +60,7 @@ export default function Page() {
                             </div>
 
                             {/* Directed Acyclic Graph (DAG) */}
-                            <Graph className="min-h-0 flex-1" />
+                            <Graph className="border rounded-sm min-h-0 flex-1" />
                         </div>
                     </ResizablePanel>
                     <ResizableHandle />
