@@ -1,4 +1,6 @@
-import { PauseIcon, PencilIcon, PlayIcon } from "@databricks/design-system";
+import { useState } from "react";
+
+import { ChevronDownIcon, ChevronRightIcon, PauseIcon, PencilIcon, PlayIcon } from "@databricks/design-system";
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -394,6 +396,8 @@ export default function Panel({
         label: "Advanced"
     }, ];
 
+    const [collapsedSections, setCollapsedSections] = useState<number[]>([7]);
+
     return (
         <div aria-label="panel-1" className="bg-white h-full overflow-y-scroll p-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-thumb]:opacity-0 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:transition-opacity [&::-webkit-scrollbar-track]:bg-transparent [scrollbar-color:rgb(209_213_219)_transparent] [scrollbar-width:thin] hover:[&::-webkit-scrollbar-thumb]:bg-gray-600 hover:[&::-webkit-scrollbar-thumb]:opacity-100">
             {sections.map((section, index) => (
@@ -402,8 +406,15 @@ export default function Panel({
                     className={`${index > 0 ? 'border-t' : ''} border-neutral-200 flex flex-col text-sm gap-2 p-4 w-full`}
                     key={`panel-section-${index}`}
                 >
-                    <div className="font-bold">{section.label}</div>
-                    {section.content}
+                    <div className="items-center flex font-bold gap-1.5" onClick={() => setCollapsedSections((prev) => prev.includes(index) ? prev.filter((item) => item !== index) : [...prev, index])}>
+                        {!collapsedSections.includes(index) ? <ChevronDownIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} /> : <ChevronRightIcon onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />}
+                        {section.label}
+                    </div>
+                    {!collapsedSections.includes(index) && (
+                        <div className="flex flex-col gap-2 pl-6">
+                            {section.content}
+                        </div>
+                    )}
                 </div>
             ))}
         </div>
