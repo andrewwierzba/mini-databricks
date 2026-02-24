@@ -50,12 +50,53 @@ interface TriggerProps {
     id: string;
     interval?: number;
     minute?: number;
+    minuteOffset?: number;
+    monthDays?: number[];
     scheduleMode?: "simple" | "advanced";
     status?: boolean;
     timeUnit?: string;
     timezone?: string;
     type: string;
     useCronExpression?: boolean;
+    weekDays?: string[];
+}
+
+function formatSimpleSchedule(trigger: TriggerProps): string {
+    const interval = trigger.interval ?? 1;
+    const unit = trigger.timeUnit ?? "day";
+    const plural = interval === 1 ? "" : "s";
+    const time = trigger.hour != null && trigger.minute != null
+        ? `${String(trigger.hour).padStart(2, "0")}:${String(trigger.minute).padStart(2, "0")}`
+        : undefined;
+    const tz = trigger.timezone ? ` ${trigger.timezone}` : "";
+
+    if (unit === "minute") return `Every ${interval} minute${plural}`;
+    if (unit === "hour") {
+        if (trigger.minuteOffset != null && trigger.minuteOffset > 0) return `Every ${interval} hour${plural} at ${trigger.minuteOffset} minutes past${tz}`;
+        return `Every ${interval} hour${plural}${tz}`;
+    }
+    if (unit === "day") {
+        return time ? `Every ${interval} day${plural} at ${time}${tz}` : `Every ${interval} day${plural}`;
+    }
+    if (unit === "week") {
+        const days = trigger.weekDays?.length ? ` on ${trigger.weekDays.join(", ")}` : "";
+        return time ? `Every ${interval} week${plural}${days} at ${time}${tz}` : `Every ${interval} week${plural}${days}`;
+    }
+    if (unit === "month") {
+        const days = trigger.monthDays?.length
+            ? ` on ${trigger.monthDays.map((d) => {
+                if (d === 0) return "last day of month";
+                const n = d % 100;
+                if (n >= 11 && n <= 13) return `${d}th`;
+                if (d % 10 === 1) return `${d}st`;
+                if (d % 10 === 2) return `${d}nd`;
+                if (d % 10 === 3) return `${d}rd`;
+                return `${d}th`;
+            }).join(", ")}`
+            : "";
+        return time ? `Every ${interval} month${plural}${days} at ${time}${tz}` : `Every ${interval} month${plural}${days}`;
+    }
+    return `Every ${interval} ${unit}${plural}`;
 }
 
 interface Props {
@@ -147,9 +188,6 @@ export default function Panel({
                             <div key={trigger.id} className="flex flex-col gap-2">
                                 <div className="flex flex-col gap-1">
                                     <span className="font-bold capitalize">{trigger.type} {trigger.status === false ? "(Paused)" : ""}</span>
-                                    {trigger.type === "schedule" && trigger.scheduleMode === "simple" && (
-                                        <span className="truncate">Every {trigger.interval} {trigger.timeUnit}</span>
-                                    )}
                                     {trigger.type === "schedule" && trigger.scheduleMode === "advanced" && (
                                         <span className="truncate">
                                             {trigger.useCronExpression && trigger.cronExpression 
@@ -158,8 +196,8 @@ export default function Panel({
                                             }
                                         </span>
                                     )}
-                                    {trigger.type === "schedule" && !trigger.scheduleMode && (
-                                        <span className="truncate">Every {trigger.interval} {trigger.timeUnit}</span>
+                                    {trigger.type === "schedule" && trigger.scheduleMode !== "advanced" && (
+                                        <span className="truncate">{formatSimpleSchedule(trigger)}</span>
                                     )}
                                 </div>
                                 <div className="flex gap-2">
