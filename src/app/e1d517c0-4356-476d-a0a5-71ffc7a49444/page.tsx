@@ -55,9 +55,11 @@ export default function Page() {
 					<ResizableHandle />
 					<ResizablePanel className="p-4" defaultSize={25}>
 						<Panel
-							author="andrew.wierzba@databricks.com"
+							author="first.lastname@databricks.com"
+							compute={[{ id: "compute-1", value: "Serverless" }]}
 							description="This job processes raw customer activity logs from the previous 24 hours and generates aggregated metrics for dashboard reporting."
 							id="e1d517c0-4356-476d-a0a5-71ffc7a49444"
+							parameters={[{ id: "parameter-1", label: "env", value: "staging" }]}
 						/>
 					</ResizablePanel>
 				</ResizablePanelGroup>

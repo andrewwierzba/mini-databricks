@@ -132,10 +132,10 @@ const WEEK_DAYS: { label: string; value: Days }[] = [
 export type FieldOrientation = "horizontal" | "vertical";
 
 export interface Props {
-    onChange?: (trigger: TriggerProps) => void;
     orientation?: FieldOrientation;
     trigger?: TriggerProps;
     variant?: "combined" | "default";
+    onChange?: (trigger: TriggerProps) => void;
 }
 
 export default function TriggerForm({ onChange, orientation = "horizontal", trigger: triggerProp, variant = "default" }: Props) {

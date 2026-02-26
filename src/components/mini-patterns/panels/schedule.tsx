@@ -35,11 +35,13 @@ interface NotificationProps {
 
 interface ParameterProps {
     id: string;
+    label: string;
     value: string;
 };
 
 interface TagProps {
    id: string;
+   label: string;
    value: string;
 };
 
@@ -277,7 +279,7 @@ export default function Panel({
                 <>
                     <div className="flex flex-wrap gap-2">
                         {parameters.map((parameter) => (
-                            <span className="bg-neutral-200 rounded-sm px-1.5" key={parameter.id}>{parameter.id}: {parameter.value}</span>
+                            <span className="bg-neutral-200 rounded-sm px-1.5" key={parameter.id}>{parameter.label}: {parameter.value}</span>
                         ))}
                     </div>
                     <Button

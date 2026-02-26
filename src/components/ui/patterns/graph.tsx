@@ -4,13 +4,12 @@ import { useCallback, useMemo } from "react"
 import ReactFlow, {
     Background,
     Controls,
-    MiniMap,
-    Node,
     Edge,
+    Handle,
+    Node,
     NodeTypes,
     BackgroundVariant,
-    Panel,
-    useReactFlow,
+    Position,
 } from "reactflow"
 import "reactflow/dist/style.css"
 
@@ -21,40 +20,53 @@ import { CheckCircleIcon, GridDashIcon } from "@databricks/design-system"
 import { Separator } from "@/components/ui/separator"
 
 // Custom Node Component
-function StepNode({ data }: { data: { label: string } }) {
+interface StepNodeData {
+    content?: React.ReactNode;
+    label: string;
+    showSource?: boolean;
+    showTarget?: boolean;
+}
+
+function StepNode({ data }: { data: StepNodeData }) {
     return (
         <div
             aria-label="graph-step"
-            className="bg-white rounded-sm shadow-xs w-[240px]"
-                    >
-                        <div className="items-center flex gap-2 p-2">
-                            <div aria-label="step-icon" className="bg-gray-100 rounded-sm flex h-6 p-1 w-6">
-                                <GridDashIcon
-                                    onPointerEnterCapture={undefined}
-                                    onPointerLeaveCapture={undefined}
-                                    style={{
-                                        color: "var(--du-bois-color-text-secondary)",
-                                    }}
-                                />
-                            </div>
-                            <span aria-label="step-name" className="text-sm font-semibold flex-1 truncate">
+            className="bg-white relative rounded-sm shadow-xs w-[240px]"
+        >
+            {data.showTarget !== false && <Handle className="!bg-gray-300 !border-none !h-2 !w-2" position={Position.Left} type="target" />}
+            {data.showSource !== false && <Handle className="!bg-gray-300 !border-none !h-2 !w-2" position={Position.Right} type="source" />}
+            <div className="items-center flex gap-2 p-2">
+                <div aria-label="step-icon" className="bg-gray-100 rounded-sm flex h-6 p-1 w-6">
+                    <GridDashIcon
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                        style={{
+                            color: "var(--du-bois-color-text-secondary)",
+                        }}
+                    />
+                </div>
+                <span aria-label="step-name" className="text-sm font-semibold flex-1 truncate">
                     {data.label}
-                            </span>
-                            <div aria-label="step-status" className="flex h-6 items-center justify-center w-6">
-                                <CheckCircleIcon
-                                    onPointerEnterCapture={undefined}
-                                    onPointerLeaveCapture={undefined}
-                                    style={{
-                                        color: "var(--du-bois-color-validation-success)",
-                                    }}
-                                />
-                            </div>
-                        </div>
-                        <Separator className="bg-gray-200" />
-                        <div aria-label="" className="p-2">
-                            <div className="bg-gray-50 border border-gray-200 border-dashed h-[60px] rounded" />
-                        </div>
-                    </div>
+                </span>
+                <div aria-label="step-status" className="flex h-6 items-center justify-center w-6">
+                    <CheckCircleIcon
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                        style={{
+                            color: "var(--du-bois-color-validation-success)",
+                        }}
+                    />
+                </div>
+            </div>
+            <Separator className="bg-gray-200" />
+            <div aria-label="" className="min-w-0 overflow-hidden p-2">
+                {data?.content ? (
+                    data.content
+                ) : (
+                    <div className="bg-gray-50 border border-gray-200 border-dashed h-[60px] rounded" />
+                )}
+            </div>
+        </div>
     )
 }
 
@@ -68,32 +80,38 @@ export function Graph({ className }: { className?: string }) {
             id: "0", 
             type: "step",
             position: { x: 50, y: 50 },
-            data: { label: "Step 001" }
+            data: { 
+                content: 
+                    <>
+                        <span className="bg-neutral-200 block rounded-sm px-1.5 truncate">/pipelines/bronze/customer_activity_ingest</span>
+                    </>,
+                label: "Ingest customers",
+                showTarget: false,
+            }
         },
         { 
             id: "1", 
             type: "step",
             position: { x: 340, y: 50 },
-            data: { label: "Step 002" }
+            data: { label: "Transform customers" }
         },
         { 
             id: "2", 
             type: "step",
-            position: { x: 340, y: 217 },
-            data: { label: "Step 003" }
+            position: { x: 630, y: 50 },
+            data: { label: "Aggregate" }
         },
         { 
             id: "3", 
             type: "step",
-            position: { x: 630, y: 50 },
-            data: { label: "Step 004" }
+            position: { x: 920, y: 50 },
+            data: { label: "Quality check", showSource: false }
         },
     ], [])
 
     const initialEdges: Edge[] = useMemo(() => [
         { id: "e0-1", source: "0", target: "1", type: "smoothstep" },
-        { id: "e0-2", source: "0", target: "2", type: "smoothstep" },
-        { id: "e1-3", source: "1", target: "3", type: "smoothstep" },
+        { id: "e1-2", source: "1", target: "2", type: "smoothstep" },
         { id: "e2-3", source: "2", target: "3", type: "smoothstep" },
     ], [])
 
@@ -103,9 +121,9 @@ export function Graph({ className }: { className?: string }) {
             className={cn("bg-gray-50", className)}
         >
             <ReactFlow
-                defaultViewport={{ x: 0, y: 0, zoom: 1 }}
                 edges={initialEdges}
                 fitView
+                fitViewOptions={{ maxZoom: 1, padding: 0.2 }}
                 nodes={initialNodes}
                 nodeTypes={nodeTypes}
             >

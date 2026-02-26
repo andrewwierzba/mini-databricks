@@ -9,6 +9,7 @@ interface Props {
     compute?: string;
     description?: string;
     id: string;
+    parameters?: { id: string; label: string; value: string }[];
     trigger?: TriggerProps;
     onAddTrigger?: () => void;
     onDeleteTrigger?: () => void;
@@ -20,6 +21,7 @@ export default function Settings({
     compute,
     description,
     id,
+    parameters,
     trigger,
     onAddTrigger,
     onDeleteTrigger,
@@ -48,6 +50,7 @@ export default function Settings({
             compute={compute ? [{ id: "compute-1", value: compute }] : undefined}
             description={description}
             id={id}
+            parameters={parameters}
             triggers={triggers}
             onAddTrigger={onAddTrigger}
             onDeleteTrigger={onDeleteTrigger}

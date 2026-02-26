@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -12,9 +12,9 @@ interface Props {
     orientation?: "horizontal" | "vertical";
 }
 
-export default function Page({ orientation = "horizontal" }: Props) {
+function PageContent({ orientation = "horizontal" }: Props) {
 	const [cursor, setCursor] = useState({ visible: false, x: 0, y: 0 });
-	
+
 	const cursorId = useSearchParams().get("id");
 
 	return (
@@ -41,5 +41,13 @@ export default function Page({ orientation = "horizontal" }: Props) {
 				</div>
 			)}
 		</ResizablePanelGroup>
+	);
+}
+
+export default function Page({ orientation = "horizontal" }: Props) {
+	return (
+		<Suspense fallback={null}>
+			<PageContent orientation={orientation} />
+		</Suspense>
 	);
 }

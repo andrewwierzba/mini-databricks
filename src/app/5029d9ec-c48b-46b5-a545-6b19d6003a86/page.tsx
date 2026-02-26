@@ -71,10 +71,11 @@ export default function Page() {
                                 compute="Serverless"
                                 description="This job processes raw customer activity logs from the previous 24 hours and generates aggregated metrics for dashboard reporting."
                                 id="63481d34-4170-44c9-9def-eae3d60db014"
+                                parameters={[{ id: "env", label: "Environment", value: "staging" }]}
+                                trigger={trigger}
                                 onAddTrigger={() => setShowDialog(true)}
                                 onDeleteTrigger={() => setTrigger(undefined)}
                                 onEditTrigger={() => setShowDialog(true)}
-                                trigger={trigger}
                             />
                         </ResizablePanel>
                     </ResizablePanelGroup>
