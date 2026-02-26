@@ -1,34 +1,45 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
-import { ApplicationSettings } from "@/components/mini-ui/application-settings";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
-import TriggerForm, { Props } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/trigger-form";
+import Form1 from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/form-1";
+import Form2 from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/form-2";
 
-export default function Page() {
-	const [variant, setVariant] = useState<NonNullable<Props["variant"]>>("default");
+interface Props {
+    orientation?: "horizontal" | "vertical";
+}
+
+export default function Page({ orientation = "horizontal" }: Props) {
+	const [cursor, setCursor] = useState({ visible: false, x: 0, y: 0 });
+	
+	const cursorId = useSearchParams().get("id");
 
 	return (
-		<>
-			<div className="pb-8">
-				<TriggerForm variant={variant} />
-			</div>
-			<ApplicationSettings
-				controls={[
-					{
-						id: "variant",
-						label: "Variant",
-						onChange: (value) => setVariant(value as NonNullable<Props["variant"]>),
-						options: [
-							{ label: "Default", value: "default" },
-							{ label: "Inline", value: "inline" },
-						],
-						type: "select",
-						value: variant,
-					},
-				]}
-			/>
-		</>
+		<ResizablePanelGroup
+			className="bg-background"
+			direction={orientation}
+			onMouseLeave={() => setCursor((prev) => ({ ...prev, visible: false }))}
+			onMouseMove={(e) => setCursor({ visible: true, x: e.clientX, y: e.clientY })}
+		>
+			<ResizablePanel className="p-6" defaultSize={50}>
+				<Form1 />
+			</ResizablePanel>
+			<ResizableHandle />
+			<ResizablePanel className="p-6" defaultSize={50}>
+				<Form2 orientation={orientation} />
+			</ResizablePanel>
+
+			{cursorId && cursor.visible && (
+				<div
+					className="bg-primary fixed pointer-events-none px-2 py-0.5 rounded-full text-primary-foreground text-xs z-100"
+					style={{ left: cursor.x + 12, top: cursor.y + 12 }}
+				>
+					{cursorId}
+				</div>
+			)}
+		</ResizablePanelGroup>
 	);
 }
