@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { TIME_ZONES } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/components/timezone-select";
+import { TIME_ZONES } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/components/time-zone-select";
 
 type Days = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
 type TriggerType = "continuous" | "file-arrival" | "model-update" | "schedule" | "table-update";
@@ -65,7 +65,7 @@ export default function Form({ orientation }: Props) {
 	const [trigger, setTrigger] = useState<TriggerState>(DEFAULT_TRIGGER);
 
 	return (
-		<FieldSet>
+		<FieldSet className="[&_[data-slot=button]]:rounded-sm [&_[data-slot=input]]:rounded-sm [&_[data-slot=input]:focus-visible]:ring-2 [&_[data-slot=input]:focus-visible]:ring-(--du-bois-blue-600) [&_[data-slot=select-trigger]]:rounded-sm [&_[data-slot=select-trigger]:focus]:ring-2 [&_[data-slot=select-trigger]:focus]:ring-(--du-bois-blue-600) [&_[data-slot=select-trigger]:focus-visible]:ring-2 [&_[data-slot=select-trigger]:focus-visible]:ring-(--du-bois-blue-600)">
 			<FieldGroup className="gap-6">
 				{/* Status */}
 				{trigger.type !== undefined && (
@@ -97,7 +97,7 @@ export default function Form({ orientation }: Props) {
 						<SelectTrigger className="w-full" id="trigger-type">
 							<SelectValue placeholder="None (manual)" />
 						</SelectTrigger>
-						<SelectContent>
+						<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 							<SelectItem value="schedule">Scheduled</SelectItem>
 							<SelectItem value="file-arrival">File arrival</SelectItem>
 							<SelectItem value="table-update">Table update</SelectItem>
@@ -113,8 +113,8 @@ export default function Form({ orientation }: Props) {
 						<FieldLabel htmlFor="trigger-schedule-type">Schedule type</FieldLabel>
 						<Tabs className="gap-6" defaultValue="simple">
 							<TabsList className="bg-transparent border-none h-auto p-0 rounded-sm">
-								<TabsTrigger className="border border-border border-r-0 data-[state=active]:bg-(--du-bois-blue-600)/16 data-[state=active]:border-(--du-bois-blue-800) data-[state=active]:border-r data-[state=active]:rounded-e-none data-[state=active]:text-(--du-bois-blue-800) h-8 px-3 py-1.5 rounded-e-none rounded-s-md" value="simple">Simple</TabsTrigger>
-								<TabsTrigger className="border border-border border-l-0 data-[state=active]:bg-(--du-bois-blue-600)/16 data-[state=active]:border-(--du-bois-blue-800) data-[state=active]:border-l data-[state=active]:rounded-s-none data-[state=active]:text-(--du-bois-blue-800) h-8 px-3 py-1.5 rounded-e-md rounded-s-none" value="advanced">Advanced</TabsTrigger>
+								<TabsTrigger className="border border-border border-r-0 data-[state=active]:bg-(--du-bois-blue-600)/16 data-[state=active]:border-(--du-bois-blue-800) data-[state=active]:border-r data-[state=active]:rounded-e-none data-[state=active]:text-(--du-bois-blue-800) h-8 px-3 py-1.5 rounded-e-none rounded-s-sm" value="simple">Simple</TabsTrigger>
+								<TabsTrigger className="border border-border border-l-0 data-[state=active]:bg-(--du-bois-blue-600)/16 data-[state=active]:border-(--du-bois-blue-800) data-[state=active]:border-l data-[state=active]:rounded-s-none data-[state=active]:text-(--du-bois-blue-800) h-8 px-3 py-1.5 rounded-e-sm rounded-s-none" value="advanced">Advanced</TabsTrigger>
 							</TabsList>
 
 							{/* Simple tab */}
@@ -131,7 +131,7 @@ export default function Form({ orientation }: Props) {
 												<SelectTrigger className="w-full" id="run-every-simple">
 													<SelectValue placeholder="Select an interval" />
 												</SelectTrigger>
-												<SelectContent>
+												<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 													{INTERVAL_OPTIONS[trigger.timeUnit ?? "day"].map((n) => (
 														<SelectItem key={n} value={String(n)}>{n}</SelectItem>
 													))}
@@ -144,7 +144,7 @@ export default function Form({ orientation }: Props) {
 												<SelectTrigger className="w-full">
 													<SelectValue placeholder="Select a unit" />
 												</SelectTrigger>
-												<SelectContent>
+												<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 													<SelectItem value="hour">Hour</SelectItem>
 													<SelectItem value="day">Day</SelectItem>
 													<SelectItem value="week">Week</SelectItem>
@@ -173,7 +173,7 @@ export default function Form({ orientation }: Props) {
 														<SelectTrigger className="flex-1 min-w-0 truncate w-full" id="run-every-adv">
 															<SelectValue placeholder="Select an interval" />
 														</SelectTrigger>
-														<SelectContent>
+														<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 															{INTERVAL_OPTIONS[trigger.timeUnit].map((n) => (
 																<SelectItem key={n} value={String(n)}>{n}</SelectItem>
 															))}
@@ -189,7 +189,7 @@ export default function Form({ orientation }: Props) {
 													<SelectTrigger className="flex-1 min-w-0 truncate w-full">
 														<SelectValue placeholder="Select a unit" />
 													</SelectTrigger>
-													<SelectContent>
+													<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 														<SelectItem value="minute">Minute</SelectItem>
 														<SelectItem value="hour">Hour</SelectItem>
 														<SelectItem value="day">Day</SelectItem>
@@ -209,7 +209,7 @@ export default function Form({ orientation }: Props) {
 															<SelectTrigger className="flex-1 min-w-0 truncate w-full">
 																<SelectValue placeholder="Minute offset" />
 															</SelectTrigger>
-															<SelectContent>
+															<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 																{Array.from({ length: 60 }, (_, i) => (
 																	<SelectItem key={i} value={String(i)}>
 																		{i} minute(s) past the hour
@@ -231,7 +231,7 @@ export default function Form({ orientation }: Props) {
 															<SelectTrigger className="flex-1 min-w-0 truncate w-full">
 																<SelectValue placeholder="Day" />
 															</SelectTrigger>
-															<SelectContent>
+															<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 																<SelectItem value="Mon">Monday</SelectItem>
 																<SelectItem value="Tue">Tuesday</SelectItem>
 																<SelectItem value="Wed">Wednesday</SelectItem>
@@ -255,7 +255,7 @@ export default function Form({ orientation }: Props) {
 															<SelectTrigger className="flex-1 min-w-0 truncate w-full">
 																<SelectValue placeholder="Day" />
 															</SelectTrigger>
-															<SelectContent>
+															<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 																{Array.from({ length: 31 }, (_, i) => {
 																	const d = i + 1;
 																	const ord = d % 10 === 1 && d !== 11 ? "st" : d % 10 === 2 && d !== 12 ? "nd" : d % 10 === 3 && d !== 13 ? "rd" : "th";
@@ -285,7 +285,7 @@ export default function Form({ orientation }: Props) {
 																<SelectTrigger className="flex-1 min-w-0 truncate w-full">
 																	<SelectValue placeholder="Hour" />
 																</SelectTrigger>
-																<SelectContent>
+																<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 																	{Array.from({ length: 24 }, (_, i) => (
 																		<SelectItem key={i} value={String(i)}>
 																			{String(i).padStart(2, "0")}
@@ -304,7 +304,7 @@ export default function Form({ orientation }: Props) {
 																<SelectTrigger className="flex-1 min-w-0 truncate w-full">
 																	<SelectValue placeholder="Min" />
 																</SelectTrigger>
-																<SelectContent>
+																<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 																	{Array.from({ length: 60 }, (_, i) => (
 																		<SelectItem key={i} value={String(i)}>
 																			{String(i).padStart(2, "0")}
@@ -337,7 +337,7 @@ export default function Form({ orientation }: Props) {
 											<SelectTrigger className="flex-1 min-w-0 truncate w-full">
 												<SelectValue placeholder="Select a time zone" />
 											</SelectTrigger>
-											<SelectContent>
+											<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 												{TIME_ZONES.map((tz) => (
 													<SelectItem key={tz.value} value={tz.value}>
 														{tz.label}
@@ -448,7 +448,7 @@ export default function Form({ orientation }: Props) {
                                 {showAdvancedConfiguration ? <ChevronUpIcon /> : <ChevronDownIcon />}
                             </Button>
                         </div>
-                        {showAdvancedConfiguration && (
+					{showAdvancedConfiguration && (
                             <Box className="items-center bg-neutral-100 border border-neutral-200 flex h-auto justify-center p-6 w-full">
                                 <span className="text-muted-foreground text-sm">Advanced configuration options will appear here.</span>
                             </Box>

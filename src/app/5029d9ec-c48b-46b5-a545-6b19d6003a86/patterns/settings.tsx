@@ -35,7 +35,7 @@ export default function Settings({
         minute: trigger.type === "schedule" && trigger.time ? parseInt(trigger.time.slice(3, 5), 10) : undefined,
         minuteOffset: trigger.type === "schedule" ? trigger.minuteOffset : undefined,
         monthDays: trigger.type === "schedule" ? trigger.monthDays : undefined,
-        scheduleMode: trigger.type === "schedule" ? (trigger.scheduleMode === "cron" ? "advanced" as const : "simple" as const) : undefined,
+        scheduleMode: trigger.type === "schedule" ? (trigger.cronExpression ? "advanced" as const : "simple" as const) : undefined,
         status: trigger.status,
         timeUnit: trigger.type === "schedule" ? trigger.timeUnit : undefined,
         timezone: trigger.type === "schedule" ? trigger.timezone : undefined,

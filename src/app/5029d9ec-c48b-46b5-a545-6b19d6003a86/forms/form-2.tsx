@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-import { TimezoneSelect } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/components/timezone-select";
+import { TimeZoneSelect } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/components/time-zone-select";
 
 type Days = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
 type TriggerType = "continuous" | "data-change" | "schedule";
@@ -68,7 +68,7 @@ export default function Form({ orientation }: Props) {
 	const [trigger, setTrigger] = useState<TriggerState>(DEFAULT_TRIGGER);
 
 	return (
-		<FieldSet>
+		<FieldSet className="[&_[data-slot=input]]:border-(--du-bois-color-border) [&_[data-slot=button]]:rounded-sm [&_[data-slot=input]]:rounded-sm [&_[data-slot=input]:focus-visible]:border-(--du-bois-blue-600) [&_[data-slot=input]:focus-visible]:ring-2 [&_[data-slot=input]:focus-visible]:ring-(--du-bois-blue-600)/8 [&_[data-slot=select-trigger]]:rounded-sm [&_[data-slot=select-trigger]:focus]:border-(--du-bois-blue-600) [&_[data-slot=select-trigger]:focus]:ring-2 [&_[data-slot=select-trigger]:focus]:ring-(--du-bois-blue-600)/8 [&_[data-slot=select-trigger]:focus-visible]:ring-2 [&_[data-slot=select-trigger]:focus-visible]:ring-(--du-bois-blue-600)/8 [&_[role=tab]]:rounded-sm">
 			<FieldGroup className="gap-4">
 				{/* Status */}
 				<Field
@@ -98,7 +98,7 @@ export default function Form({ orientation }: Props) {
 						<SelectTrigger className="w-full">
 							<SelectValue placeholder="Select a trigger type" />
 						</SelectTrigger>
-						<SelectContent>
+						<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 							<SelectItem value="schedule">Scheduled</SelectItem>
 							<SelectItem value="continuous">Continuous</SelectItem>
 							<SelectItem value="data-change">Data change</SelectItem>
@@ -161,7 +161,7 @@ export default function Form({ orientation }: Props) {
 													<SelectTrigger className="flex-1" id="run-every">
 														<SelectValue placeholder="Select an interval" />
 													</SelectTrigger>
-													<SelectContent>
+													<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 														<SelectItem value="minute">Minute</SelectItem>
 														<SelectItem value="hour">Hour</SelectItem>
 														<SelectItem value="day">Day</SelectItem>
@@ -216,7 +216,7 @@ export default function Form({ orientation }: Props) {
 													<SelectTrigger className="w-full">
 														<SelectValue placeholder="Select day" />
 													</SelectTrigger>
-													<SelectContent>
+													<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 														{Array.from({ length: 31 }, (_, i) => {
 															const d = i + 1;
 															const ord = d % 10 === 1 && d !== 11 ? "st" : d % 10 === 2 && d !== 12 ? "nd" : d % 10 === 3 && d !== 13 ? "rd" : "th";
@@ -243,7 +243,7 @@ export default function Form({ orientation }: Props) {
 														<SelectTrigger className="min-w-0 truncate w-full">
 															<SelectValue />
 														</SelectTrigger>
-														<SelectContent>
+														<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 															{Array.from({ length: 60 }, (_, i) => (
 																<SelectItem key={i} value={String(i)}>
 																	{i} minute(s) past the hour
@@ -253,7 +253,7 @@ export default function Form({ orientation }: Props) {
 													</Select>
 												</Field>
 												<div className="flex-1 min-w-0">
-													<TimezoneSelect
+													<TimeZoneSelect
 														onChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
 														value={trigger.timezone}
 													/>
@@ -275,7 +275,7 @@ export default function Form({ orientation }: Props) {
 													/>
 												</Field>
 												<div className="flex-1 min-w-0">
-													<TimezoneSelect
+													<TimeZoneSelect
 														onChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
 														value={trigger.timezone}
 													/>
@@ -303,7 +303,7 @@ export default function Form({ orientation }: Props) {
 										<Field className="items-start gap-4" orientation={orientation}>
 											<FieldLabel className="!flex-none mt-2 min-w-[208px]" />
 											<div className="flex flex-1 justify-start min-w-0">
-												<TimezoneSelect
+												<TimeZoneSelect
 													onChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
 													value={trigger.timezone}
 												/>
@@ -328,7 +328,7 @@ export default function Form({ orientation }: Props) {
 								<SelectTrigger className="w-full" id="data-change-mode">
 									<SelectValue placeholder="Select a source" />
 								</SelectTrigger>
-								<SelectContent>
+								<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
 									<SelectItem value="file-arrival">File arrival</SelectItem>
 									<SelectItem value="table-update">Table update</SelectItem>
 									<SelectItem value="model-update">Model update</SelectItem>

@@ -21,24 +21,22 @@ export type { TriggerProps };
 interface TriggerDialogProps {
     initialTrigger?: Partial<TriggerProps>;
     onOpenChange?: (open: boolean) => void;
+    onSubmit?: (trigger: TriggerProps) => void;
     open?: boolean;
     orientation?: TriggerFormProps["orientation"];
     resetTrigger?: number;
-    onSubmit?: (trigger: TriggerProps) => void;
-    variant?: TriggerFormProps["variant"];
 }
 
 const DEFAULT_TRIGGER: TriggerProps = {
     conditions: [],
     interval: 1,
-    scheduleMode: "interval",
     status: true,
     time: "09:00:00",
     timeUnit: "day",
-    type: "schedule"
+    type: "schedule",
 };
 
-export default function TriggerDialog({ onOpenChange, onSubmit, open, orientation, variant }: TriggerDialogProps) {
+export default function TriggerDialog({ onOpenChange, onSubmit, open, orientation }: TriggerDialogProps) {
     const [depth, setDepth] = useState(0);
     const [trigger, setTrigger] = useState<TriggerProps>(DEFAULT_TRIGGER);
 
@@ -94,7 +92,6 @@ export default function TriggerDialog({ onOpenChange, onSubmit, open, orientatio
                             onChange={setTrigger}
                             orientation={orientation}
                             trigger={trigger}
-                            variant={variant}
                         />
                     )}
                     {depth === 1 && (

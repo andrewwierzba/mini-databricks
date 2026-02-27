@@ -18,7 +18,7 @@ import { Graph } from "@/components/ui/patterns/graph";
 
 import Settings from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/patterns/settings";
 import TriggerDialog, { TriggerProps } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/trigger-dialog";
-import { FieldOrientation, Props as TriggerFormProps } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/trigger-form";
+import { FieldOrientation } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/trigger-form";
 
 import { ApplicationSettings } from "@/components/mini-ui/application-settings";
 
@@ -26,7 +26,6 @@ export default function Page() {
     const [orientation, setOrientation] = useState<FieldOrientation>("horizontal");
     const [showDialog, setShowDialog] = useState<boolean>(true);
     const [trigger, setTrigger] = useState<TriggerProps | undefined>(undefined);
-    const [variant, setVariant] = useState<NonNullable<TriggerFormProps["variant"]>>("default");
 
     return (
         <>
@@ -91,7 +90,6 @@ export default function Page() {
                         }}
                         open={showDialog}
                         orientation={orientation}
-                        variant={variant}
                     />
                 </ApplicationShell>
             </div>
@@ -99,17 +97,6 @@ export default function Page() {
             {/* Application settings */}
             <ApplicationSettings
                 controls={[
-                    {
-                        id: "variant",
-                        label: "Variant",
-                        onChange: (value) => setVariant(value as NonNullable<TriggerFormProps["variant"]>),
-                        options: [
-                            { label: "Default", value: "default" },
-                            { label: "Combined", value: "combined" },
-                        ],
-                        type: "select",
-                        value: variant,
-                    },
                     {
                         id: "orientation",
                         label: "Orientation",
