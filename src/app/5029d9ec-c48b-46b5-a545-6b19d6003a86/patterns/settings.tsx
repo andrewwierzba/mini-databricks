@@ -1,7 +1,10 @@
 "use client";
 
+import { useMemo } from "react";
+
 import Panel from "@/components/mini-patterns/panels/schedule";
 
+import { TIME_ZONES } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/components/time-zone-select";
 import { TriggerProps } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/trigger-dialog";
 
 interface Props {
@@ -16,6 +19,12 @@ interface Props {
     onEditTrigger?: () => void;
 }
 
+function resolveTimezoneLabel(timezone: string | undefined): string {
+    const iana = timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const entry = TIME_ZONES.find((tz) => tz.value === iana);
+    return entry?.label ?? iana;
+}
+
 export default function Settings({
     author,
     compute,
@@ -27,6 +36,11 @@ export default function Settings({
     onDeleteTrigger,
     onEditTrigger,
 }: Props) {
+    const timezoneLabel = useMemo(
+        () => trigger?.type === "schedule" ? resolveTimezoneLabel(trigger.timezone) : undefined,
+        [trigger],
+    );
+
     const triggers = trigger ? [{
         cronExpression: trigger.type === "schedule" ? trigger.cronExpression : undefined,
         hour: trigger.type === "schedule" && trigger.time ? parseInt(trigger.time.slice(0, 2), 10) : undefined,
@@ -38,7 +52,7 @@ export default function Settings({
         scheduleMode: trigger.type === "schedule" ? (trigger.cronExpression ? "advanced" as const : "simple" as const) : undefined,
         status: trigger.status,
         timeUnit: trigger.type === "schedule" ? trigger.timeUnit : undefined,
-        timezone: trigger.type === "schedule" ? trigger.timezone : undefined,
+        timezone: timezoneLabel,
         type: trigger.type,
         weekDays: trigger.type === "schedule" ? trigger.weekDays : undefined,
     }] : [];

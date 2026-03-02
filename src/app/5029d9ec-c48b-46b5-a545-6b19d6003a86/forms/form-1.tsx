@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { ChevronDownIcon, ChevronUpIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 
 import { Box } from "@/components/mini-patterns/box";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,9 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { TIME_ZONES } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/components/time-zone-select";
+import FileArrival from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/file-arrival";
+import ModelUpdate from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/model-update";
+import TableUpdate from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/table-update";
 
 type Days = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
 type TriggerType = "continuous" | "file-arrival" | "model-update" | "schedule" | "table-update";
@@ -106,6 +109,13 @@ export default function Form({ orientation }: Props) {
 						</SelectContent>
 					</Select>
 				</Field>
+
+                {/* Type: Continuous */}
+				{trigger.type === "continuous" && (
+                    <span className="text-sm">
+                        A continuous job ensures that there is always one active run. A new run is created as soon as the previous one finished (due to failure or success) or when there are none.
+                    </span>
+                )}
 
 				{/* Type: Schedule */}
 				{trigger.type === "schedule" && (
@@ -365,73 +375,17 @@ export default function Form({ orientation }: Props) {
 
 				{/* Type: File arrival */}
 				{trigger.type === "file-arrival" && (
-					<Field className="gap-2" orientation={orientation}>
-						<FieldLabel htmlFor="storage-location">Storage location</FieldLabel>
-						<Input
-							id="storage-location"
-							onChange={(e) => setTrigger((prev) => ({ ...prev, storageLocation: e.target.value }))}
-							placeholder="e.g. /Volumes/mycatalog/myschema/myvolume/path/"
-							value={trigger.storageLocation ?? ""}
-						/>
-					</Field>
+					<FileArrival orientation={orientation} storageLocation={trigger.storageLocation ?? ""} />
 				)}
 
 				{/* Type: Table update */}
 				{trigger.type === "table-update" && (
-					<Field className="gap-2" orientation={orientation}>
-						<FieldLabel>Tables</FieldLabel>
-						<div className="flex flex-col gap-2">
-							{(trigger.tableNames ?? [""]).map((name, index, arr) => (
-								<div className="flex gap-1" key={index}>
-									<Input
-										onChange={(e) => setTrigger((prev) => {
-											const names = [...(prev.tableNames ?? [""])];
-											names[index] = e.target.value;
-											return { ...prev, tableNames: names };
-										})}
-										placeholder="e.g. mycatalog.myschema.mytable"
-										value={name}
-									/>
-									{arr.length > 1 && (
-										<Button
-											onClick={() => setTrigger((prev) => ({
-												...prev,
-												tableNames: (prev.tableNames ?? [""]).filter((_, i) => i !== index),
-											}))}
-											size="icon"
-											variant="ghost"
-										>
-											<TrashIcon />
-										</Button>
-									)}
-								</div>
-							))}
-							<Button
-								className="gap-1 self-start"
-								onClick={() => setTrigger((prev) => ({
-									...prev,
-									tableNames: [...(prev.tableNames ?? [""]), ""],
-								}))}
-								variant="outline"
-							>
-								<PlusIcon className="size-4 text-neutral-600" />
-								<span>Add table</span>
-							</Button>
-						</div>
-					</Field>
+					<TableUpdate names={trigger.tableNames ?? [""]} orientation={orientation} />
 				)}
 
 				{/* Type: Model update */}
 				{trigger.type === "model-update" && (
-					<Field className="gap-2" orientation={orientation}>
-						<FieldLabel htmlFor="model-name">Model name</FieldLabel>
-						<Input
-							id="model-name"
-							onChange={(e) => setTrigger((prev) => ({ ...prev, modelName: e.target.value }))}
-							placeholder="e.g. mycatalog.myschema.mymodel"
-							value={trigger.modelName ?? ""}
-						/>
-					</Field>
+					<ModelUpdate orientation={orientation} type="model" />
 				)}
 
 				{/* Advanced configuration */}

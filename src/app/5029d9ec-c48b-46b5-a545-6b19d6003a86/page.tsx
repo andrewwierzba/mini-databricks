@@ -81,10 +81,9 @@ export default function Page() {
 
                     {/* Trigger Dialog */}
                     <TriggerDialog
+                        initialTrigger={trigger}
                         onOpenChange={setShowDialog}
                         onSubmit={(trigger) => {
-                            console.log('Trigger created:', trigger);
-
                             setTrigger(trigger);
                             setShowDialog(false);
                         }}
@@ -95,7 +94,7 @@ export default function Page() {
             </div>
 
             {/* Application settings */}
-            <ApplicationSettings
+            {/* <ApplicationSettings
                 controls={[
                     {
                         id: "orientation",
@@ -109,7 +108,7 @@ export default function Page() {
                         value: orientation,
                     },
                 ]}
-            />
+            /> */}
         </>
     )
 }

@@ -36,16 +36,16 @@ const DEFAULT_TRIGGER: TriggerProps = {
     type: "schedule",
 };
 
-export default function TriggerDialog({ onOpenChange, onSubmit, open, orientation }: TriggerDialogProps) {
+export default function TriggerDialog({ initialTrigger, onOpenChange, onSubmit, open, orientation }: TriggerDialogProps) {
     const [depth, setDepth] = useState(0);
     const [trigger, setTrigger] = useState<TriggerProps>(DEFAULT_TRIGGER);
 
     useEffect(() => {
         if (open) {
             setDepth(0);
-            setTrigger(DEFAULT_TRIGGER);
+            setTrigger(initialTrigger ? { ...DEFAULT_TRIGGER, ...initialTrigger } as TriggerProps : DEFAULT_TRIGGER);
         }
-    }, [open]);
+    }, [open, initialTrigger]);
 
     return (
         <Dialog
@@ -58,7 +58,7 @@ export default function TriggerDialog({ onOpenChange, onSubmit, open, orientatio
                 <DialogHeader>
                     {depth === 0 && (
                         <div className="items-center flex gap-2 justify-between">
-                            <DialogTitle>New trigger</DialogTitle>
+                            <DialogTitle>{initialTrigger ? "Edit trigger" : "New trigger"}</DialogTitle>
                             <DialogClose asChild>
                                 <Button
                                     className="rounded-sm text-gray-600 h-8 p-2 w-8"
@@ -114,7 +114,7 @@ export default function TriggerDialog({ onOpenChange, onSubmit, open, orientatio
                                     onOpenChange?.(false);
                                 }}
                             >
-                                Create
+                                {initialTrigger ? "Save" : "Create"}
                             </Button>
                         </>
                     )}

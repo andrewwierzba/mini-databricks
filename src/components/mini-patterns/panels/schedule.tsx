@@ -190,17 +190,16 @@ export default function Panel({
                             <div key={trigger.id} className="flex flex-col gap-2">
                                 <div className="flex flex-col gap-1">
                                     <span className="font-bold capitalize">{trigger.type} {trigger.status === false ? "(Paused)" : ""}</span>
-                                    {trigger.type === "schedule" && trigger.scheduleMode === "advanced" && (
-                                        <span className="truncate">
-                                            {trigger.useCronExpression && trigger.cronExpression 
-                                                ? `Cron: ${trigger.cronExpression}`
-                                                : `Every ${trigger.timeUnit} at ${String(trigger.hour ?? 0).padStart(2, "0")}:${String(trigger.minute ?? 0).padStart(2, "0")} (${trigger.timezone || "UTC"})`
-                                            }
-                                        </span>
-                                    )}
-                                    {trigger.type === "schedule" && trigger.scheduleMode !== "advanced" && (
-                                        <span className="truncate">{formatSimpleSchedule(trigger)}</span>
-                                    )}
+                                    {trigger.type === "schedule" && trigger.scheduleMode === "advanced" && (() => {
+                                        const text = trigger.useCronExpression && trigger.cronExpression
+                                            ? `Cron: ${trigger.cronExpression}`
+                                            : `Every ${trigger.timeUnit} at ${String(trigger.hour ?? 0).padStart(2, "0")}:${String(trigger.minute ?? 0).padStart(2, "0")} (${trigger.timezone || "UTC"})`;
+                                        return <span className="truncate" title={text}>{text}</span>;
+                                    })()}
+                                    {trigger.type === "schedule" && trigger.scheduleMode !== "advanced" && (() => {
+                                        const text = formatSimpleSchedule(trigger);
+                                        return <span className="truncate" title={text}>{text}</span>;
+                                    })()}
                                 </div>
                                 <div className="flex gap-2">
                                     {/* Edit trigger */}

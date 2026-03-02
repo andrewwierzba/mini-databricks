@@ -155,7 +155,7 @@ function PageContent({ orientation = "horizontal" }: Props) {
 			onMouseMove={(e) => setCursor({ visible: true, x: e.clientX, y: e.clientY })}
 		>
 			<ResizablePanel className="p-6 relative" defaultSize={50}>
-				<Form1 />
+				<Form1 orientation="vertical" />
 				{dualMode && (timer1.running || timer1.completed) && (
 					<div className="absolute bottom-4 right-4">
 						<Stopwatch
@@ -169,7 +169,7 @@ function PageContent({ orientation = "horizontal" }: Props) {
 			</ResizablePanel>
 			<ResizableHandle />
 			<ResizablePanel className="p-6 relative" defaultSize={50}>
-				<Form2 orientation={orientation} />
+				<Form2 orientation="horizontal" />
 				{dualMode && (timer2.running || timer2.completed) && (
 					<div className="absolute bottom-4 right-4">
 						<Stopwatch

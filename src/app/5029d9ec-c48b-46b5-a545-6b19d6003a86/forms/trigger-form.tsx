@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { ChevronDownIcon, ChevronUpIcon, ExternalLinkIcon, EyeIcon, InfoIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, ExternalLinkIcon, EyeIcon, InfoIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox";
@@ -20,6 +20,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Condition, Props as TriggerConditionProps } from "@/app/81ae035b-057f-45d5-8d8b-e82583bc2a65/components/condition";
 import { ConditionProps as ConditionPreviewProps } from "@/app/81ae035b-057f-45d5-8d8b-e82583bc2a65/components/conditions";
 import { TimeZoneSelect } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/components/time-zone-select";
+
+import FileArrival from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/file-arrival";
+import ModelUpdate, { type ModelUpdateScopeProps } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/model-update";
+import TableUpdate from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/table-update";
 
 // Types
 
@@ -59,7 +63,7 @@ interface ContinuousTriggerProps extends BaseTriggerProps {
 interface DataChangeTriggerProps extends BaseTriggerProps {
 	dataChangeMode?: DataChangeMode;
 	minTimeBetweenTriggers?: number;
-	modelName?: string;
+	modelScope?: ModelUpdateScopeProps;
 	storageLocation?: string;
 	tableNames?: string[];
 	type: "data-change";
@@ -426,6 +430,13 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 					</div>
 				)}
 
+				{/* Continuous */}
+				{isContinuous(trigger) && (
+					<span className="text-neutral-500 text-sm">
+						A continuous job ensures that there is always one active run. A new run is created as soon as the previous one finished (due to failure or success) or when there are none.
+					</span>
+				)}
+
 				{/* Data change */}
 				{isDataChange(trigger) && (
 					<>
@@ -438,83 +449,39 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 								<SelectTrigger className="w-full" id="data-change-mode">
 									<SelectValue placeholder="Select a source" />
 								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="file-arrival">File arrival</SelectItem>
-									<SelectItem value="table-update">Table update</SelectItem>
-									<SelectItem value="model-update">Model update</SelectItem>
-								</SelectContent>
+							<SelectContent className="max-w-[var(--radix-select-trigger-width)]">
+								<SelectItem value="file-arrival">File arrival</SelectItem>
+								<SelectItem value="table-update">Table update</SelectItem>
+								<SelectItem value="model-update">Model update</SelectItem>
+							</SelectContent>
 							</Select>
 						</Field>
 
 						{/* File arrival */}
 						{trigger.dataChangeMode === "file-arrival" && (
-							<Field className="items-start gap-4" orientation={orientation}>
-								<FieldLabel className="mt-2 min-w-[208px]" htmlFor="storage-location">Storage location</FieldLabel>
-								<Input
-									id="storage-location"
-									onChange={(e) => setTrigger((prev) => ({ ...prev, storageLocation: e.target.value }))}
-									placeholder="e.g. /Volumes/mycatalog/myschema/myvolume/path/"
-									value={trigger.storageLocation ?? ""}
-								/>
-							</Field>
+							<FileArrival
+								onChange={(state) => setTrigger((prev) => ({ ...prev, storageLocation: state.storageLocation }))}
+								orientation={orientation}
+								storageLocation={trigger.storageLocation ?? ""}
+							/>
 						)}
 
 						{/* Table update */}
 						{trigger.dataChangeMode === "table-update" && (
-							<Field className="items-start gap-4" orientation={orientation}>
-								<FieldLabel className="mt-2 min-w-[208px]">Tables</FieldLabel>
-								<div className="flex flex-col gap-2 w-full">
-									{(trigger.tableNames ?? [""]).map((name, index, arr) => (
-										<div className="flex gap-1" key={index}>
-											<Input
-												onChange={(e) => setTrigger((prev) => {
-													const names = [...((prev as DataChangeTriggerProps).tableNames ?? [""])];
-													names[index] = e.target.value;
-													return { ...prev, tableNames: names };
-												})}
-												placeholder="e.g. mycatalog.myschema.mytable"
-												value={name}
-											/>
-											{arr.length > 1 && (
-												<Button
-													onClick={() => setTrigger((prev) => ({
-														...prev,
-														tableNames: ((prev as DataChangeTriggerProps).tableNames ?? [""]).filter((_, i) => i !== index),
-													}))}
-													size="icon"
-													variant="ghost"
-												>
-													<TrashIcon />
-												</Button>
-											)}
-										</div>
-									))}
-									<Button
-										className="gap-1 self-start"
-										onClick={() => setTrigger((prev) => ({
-											...prev,
-											tableNames: [...((prev as DataChangeTriggerProps).tableNames ?? [""]), ""],
-										}))}
-										variant="outline"
-									>
-										<PlusIcon className="size-4 text-neutral-600" />
-										<span>Add table</span>
-									</Button>
-								</div>
-							</Field>
+							<TableUpdate
+								names={trigger.tableNames ?? []}
+								onChange={(state) => setTrigger((prev) => ({ ...prev, tableNames: state.names }))}
+								orientation={orientation}
+							/>
 						)}
 
 						{/* Model update */}
 						{trigger.dataChangeMode === "model-update" && (
-							<Field className="items-start gap-4" orientation={orientation}>
-								<FieldLabel className="mt-2 min-w-[208px]" htmlFor="model-name">Model name</FieldLabel>
-								<Input
-									id="model-name"
-									onChange={(e) => setTrigger((prev) => ({ ...prev, modelName: e.target.value }))}
-									placeholder="e.g. mycatalog.myschema.mymodel"
-									value={trigger.modelName ?? ""}
-								/>
-							</Field>
+							<ModelUpdate
+								onChange={(state) => setTrigger((prev) => ({ ...prev, modelScope: state }))}
+								orientation={orientation}
+								type={trigger.modelScope?.type ?? "model"}
+							/>
 						)}
 					</>
 				)}

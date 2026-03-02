@@ -15,7 +15,7 @@ import "reactflow/dist/style.css"
 
 import { cn } from "@/lib/utils"
 
-import { CheckCircleIcon, GridDashIcon } from "@databricks/design-system"
+import { CheckCircleIcon, NotebookIcon } from "@databricks/design-system"
 
 import { Separator } from "@/components/ui/separator"
 
@@ -25,6 +25,7 @@ interface StepNodeData {
     label: string;
     showSource?: boolean;
     showTarget?: boolean;
+    status?: "success";
 }
 
 function StepNode({ data }: { data: StepNodeData }) {
@@ -37,7 +38,7 @@ function StepNode({ data }: { data: StepNodeData }) {
             {data.showSource !== false && <Handle className="!bg-gray-300 !border-none !h-2 !w-2" position={Position.Right} type="source" />}
             <div className="items-center flex gap-2 p-2">
                 <div aria-label="step-icon" className="bg-gray-100 rounded-sm flex h-6 p-1 w-6">
-                    <GridDashIcon
+                    <NotebookIcon
                         onPointerEnterCapture={undefined}
                         onPointerLeaveCapture={undefined}
                         style={{
@@ -48,15 +49,17 @@ function StepNode({ data }: { data: StepNodeData }) {
                 <span aria-label="step-name" className="text-sm font-semibold flex-1 truncate">
                     {data.label}
                 </span>
-                <div aria-label="step-status" className="flex h-6 items-center justify-center w-6">
-                    <CheckCircleIcon
-                        onPointerEnterCapture={undefined}
-                        onPointerLeaveCapture={undefined}
-                        style={{
-                            color: "var(--du-bois-color-validation-success)",
-                        }}
-                    />
-                </div>
+                {data.status === "success" && (
+                    <div aria-label="step-status" className="flex h-6 items-center justify-center w-6">
+                        <CheckCircleIcon
+                            onPointerEnterCapture={undefined}
+                            onPointerLeaveCapture={undefined}
+                            style={{
+                                color: "var(--du-bois-color-validation-success)",
+                            }}
+                        />
+                    </div>
+                )}
             </div>
             <Separator className="bg-gray-200" />
             <div aria-label="" className="min-w-0 overflow-hidden p-2">
@@ -82,10 +85,11 @@ export function Graph({ className }: { className?: string }) {
             position: { x: 50, y: 50 },
             data: { 
                 content: 
-                    <>
-                        <span className="bg-neutral-200 block rounded-sm px-1.5 truncate">/pipelines/bronze/customer_activity_ingest</span>
-                    </>,
-                label: "Ingest customers",
+                    <div className="flex gap-1">
+                        <span className="text-neutral-500">Source:</span>
+                        <span className="bg-neutral-200 block rounded-sm px-1.5 truncate" title="/pipelines/bronze/raw_activity_logs">/pipelines/bronze/raw_activity_logs</span>
+                    </div>,
+                label: "Ingest activity logs",
                 showTarget: false,
             }
         },
@@ -93,19 +97,41 @@ export function Graph({ className }: { className?: string }) {
             id: "1", 
             type: "step",
             position: { x: 340, y: 50 },
-            data: { label: "Transform customers" }
+            data: { 
+                content: 
+                    <div className="flex gap-1">
+                        <span className="text-neutral-500">Table:</span>
+                        <span className="bg-neutral-200 block rounded-sm px-1.5 truncate" title="/pipelines/silver/activity_cleansed">/pipelines/silver/activity_cleansed</span>
+                    </div>,
+                label: "Cleanse & deduplicate",
+            }
         },
         { 
             id: "2", 
             type: "step",
             position: { x: 630, y: 50 },
-            data: { label: "Aggregate" }
+            data: { 
+                content: 
+                    <div className="flex gap-1">
+                        <span className="text-neutral-500">Table:</span>
+                        <span className="bg-neutral-200 block rounded-sm px-1.5 truncate" title="/pipelines/gold/activity_metrics_24h">/pipelines/gold/activity_metrics_24h</span>
+                    </div>,
+                label: "Aggregate metrics",
+            }
         },
         { 
             id: "3", 
             type: "step",
             position: { x: 920, y: 50 },
-            data: { label: "Quality check", showSource: false }
+            data: { 
+                content: 
+                    <div className="flex gap-1">
+                        <span className="text-neutral-500">Target:</span>
+                        <span className="bg-neutral-200 block rounded-sm px-1.5 truncate" title="/pipelines/gold/dashboard_report">/pipelines/gold/dashboard_report</span>
+                    </div>,
+                label: "Publish to dashboard",
+                showSource: false,
+            }
         },
     ], [])
 

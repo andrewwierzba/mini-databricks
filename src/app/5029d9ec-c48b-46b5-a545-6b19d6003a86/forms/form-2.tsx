@@ -18,6 +18,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 import { TimeZoneSelect } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/components/time-zone-select";
 
+import FileArrival from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/file-arrival";
+import ModelUpdate from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/model-update";
+import TableUpdate from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/table-update";
+
 type Days = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
 type TriggerType = "continuous" | "data-change" | "schedule";
 type DataChangeMode = "file-arrival" | "model-update" | "table-update";
@@ -105,6 +109,56 @@ export default function Form({ orientation }: Props) {
 						</SelectContent>
 					</Select>
 				</Field>
+
+                {/* Type: Continuous */}
+				{trigger.type === "continuous" && (
+                    <span className="text-neutral-500 text-sm">
+                        A continuous job ensures that there is always one active run. A new run is created as soon as the previous one finished (due to failure or success) or when there are none.
+                    </span>
+                )}
+
+                {/* Type: Data change */}
+				{trigger.type === "data-change" && (
+					<>
+						<Field className={orientation === "horizontal" ? "gap-4" : "gap-2"} orientation={orientation}>
+							<FieldLabel className="min-w-[208px]" htmlFor="data-change-mode">Source</FieldLabel>
+							<Select onValueChange={(value) => setTrigger((prev) => ({ ...prev, dataChangeMode: value as DataChangeMode }))} value={trigger.dataChangeMode}>
+								<SelectTrigger className="w-full" id="data-change-mode">
+									<SelectValue placeholder="Select a source" />
+								</SelectTrigger>
+								<SelectContent className="max-w-[var(--radix-select-trigger-width)] [&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
+									<SelectItem value="file-arrival">File arrival</SelectItem>
+									<SelectItem value="table-update">Table update</SelectItem>
+									<SelectItem value="model-update">Model update</SelectItem>
+								</SelectContent>
+							</Select>
+						</Field>
+
+						{/* Data change: File arrival */}
+						{trigger.dataChangeMode === "file-arrival" && (
+                            <FileArrival
+                                orientation={orientation}
+                                storageLocation={trigger.storageLocation ?? ""}
+                            />
+						)}
+
+						{/* Data change: Table update */}
+						{trigger.dataChangeMode === "table-update" && (
+							<TableUpdate
+								orientation={orientation}
+								names={trigger.tableNames ?? []}
+							/>
+						)}
+
+						{/* Data change: Model update */}
+						{trigger.dataChangeMode === "model-update" && (
+							<ModelUpdate
+								orientation={orientation}
+								type="model"
+							/>
+						)}
+					</>
+				)}
 
 				{/* Type: Schedule */}
 				{trigger.type === "schedule" && (
@@ -314,99 +368,6 @@ export default function Form({ orientation }: Props) {
 							</TabsContent>
 						</Tabs>
 					</div>
-				)}
-
-				{/* Type: Data change */}
-				{trigger.type === "data-change" && (
-					<>
-						<Field className={orientation === "horizontal" ? "gap-4" : "gap-2"} orientation={orientation}>
-							<FieldLabel className="min-w-[208px]" htmlFor="data-change-mode">Source</FieldLabel>
-							<Select
-								onValueChange={(value) => setTrigger((prev) => ({ ...prev, dataChangeMode: value as DataChangeMode }))}
-								value={trigger.dataChangeMode}
-							>
-								<SelectTrigger className="w-full" id="data-change-mode">
-									<SelectValue placeholder="Select a source" />
-								</SelectTrigger>
-								<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
-									<SelectItem value="file-arrival">File arrival</SelectItem>
-									<SelectItem value="table-update">Table update</SelectItem>
-									<SelectItem value="model-update">Model update</SelectItem>
-								</SelectContent>
-							</Select>
-						</Field>
-
-						{/* Data change: File arrival */}
-						{trigger.dataChangeMode === "file-arrival" && (
-							<Field className={orientation === "horizontal" ? "gap-4" : "gap-2"} orientation={orientation}>
-								<FieldLabel className="min-w-[208px]" htmlFor="storage-location">Storage location</FieldLabel>
-								<Input
-									id="storage-location"
-									onChange={(e) => setTrigger((prev) => ({ ...prev, storageLocation: e.target.value }))}
-									placeholder="e.g. /Volumes/mycatalog/myschema/myvolume/path/"
-									value={trigger.storageLocation ?? ""}
-								/>
-							</Field>
-						)}
-
-						{/* Data change: Table update */}
-						{trigger.dataChangeMode === "table-update" && (
-						<Field className={`items-start ${orientation === "horizontal" ? "gap-4" : "gap-2"}`} orientation={orientation}>
-							<FieldLabel className="mt-2 min-w-[208px]">Tables</FieldLabel>
-								<div className="flex flex-col gap-2 w-full">
-									{(trigger.tableNames ?? [""]).map((name, index, arr) => (
-										<div className="flex gap-1" key={index}>
-											<Input
-												onChange={(e) => setTrigger((prev) => {
-													const names = [...(prev.tableNames ?? [""])];
-													names[index] = e.target.value;
-													return { ...prev, tableNames: names };
-												})}
-												placeholder="e.g. mycatalog.myschema.mytable"
-												value={name}
-											/>
-											{arr.length > 1 && (
-												<Button
-													onClick={() => setTrigger((prev) => ({
-														...prev,
-														tableNames: (prev.tableNames ?? [""]).filter((_, i) => i !== index),
-													}))}
-													size="icon"
-													variant="ghost"
-												>
-													<TrashIcon />
-												</Button>
-											)}
-										</div>
-									))}
-									<Button
-										className="gap-1 self-start"
-										onClick={() => setTrigger((prev) => ({
-											...prev,
-											tableNames: [...(prev.tableNames ?? [""]), ""],
-										}))}
-										variant="outline"
-									>
-										<PlusIcon className="size-4 text-neutral-600" />
-										<span>Add table</span>
-									</Button>
-								</div>
-							</Field>
-						)}
-
-						{/* Data change: Model update */}
-						{trigger.dataChangeMode === "model-update" && (
-							<Field className={orientation === "horizontal" ? "gap-4" : "gap-2"} orientation={orientation}>
-								<FieldLabel className="min-w-[208px]" htmlFor="model-name">Model name</FieldLabel>
-								<Input
-									id="model-name"
-									onChange={(e) => setTrigger((prev) => ({ ...prev, modelName: e.target.value }))}
-									placeholder="e.g. mycatalog.myschema.mymodel"
-									value={trigger.modelName ?? ""}
-								/>
-							</Field>
-						)}
-					</>
 				)}
 
 				<Separator />
