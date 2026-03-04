@@ -266,3 +266,10 @@ body {
 .scrollbar-hide-on-hover:hover {
 	scrollbar-color: rgb(209 213 219) transparent;
 }
+
+@media (min-width: 640px) {
+	div:has(> [aria-label="dialog-content"].dialog-wide) {
+		max-width: 880px;
+		padding: 24px;
+	}
+}

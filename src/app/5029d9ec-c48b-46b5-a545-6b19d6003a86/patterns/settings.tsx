@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 import Panel from "@/components/mini-patterns/panels/schedule";
 
-import { TIME_ZONES } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/components/time-zone-select";
+import { TIME_ZONES } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/components/time-zone";
 import { TriggerProps } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/trigger-dialog";
 
 interface Props {

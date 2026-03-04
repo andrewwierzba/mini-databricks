@@ -141,22 +141,6 @@ export default function Page() {
 					/>
 				</ApplicationShell>
 			</div>
-
-			<ApplicationSettings
-				controls={[
-					{
-						id: "orientation",
-						label: "Orientation",
-						onChange: (value) => setOrientation(value as FieldOrientation),
-						options: [
-							{ label: "Horizontal", value: "horizontal" },
-							{ label: "Vertical", value: "vertical" },
-						],
-						type: "select",
-						value: orientation,
-					},
-				]}
-			/>
 		</>
 	)
 }

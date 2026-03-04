@@ -58,11 +58,12 @@ function getLocalTimeZone(): string {
 }
 
 interface Props {
+	className?: string;
 	onChange: (value: string | undefined) => void;
 	value: string | undefined;
 }
 
-export function TimeZoneSelect({ onChange, value }: Props) {
+export function TimeZone({ className, onChange, value }: Props) {
 	const [open, setOpen] = useState(false);
 	const [search, setSearch] = useState("");
 
@@ -90,7 +91,7 @@ export function TimeZoneSelect({ onChange, value }: Props) {
 		>
 			<PopoverTrigger asChild>
 				<Button
-					className="text-(--du-bois-blue-600) max-w-full min-w-0 px-3 hover:bg-(--du-bois-blue-700)/10 hover:text-(--du-bois-blue-800)"
+					className={`text-(--du-bois-blue-600) max-w-full min-w-0 px-3 hover:bg-(--du-bois-blue-700)/10 hover:text-(--du-bois-blue-800) ${className ?? ""}`}
 					title={label}
 					variant="ghost"
 				>
@@ -110,6 +111,9 @@ export function TimeZoneSelect({ onChange, value }: Props) {
 					/>
 				</div>
 				<div className="flex flex-1 flex-col overflow-y-auto p-1" role="listbox">
+					<div className="px-2 py-1 text-xs font-medium text-neutral-500">
+						Recommended
+					</div>
 					<TimeZoneOption
 						label={`Local time (${localTimeZone})`}
 						onClick={() => {
@@ -120,7 +124,7 @@ export function TimeZoneSelect({ onChange, value }: Props) {
 					/>
 					<Separator className="my-1" />
 					<div className="px-2 py-1 text-xs font-medium text-neutral-500">
-						Time zones
+						Standard time zones
 					</div>
 					{filteredTimeZones.length === 0 ? (
 						<div className="px-2 py-4 text-center text-sm text-neutral-400">

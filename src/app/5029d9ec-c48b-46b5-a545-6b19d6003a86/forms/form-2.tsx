@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-import { TimeZoneSelect } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/components/time-zone-select";
+import { TimeZone } from "@/components/mini-patterns/time-zone";
 
 import FileArrival from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/file-arrival";
 import ModelUpdate from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/model-update";
@@ -60,6 +60,21 @@ const WEEK_DAYS: { label: string; value: Days }[] = [
 	{ label: "Friday", value: "Fri" },
 	{ label: "Saturday", value: "Sat" },
 ];
+
+function formatTime12h(time24: string, timezone?: string): string {
+	const [hStr, mStr] = time24.split(":");
+	let h = parseInt(hStr, 10);
+	const period = h >= 12 ? "PM" : "AM";
+	if (h === 0) h = 12;
+	else if (h > 12) h -= 12;
+	const tz = timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+	let offset = new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "shortOffset" })
+		.formatToParts(new Date())
+		.find((p) => p.type === "timeZoneName")?.value ?? "";
+	if (offset === "GMT") offset = "UTC";
+	else offset = offset.replace("GMT", "UTC");
+	return `${h}:${mStr} ${period} ${offset}`;
+}
 
 export type FieldOrientation = "horizontal" | "vertical";
 
@@ -172,62 +187,62 @@ export default function Form({ orientation }: Props) {
 
 							{/* Interval tab */}
 							<TabsContent value="interval">
-								<FieldSet>
-									<FieldGroup className="gap-4">
-										<Field className="items-start gap-4" orientation={orientation}>
-											<FieldLabel className="mt-2 min-w-[208px]" htmlFor="run-every">Run every</FieldLabel>
-											<div className="flex gap-2 w-full">
-												{(() => {
-													const unit = trigger.timeUnit;
-													const max = unit === "minute" ? 59 : unit === "hour" ? 23 : unit === "day" ? 31 : 99;
-													return (
-														<Input
-															className="w-23"
-															id="schedule-interval"
-															max={max}
-															min={1}
-															onChange={(e) => {
-																const n = parseInt(e.target.value, 10);
-																if (!Number.isNaN(n)) {
-																	setTrigger((prev) => ({ ...prev, interval: Math.min(Math.max(n, 1), max) }));
-																}
-															}}
-															type="number"
-															value={trigger.interval ?? 1}
-														/>
-													);
-												})()}
-												<Select
-													onValueChange={(value) => {
-														setTrigger((prev) => {
-															const next = { ...prev, interval: 1, timeUnit: value };
-															if (value === "week" && !prev.weekDays?.length) {
-																return { ...next, time: prev.time ?? "09:00:00", weekDays: ["Mon" as Days] };
+								<FieldSet className="gap-4">
+									<Field className="gap-4" orientation={orientation}>
+										<FieldLabel className="mt-2 min-w-[208px]" htmlFor="run-every">Run every</FieldLabel>
+										<div className="items-center flex gap-2 w-full">
+											{(() => {
+												const unit = trigger.timeUnit;
+												const max = unit === "minute" ? 59 : unit === "hour" ? 23 : unit === "day" ? 31 : 99;
+												return (
+													<Input
+														className="max-w-24 min-w-0 w-full truncate"
+														id="schedule-interval"
+														max={max}
+														min={1}
+														onChange={(e) => {
+															const n = parseInt(e.target.value, 10);
+															if (!Number.isNaN(n)) {
+																setTrigger((prev) => ({ ...prev, interval: Math.min(Math.max(n, 1), max) }));
 															}
-															if (value === "month" && !prev.monthDays?.length) {
-																return { ...next, time: prev.time ?? "09:00:00", monthDays: [1] };
-															}
-															return next;
-														});
-													}}
-													value={trigger.timeUnit || "day"}
-												>
-													<SelectTrigger className="flex-1" id="run-every">
-														<SelectValue placeholder="Select an interval" />
-													</SelectTrigger>
-													<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
-														<SelectItem value="minute">Minute</SelectItem>
-														<SelectItem value="hour">Hour</SelectItem>
-														<SelectItem value="day">Day</SelectItem>
-														<SelectItem value="week">Week</SelectItem>
-														<SelectItem value="month">Month</SelectItem>
-													</SelectContent>
-												</Select>
-											</div>
-										</Field>
+														}}
+														type="number"
+														value={trigger.interval ?? 1}
+													/>
+												);
+											})()}
+											<Select
+												onValueChange={(value) => {
+													setTrigger((prev) => {
+														const next = { ...prev, interval: 1, timeUnit: value };
+														if (value === "week" && !prev.weekDays?.length) {
+															return { ...next, time: prev.time ?? "09:00:00", weekDays: ["Mon" as Days] };
+														}
+														if (value === "month" && !prev.monthDays?.length) {
+															return { ...next, time: prev.time ?? "09:00:00", monthDays: [1] };
+														}
+														return next;
+													});
+												}}
+												value={trigger.timeUnit || "day"}
+											>
+												<SelectTrigger className="max-w-56 min-w-0 w-full truncate" id="run-every">
+													<SelectValue placeholder="Select an interval" />
+												</SelectTrigger>
+												<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
+													<SelectItem value="minute">Minute</SelectItem>
+													<SelectItem value="hour">Hour</SelectItem>
+													<SelectItem value="day">Day</SelectItem>
+													<SelectItem value="week">Week</SelectItem>
+													<SelectItem value="month">Month</SelectItem>
+												</SelectContent>
+											</Select>
+										</div>
+									</Field>
 
-										{/* Week days */}
-										{trigger.timeUnit === "week" && (
+									{/* Unit: Week */}
+									{trigger.timeUnit === "week" && (
+										<FieldGroup>
 											<Field className="items-start gap-4" orientation={orientation}>
 												<FieldLabel className="!flex-none mt-2 w-[208px]" />
 												<ToggleGroup
@@ -252,10 +267,12 @@ export default function Form({ orientation }: Props) {
 													))}
 												</ToggleGroup>
 											</Field>
-										)}
+										</FieldGroup>
+									)}
 
-										{/* Month days */}
-										{trigger.timeUnit === "month" && (
+									{/* Unit: Month */}
+									{trigger.timeUnit === "month" && (
+										<FieldGroup>
 											<Field className="items-start gap-4" orientation={orientation}>
 												<FieldLabel className="mt-2 min-w-[208px]" />
 												<Select
@@ -284,59 +301,61 @@ export default function Form({ orientation }: Props) {
 													</SelectContent>
 												</Select>
 											</Field>
-										)}
+										</FieldGroup>
+									)}
 
-										{/* Hour: minute offset + timezone */}
-										{trigger.timeUnit === "hour" && (
-											<div className="items-center flex gap-2 pl-[224px]">
-												<Field className="flex-1 items-start gap-4 min-w-0" orientation={orientation}>
-													<Select
-														onValueChange={(value) => setTrigger((prev) => ({ ...prev, minuteOffset: parseInt(value, 10) }))}
-														value={String(trigger.minuteOffset ?? 0)}
-													>
-														<SelectTrigger className="min-w-0 truncate w-full">
-															<SelectValue />
-														</SelectTrigger>
-														<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
-															{Array.from({ length: 60 }, (_, i) => (
-																<SelectItem key={i} value={String(i)}>
-																	{i} minute(s) past the hour
-																</SelectItem>
-															))}
-														</SelectContent>
-													</Select>
-												</Field>
-												<div className="flex-1 min-w-0">
-													<TimeZoneSelect
-														onChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
-														value={trigger.timezone}
-													/>
-												</div>
-											</div>
-										)}
+									{/* Unit: Hour */}
+									{trigger.timeUnit === "hour" && (
+										<FieldGroup className="flex flex-row items-center gap-2 pl-[224px]">
+											<Select
+												onValueChange={(value) => setTrigger((prev) => ({ ...prev, minuteOffset: parseInt(value, 10) }))}
+												value={String(trigger.minuteOffset ?? 0)}
+											>
+												<SelectTrigger className="max-w-24 min-w-0 w-full [&_[data-slot=select-value]]:min-w-0 [&_[data-slot=select-value]]:overflow-hidden [&_[data-slot=select-value]]:text-ellipsis">
+													<SelectValue />
+												</SelectTrigger>
+												<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
+													{Array.from({ length: 60 }, (_, i) => (
+														<SelectItem
+                                                            className="rounded-none"
+                                                            key={i}
+                                                            value={String(i)}
+                                                        >
+															{i} minute(s) past the hour
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+											<TimeZone
+												className="max-w-56 min-w-0 w-full truncate"
+												onChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
+												value={trigger.timezone}
+											/>
+										</FieldGroup>
+									)}
 
-										{/* Day/Week/Month: time + timezone */}
-										{(trigger.timeUnit === "day" || trigger.timeUnit === "week" || trigger.timeUnit === "month") && (
-											<div className="flex items-center gap-2">
-												<Field className="items-start gap-4 w-auto" orientation={orientation}>
-													<FieldLabel className="!flex-none mt-2 min-w-[208px]" />
-													<Input
-														className="appearance-none bg-background w-auto [&::-webkit-calendar-picker-indicator]:appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
-														onChange={(e) => setTrigger((prev) => ({ ...prev, time: e.target.value || "09:00:00" }))}
-														step="1"
-														type="time"
-														value={trigger.time ?? "09:00:00"}
-													/>
-												</Field>
-												<div className="flex-1 min-w-0">
-													<TimeZoneSelect
-														onChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
-														value={trigger.timezone}
-													/>
-												</div>
-											</div>
-										)}
-									</FieldGroup>
+									{/* Units: Day, Week, or Month */}
+									{(trigger.timeUnit === "day" || trigger.timeUnit === "week" || trigger.timeUnit === "month") && (
+										<Field className="gap-4" orientation={orientation}>
+                                            <FieldLabel className="mt-2 min-w-[208px]" />
+                                            <div className="flex flex-col gap-2 w-full">
+                                                <div className="items-center flex gap-2 w-full">
+                                                    <Input
+                                                        className="appearance-none bg-background max-w-24 min-w-0 w-full truncate [&::-webkit-calendar-picker-indicator]:appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
+                                                        onChange={(e) => setTrigger((prev) => ({ ...prev, time: e.target.value ? `${e.target.value}:00` : "09:00:00" }))}
+                                                        type="time"
+                                                        value={(trigger.time ?? "09:00:00").slice(0, 5)}
+                                                    />
+                                                    <TimeZone
+                                                        className="max-w-56 min-w-0 w-full truncate"
+                                                        onChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
+                                                        value={trigger.timezone}
+                                                    />
+                                                </div>
+                                                <span className="text-muted-foreground text-sm">At {formatTime12h((trigger.time ?? "09:00:00").slice(0, 5), trigger.timezone)}</span>
+                                            </div>
+										</Field>
+									)}
 								</FieldSet>
 							</TabsContent>
 
@@ -354,14 +373,12 @@ export default function Form({ orientation }: Props) {
 												value={trigger.cronExpression ?? ""}
 											/>
 										</Field>
-										<Field className="items-start gap-4" orientation={orientation}>
-											<FieldLabel className="!flex-none mt-2 min-w-[208px]" />
-											<div className="flex flex-1 justify-start min-w-0">
-												<TimeZoneSelect
-													onChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
-													value={trigger.timezone}
-												/>
-											</div>
+										<Field className="items-start gap-4 pl-[224px]" orientation={orientation}>
+											<TimeZone
+                                                className="max-w-56 min-w-0 w-full truncate"
+                                                onChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
+                                                value={trigger.timezone}
+                                            />
 										</Field>
 									</FieldGroup>
 								</FieldSet>

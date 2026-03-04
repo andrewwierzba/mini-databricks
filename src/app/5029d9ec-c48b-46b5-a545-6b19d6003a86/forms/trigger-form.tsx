@@ -19,7 +19,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 import { Condition, Props as TriggerConditionProps } from "@/app/81ae035b-057f-45d5-8d8b-e82583bc2a65/components/condition";
 import { ConditionProps as ConditionPreviewProps } from "@/app/81ae035b-057f-45d5-8d8b-e82583bc2a65/components/conditions";
-import { TimeZoneSelect } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/components/time-zone-select";
+import { TimeZone } from "@/components/mini-patterns/time-zone";
 
 import FileArrival from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/file-arrival";
 import ModelUpdate, { type ModelUpdateScopeProps } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/model-update";
@@ -108,6 +108,49 @@ function getOrdinalSuffix(d: number): string {
 	return "th";
 }
 
+function formatTime12h(time24: string, timezone?: string): string {
+	const [hStr, mStr] = time24.split(":");
+	let h = parseInt(hStr, 10);
+	const period = h >= 12 ? "PM" : "AM";
+	if (h === 0) h = 12;
+	else if (h > 12) h -= 12;
+	const tz = timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+	let offset = new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "shortOffset" })
+		.formatToParts(new Date())
+		.find((p) => p.type === "timeZoneName")?.value ?? "";
+	if (offset === "GMT") offset = "UTC";
+	else offset = offset.replace("GMT", "UTC");
+	return `${h}:${mStr} ${period} ${offset}`;
+}
+
+function generateCronExpression(trigger: ScheduleTriggerProps): string {
+	const timeUnit = trigger.timeUnit ?? "day";
+	const interval = trigger.interval ?? 1;
+	const time = trigger.time ?? "09:00:00";
+	const [hours, minutes] = time.split(":").map(Number);
+
+	switch (timeUnit) {
+		case "minute":
+			return interval === 1 ? "0 * * ? * *" : `0 */${interval} * ? * *`;
+		case "hour": {
+			const offset = trigger.minuteOffset ?? 0;
+			return interval === 1 ? `0 ${offset} * ? * *` : `0 ${offset} */${interval} ? * *`;
+		}
+		case "day":
+			return interval === 1 ? `0 ${minutes} ${hours} * * ?` : `0 ${minutes} ${hours} */${interval} * ?`;
+		case "week": {
+			const days = trigger.weekDays ?? ["Mon"];
+			return `0 ${minutes} ${hours} ? * ${days.join(",")}`;
+		}
+		case "month": {
+			const day = (trigger.monthDays ?? [1])[0] ?? 1;
+			return `0 ${minutes} ${hours} ${day === 0 ? "L" : day} * ?`;
+		}
+		default:
+			return `0 ${minutes} ${hours} * * ?`;
+	}
+}
+
 // Constants
 
 const WEEK_DAYS: { label: string; value: Days }[] = [
@@ -151,6 +194,8 @@ export interface Props {
 	trigger?: TriggerProps;
 }
 
+const USES_12_HOUR = new Intl.DateTimeFormat(undefined, { hour: "numeric" }).resolvedOptions().hour12;
+
 // Component
 
 export default function TriggerForm({ onChange, orientation = "horizontal", trigger: triggerProp }: Props) {
@@ -158,6 +203,7 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 	const trigger = triggerProp ?? internalTrigger;
 
 	const [showAdvancedConfiguration, setShowAdvancedConfiguration] = useState(false);
+	const [scheduleTab, setScheduleTab] = useState<"cron" | "interval">("interval");
 
 	const activationWindowMode = !trigger.activation
 		? "on"
@@ -188,11 +234,11 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 	};
 
 	return (
-		<FieldSet className="[&_[data-slot=button]]:rounded-sm [&_[data-slot=input]]:border-(--du-bois-color-border) [&_[data-slot=input]]:rounded-sm [&_[data-slot=input]:focus-visible]:border-(--du-bois-blue-600) [&_[data-slot=input]:focus-visible]:ring-2 [&_[data-slot=input]:focus-visible]:ring-(--du-bois-blue-600)/8 [&_[data-slot=select-trigger]]:rounded-sm [&_[data-slot=select-trigger]:focus]:border-(--du-bois-blue-600) [&_[data-slot=select-trigger]:focus]:ring-2 [&_[data-slot=select-trigger]:focus]:ring-(--du-bois-blue-600)/8 [&_[data-slot=select-trigger]:focus-visible]:ring-2 [&_[data-slot=select-trigger]:focus-visible]:ring-(--du-bois-blue-600)/8 [&_[role=tab]]:rounded-sm">
+		<FieldSet className="[&_[data-slot=button]]:rounded-sm [&_[data-slot=input]]:border-(--du-bois-color-border) [&_[data-slot=input]]:rounded-sm [&_[data-slot=input]]:text-sm! [&_[data-slot=input]:focus-visible]:border-(--du-bois-blue-600) [&_[data-slot=input]:focus-visible]:ring-2 [&_[data-slot=input]:focus-visible]:ring-(--du-bois-blue-600)/8 [&_[data-slot=input-group]]:border-(--du-bois-color-border)! [&_[data-slot=input-group]]:rounded-sm! [&_[data-slot=input-group]_input]:text-sm! [&_[data-slot=input-group]:has(:focus-visible)]:border-(--du-bois-blue-600)! [&_[data-slot=input-group]:has(:focus-visible)]:ring-2! [&_[data-slot=input-group]:has(:focus-visible)]:ring-(--du-bois-blue-600)/8! [&_[data-slot=select-trigger]]:rounded-sm [&_[data-slot=select-trigger]:focus]:border-(--du-bois-blue-600) [&_[data-slot=select-trigger]:focus]:ring-2 [&_[data-slot=select-trigger]:focus]:ring-(--du-bois-blue-600)/8 [&_[data-slot=select-trigger]:focus-visible]:ring-2 [&_[data-slot=select-trigger]:focus-visible]:ring-(--du-bois-blue-600)/8 [&_[role=tab]]:rounded-sm">
 			<FieldGroup className="gap-4">
 				{/* Status */}
 				<Field className="items-start gap-4" orientation={orientation}>
-					<FieldLabel className="min-w-[208px]" htmlFor="trigger-status">Status</FieldLabel>
+					<FieldLabel className="max-w-[208px] w-full" htmlFor="trigger-status">Trigger status</FieldLabel>
 					<Field className="items-start gap-1.5 w-auto" orientation="horizontal">
 						<Switch
 							checked={trigger.status}
@@ -207,12 +253,12 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 
 				{/* Type */}
 				<Field className="items-start gap-4" orientation={orientation}>
-					<FieldLabel className="mt-[6px] min-w-[208px]" htmlFor="trigger-type">Type</FieldLabel>
+					<FieldLabel className="mt-[6px] max-w-[208px] w-full" htmlFor="trigger-type">Trigger type</FieldLabel>
 					<Select
 						onValueChange={(value) => setTrigger((prev) => ({ ...prev, type: value as TriggerType }))}
 						value={trigger.type}
 					>
-						<SelectTrigger className="w-full">
+						<SelectTrigger className="max-w-80 min-w-0 w-full">
 							<SelectValue placeholder="Select a trigger type" />
 						</SelectTrigger>
 						<SelectContent>
@@ -226,8 +272,21 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 				{/* Schedule */}
 				{isSchedule(trigger) && (
 					<div className="relative w-full">
-						<FieldLabel className="absolute left-0 mt-[6px] min-w-[208px]" htmlFor="schedule-type">Schedule type</FieldLabel>
-						<Tabs className="gap-4 w-full" defaultValue="interval">
+						<FieldLabel className="absolute left-0 mt-[6px] max-w-[208px] w-full" htmlFor="schedule-type">Schedule type</FieldLabel>
+						<Tabs
+						className="gap-4 w-full"
+						onValueChange={(value) => {
+							const tab = value as "cron" | "interval";
+							setScheduleTab(tab);
+							if (tab === "cron" && isSchedule(trigger)) {
+								setTrigger((prev) => ({
+									...prev,
+									cronExpression: generateCronExpression(prev as ScheduleTriggerProps),
+								}));
+							}
+						}}
+						value={scheduleTab}
+					>
 							<TabsList className="ml-[calc(208px+16px)] w-auto">
 								<TabsTrigger value="interval">Interval</TabsTrigger>
 								<TabsTrigger value="cron">Cron</TabsTrigger>
@@ -238,13 +297,13 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 								<FieldSet>
 									<FieldGroup className="gap-4">
 										<Field className="items-start gap-4" orientation={orientation}>
-											<FieldLabel className="mt-2 min-w-[208px]" htmlFor="run-every">Run every</FieldLabel>
+											<FieldLabel className="mt-2 max-w-[208px] w-full" htmlFor="run-every">Run every</FieldLabel>
 											<div className="flex gap-2 w-full">
 												{(() => {
 													const max = trigger.timeUnit === "minute" ? 59 : trigger.timeUnit === "hour" ? 23 : trigger.timeUnit === "day" ? 31 : 99;
 													return (
 														<Input
-															className="w-23"
+															className="w-24.25"
 															id="schedule-interval"
 															max={max}
 															min={1}
@@ -274,7 +333,7 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 													}}
 													value={trigger.timeUnit || "day"}
 												>
-													<SelectTrigger className="flex-1" id="run-every">
+													<SelectTrigger className="max-w-80 min-w-0 w-full" id="run-every">
 														<SelectValue placeholder="Select an interval" />
 													</SelectTrigger>
 													<SelectContent>
@@ -319,7 +378,7 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 										{/* Month days */}
 										{trigger.timeUnit === "month" && (
 											<Field className="items-start gap-4" orientation={orientation}>
-												<FieldLabel className="mt-2 min-w-[208px]" />
+												<FieldLabel className="mt-2 max-w-[208px] w-full" />
 												<Select
 													onValueChange={(value) => setTrigger((prev) => ({ ...prev, monthDays: [value === "last" ? 0 : parseInt(value, 10)] }))}
 													value={(() => {
@@ -328,7 +387,7 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 														return first === 0 ? "last" : String(first);
 													})()}
 												>
-													<SelectTrigger className="w-full">
+													<SelectTrigger className="max-w-80 min-w-0 w-full">
 														<SelectValue placeholder="Select day" />
 													</SelectTrigger>
 													<SelectContent>
@@ -348,13 +407,13 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 
 										{/* Hourly: minute offset + time zone */}
 										{trigger.timeUnit === "hour" && (
-											<div className="flex items-center gap-2 pl-[224px]">
-												<Field className="flex-1 items-start gap-4 min-w-0" orientation={orientation}>
+											<FieldGroup className="flex flex-col gap-2 pl-[224px]">
+												<div className="flex flex-row items-center gap-2">
 													<Select
 														onValueChange={(value) => setTrigger((prev) => ({ ...prev, minuteOffset: parseInt(value, 10) }))}
 														value={String(trigger.minuteOffset ?? 0)}
 													>
-														<SelectTrigger className="min-w-0 truncate w-full">
+														<SelectTrigger className="max-w-24 min-w-0 w-full [&_[data-slot=select-value]]:min-w-0 [&_[data-slot=select-value]]:overflow-hidden [&_[data-slot=select-value]]:text-ellipsis">
 															<SelectValue />
 														</SelectTrigger>
 														<SelectContent>
@@ -365,36 +424,39 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 															))}
 														</SelectContent>
 													</Select>
-												</Field>
-												<div className="flex-1 min-w-0">
-													<TimeZoneSelect
+													<TimeZone
+														className="max-w-80 min-w-0 w-full truncate"
 														onChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
+														showLocalLabel={false}
 														value={trigger.timezone}
 													/>
 												</div>
-											</div>
+												<span className="text-muted-foreground text-sm pl-0.5 truncate">{trigger.minuteOffset ?? 0} minute(s) past the hour, every {trigger.interval} hour</span>
+											</FieldGroup>
 										)}
 
 										{/* Day/Week/Month: time + time zone */}
 										{(trigger.timeUnit === "day" || trigger.timeUnit === "week" || trigger.timeUnit === "month") && (
-											<div className="flex items-center gap-2">
-												<Field className="items-start gap-4 w-auto" orientation={orientation}>
-													<FieldLabel className="!flex-none mt-2 min-w-[208px]" />
-													<Input
-														className="appearance-none bg-background w-auto [&::-webkit-calendar-picker-indicator]:appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
-														onChange={(e) => setTrigger((prev) => ({ ...prev, time: e.target.value || "09:00:00" }))}
-														step="1"
-														type="time"
-														value={trigger.time ?? "09:00:00"}
-													/>
-												</Field>
-												<div className="flex-1 min-w-0">
-													<TimeZoneSelect
-														onChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
-														value={trigger.timezone}
-													/>
+											<Field className="items-start gap-4" orientation={orientation}>
+												<FieldLabel className="mt-2 max-w-[208px] w-full">At</FieldLabel>
+												<div className="flex flex-col gap-2 w-full">
+													<div className="items-center flex gap-2 justify-start w-full">
+														<Input
+															className="appearance-none bg-background max-w-24 min-w-0 w-full truncate [&::-webkit-calendar-picker-indicator]:appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
+															onChange={(e) => setTrigger((prev) => ({ ...prev, time: e.target.value ? `${e.target.value}:00` : "09:00:00" }))}
+															type="time"
+															value={(trigger.time ?? "09:00:00").slice(0, 5)}
+														/>
+														<TimeZone
+															className="max-w-80 min-w-0 w-full truncate "
+															onChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
+															showLocalLabel={false}
+															value={trigger.timezone}
+														/>
+													</div>
+													<span className="text-muted-foreground text-sm pl-0.5 truncate">{formatTime12h((trigger.time ?? "09:00:00").slice(0, 5), trigger.timezone)}, every {trigger.interval} {trigger.timeUnit === "day" ? "day" : trigger.timeUnit === "week" ? "week" : "month"}</span>
 												</div>
-											</div>
+											</Field>
 										)}
 									</FieldGroup>
 								</FieldSet>
@@ -405,7 +467,7 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 								<FieldSet>
 									<FieldGroup className="gap-4">
 										<Field className="items-start gap-4" orientation={orientation}>
-											<FieldLabel className="mt-2 min-w-[208px]" htmlFor="cron-syntax">Cron syntax</FieldLabel>
+											<FieldLabel className="mt-2 max-w-[208px] w-full" htmlFor="cron-syntax">Cron syntax</FieldLabel>
 											<Input
 												className="font-mono w-full"
 												id="cron-syntax"
@@ -414,14 +476,13 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 												value={trigger.cronExpression ?? ""}
 											/>
 										</Field>
-										<Field className="items-start gap-4" orientation={orientation}>
-											<FieldLabel className="!flex-none mt-2 min-w-[208px]" />
-											<div className="flex flex-1 justify-start min-w-0">
-												<TimeZoneSelect
-													onChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
-													value={trigger.timezone}
-												/>
-											</div>
+										<Field className="items-start gap-4 pl-[224px]" orientation={orientation}>
+											<TimeZone
+												className="max-w-80 min-w-0 w-full truncate"
+												onChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
+												showLocalLabel={false}
+												value={trigger.timezone}
+											/>
 										</Field>
 									</FieldGroup>
 								</FieldSet>
@@ -441,7 +502,7 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 				{isDataChange(trigger) && (
 					<>
 						<Field className="items-start gap-4" orientation={orientation}>
-							<FieldLabel className="mt-[6px] min-w-[208px]" htmlFor="data-change-mode">Source</FieldLabel>
+							<FieldLabel className="mt-[6px] max-w-[208px] w-full" htmlFor="data-change-mode">Source</FieldLabel>
 							<Select
 								onValueChange={(value) => setTrigger((prev) => ({ ...prev, dataChangeMode: value as DataChangeMode }))}
 								value={trigger.dataChangeMode}
@@ -490,15 +551,11 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 
 				{/* Advanced configuration */}
 				<div className="flex flex-col gap-2">
-					<div className="items-center flex gap-2">
+					<div className="items-center cursor-pointer flex gap-2 group hover:text-(--du-bois-blue-700)" onClick={() => setShowAdvancedConfiguration(!showAdvancedConfiguration)}>
 						<span className="font-medium text-sm">Advanced configuration</span>
-						<Button
-							onClick={() => setShowAdvancedConfiguration(!showAdvancedConfiguration)}
-							size="icon-sm"
-							variant="ghost"
-						>
-							{showAdvancedConfiguration ? <ChevronUpIcon /> : <ChevronDownIcon />}
-						</Button>
+						<span className="rounded-sm mt-[1px]">
+							{showAdvancedConfiguration ? <ChevronUpIcon className="size-4" /> : <ChevronDownIcon className="size-4" />}
+						</span>
 					</div>
 					{showAdvancedConfiguration && (
 						<FieldGroup className="gap-4">
@@ -626,7 +683,7 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 									}}
 									value={activationWindowMode}
 								>
-									<SelectTrigger className="w-full" id="activation-window">
+									<SelectTrigger className="max-w-80 min-w-0 w-full" id="activation-window">
 										<SelectValue placeholder="Select an activation window" />
 									</SelectTrigger>
 									<SelectContent>
@@ -666,33 +723,31 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 									</Field>
 									<Field className="items-start gap-4" orientation={orientation}>
 										<FieldLabel className="!flex-none mt-2 w-[208px]" htmlFor="time-start">Time range</FieldLabel>
-										<div className="flex gap-2">
-											<div className="items-center flex gap-2 w-full">
+										<div className="flex gap-2 w-full">
+											<div className="items-center flex gap-2">
 												<Input
 													className="appearance-none bg-background w-auto [&::-webkit-calendar-picker-indicator]:appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
-													defaultValue="09:30:00"
+													defaultValue="09:30"
 													id="time-start"
-													step="1"
 													type="time"
 												/>
 												<span>-</span>
 												<Input
 													className="appearance-none bg-background w-auto [&::-webkit-calendar-picker-indicator]:appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
-													defaultValue="17:30:00"
+													defaultValue="17:30"
 													id="time-end"
-													step="1"
 													type="time"
 												/>
 											</div>
-											<div>
-												<TimeZoneSelect
-													onChange={(value) => setTrigger((prev) => ({
-														...prev,
-														activation: prev.activation ? { ...prev.activation, timezone: value } : undefined,
-													}))}
-													value={trigger.activation?.timezone}
-												/>
-											</div>
+											<TimeZone
+												className="max-w-80 min-w-0 w-full truncate"
+												onChange={(value) => setTrigger((prev) => ({
+													...prev,
+													activation: prev.activation ? { ...prev.activation, timezone: value } : undefined,
+												}))}
+												showLocalLabel={false}
+												value={trigger.activation?.timezone}
+											/>
 										</div>
 									</Field>
 								</div>
@@ -722,7 +777,7 @@ export default function TriggerForm({ onChange, orientation = "horizontal", trig
 									}}
 								>
 									<ComboboxInput
-										className="w-full"
+										className="max-w-80 min-w-0 w-full"
 										id="trigger-condition"
 										placeholder="Select a trigger condition"
 									/>

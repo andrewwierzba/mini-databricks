@@ -63,12 +63,20 @@ interface TriggerProps {
     weekDays?: string[];
 }
 
+function formatTime12h(hour: number, minute: number): string {
+    const period = hour >= 12 ? "PM" : "AM";
+    let h = hour;
+    if (h === 0) h = 12;
+    else if (h > 12) h -= 12;
+    return `${h}:${String(minute).padStart(2, "0")} ${period}`;
+}
+
 function formatSimpleSchedule(trigger: TriggerProps): string {
     const interval = trigger.interval ?? 1;
     const unit = trigger.timeUnit ?? "day";
     const plural = interval === 1 ? "" : "s";
     const time = trigger.hour != null && trigger.minute != null
-        ? `${String(trigger.hour).padStart(2, "0")}:${String(trigger.minute).padStart(2, "0")}`
+        ? formatTime12h(trigger.hour, trigger.minute)
         : undefined;
     const tz = trigger.timezone ? ` ${trigger.timezone}` : "";
 
@@ -193,7 +201,7 @@ export default function Panel({
                                     {trigger.type === "schedule" && trigger.scheduleMode === "advanced" && (() => {
                                         const text = trigger.useCronExpression && trigger.cronExpression
                                             ? `Cron: ${trigger.cronExpression}`
-                                            : `Every ${trigger.timeUnit} at ${String(trigger.hour ?? 0).padStart(2, "0")}:${String(trigger.minute ?? 0).padStart(2, "0")} (${trigger.timezone || "UTC"})`;
+                                            : `Every ${trigger.timeUnit} at ${formatTime12h(trigger.hour ?? 0, trigger.minute ?? 0)} (${trigger.timezone || "UTC"})`;
                                         return <span className="truncate" title={text}>{text}</span>;
                                     })()}
                                     {trigger.type === "schedule" && trigger.scheduleMode !== "advanced" && (() => {

@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { TIME_ZONES } from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/components/time-zone-select";
+import { TimeZone } from "@/components/mini-patterns/time-zone";
 import FileArrival from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/file-arrival";
 import ModelUpdate from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/model-update";
 import TableUpdate from "@/app/5029d9ec-c48b-46b5-a545-6b19d6003a86/forms/table-update";
@@ -39,12 +39,15 @@ interface TriggerState {
 	weekDays?: Days[];
 }
 
+function getLocalTimeZone(): string {
+	return Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+
 const DEFAULT_TRIGGER: TriggerState = {
 	interval: 1,
 	status: true,
 	time: "09:00:00",
 	timeUnit: "day",
-	timezone: "Europe/Amsterdam",
 	type: undefined,
 };
 
@@ -65,7 +68,10 @@ export interface Props {
 export default function Form({ orientation }: Props) {
 	const [showAdvancedConfiguration, setShowAdvancedConfiguration] = useState(false);
 	const [showCronSyntax, setShowCronSyntax] = useState(false);
-	const [trigger, setTrigger] = useState<TriggerState>(DEFAULT_TRIGGER);
+	const [trigger, setTrigger] = useState<TriggerState>(() => ({
+		...DEFAULT_TRIGGER,
+		timezone: getLocalTimeZone(),
+	}));
 
 	return (
 		<FieldSet className="[&_[data-slot=button]]:rounded-sm [&_[data-slot=input]]:rounded-sm [&_[data-slot=input]:focus-visible]:ring-2 [&_[data-slot=input]:focus-visible]:ring-(--du-bois-blue-600) [&_[data-slot=select-trigger]]:rounded-sm [&_[data-slot=select-trigger]:focus]:ring-2 [&_[data-slot=select-trigger]:focus]:ring-(--du-bois-blue-600) [&_[data-slot=select-trigger]:focus-visible]:ring-2 [&_[data-slot=select-trigger]:focus-visible]:ring-(--du-bois-blue-600)">
@@ -340,21 +346,12 @@ export default function Form({ orientation }: Props) {
 										)}
 
 										{/* Time zone */}
-										<Select
-											onValueChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
+										<TimeZone
+											className="flex-1 min-w-0"
+											onChange={(value) => setTrigger((prev) => ({ ...prev, timezone: value }))}
+											showLocalLabel={false}
 											value={trigger.timezone}
-										>
-											<SelectTrigger className="flex-1 min-w-0 truncate w-full">
-												<SelectValue placeholder="Select a time zone" />
-											</SelectTrigger>
-											<SelectContent className="[&_[data-slot=select-item]:focus]:bg-(--du-bois-blue-600)/8">
-												{TIME_ZONES.map((tz) => (
-													<SelectItem key={tz.value} value={tz.value}>
-														{tz.label}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
+										/>
 									</FieldGroup>
 
 									{/* Cron syntax toggle */}

@@ -54,7 +54,7 @@ export default function TriggerDialog({ initialTrigger, onOpenChange, onSubmit, 
             open={open}
             setDepth={setDepth}
         >
-            <DialogContent className="sm:max-w-[600px] border-(--du-bois-color-border) flex flex-col max-h-[90vh]">
+            <DialogContent className="dialog-wide border-(--du-bois-color-border) flex flex-col max-h-[90vh] w-full">
                 <DialogHeader>
                     {depth === 0 && (
                         <div className="items-center flex gap-2 justify-between">
@@ -86,7 +86,7 @@ export default function TriggerDialog({ initialTrigger, onOpenChange, onSubmit, 
                     )}
                 </DialogHeader>
                 
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-auto pl-1 pr-3">
                     {depth === 0 && (
                         <TriggerForm
                             onChange={setTrigger}

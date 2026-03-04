@@ -54,11 +54,11 @@ export default function TriggerDialog({ initialTrigger, onOpenChange, onSubmit, 
 			open={open}
 			setDepth={setDepth}
 		>
-			<DialogContent className="sm:max-w-[600px] border-(--du-bois-color-border) flex flex-col max-h-[90vh]">
+			<DialogContent className="dialog-wide border-(--du-bois-color-border) flex flex-col max-h-[90vh] w-full">
 				<DialogHeader>
 					{depth === 0 && (
 						<div className="items-center flex gap-2 justify-between">
-							<DialogTitle>{initialTrigger ? "Edit trigger" : "New trigger"}</DialogTitle>
+							<DialogTitle className="text-2xl">Schedules & Triggers</DialogTitle>
 							<DialogClose asChild>
 								<Button
 									className="rounded-sm text-gray-600 h-8 p-2 w-8"
@@ -86,7 +86,7 @@ export default function TriggerDialog({ initialTrigger, onOpenChange, onSubmit, 
 					)}
 				</DialogHeader>
 
-				<div className="flex-1 overflow-y-auto">
+				<div className="flex-1 overflow-auto pl-1 pr-3">
 					{depth === 0 && (
 						<Form
 							onChange={setTrigger}
@@ -100,7 +100,7 @@ export default function TriggerDialog({ initialTrigger, onOpenChange, onSubmit, 
 					)}
 				</div>
 
-				<DialogFooter>
+				<DialogFooter className="flex-row justify-end">
 					{depth === 0 && (
 						<>
 							<DialogClose asChild>
@@ -113,7 +113,7 @@ export default function TriggerDialog({ initialTrigger, onOpenChange, onSubmit, 
 									onOpenChange?.(false);
 								}}
 							>
-								{initialTrigger ? "Save" : "Create"}
+								Save
 							</Button>
 						</>
 					)}
